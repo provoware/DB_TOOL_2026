@@ -1,0 +1,14 @@
+{
+  "iteration": 1,
+  "agent": "agent-web-01",
+  "write_files": [
+    "src/provoware_db/web/routes.py",
+    "tests/web/test_routes.py"
+  ],
+  "read_files": [
+    "src/provoware_db/application/catalog_service.py"
+  ],
+  "tests_required": [
+    "tests/web/test_routes.py"
+  ]
+}
