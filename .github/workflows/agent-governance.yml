@@ -3,16 +3,24 @@ name: Agent Governance
 on:
   push:
     paths:
+      - "AGENTS.md"
       - ".provoware/**"
       - "scripts/check_agent_collisions.py"
+      - "scripts/check_iteration_scope.py"
+      - "scripts/validate_agent_governance.py"
       - "docs/AGENT_ORCHESTRATION.md"
       - "docs/development/**"
+      - ".github/workflows/agent-governance.yml"
   pull_request:
     paths:
+      - "AGENTS.md"
       - ".provoware/**"
       - "scripts/check_agent_collisions.py"
+      - "scripts/check_iteration_scope.py"
+      - "scripts/validate_agent_governance.py"
       - "docs/AGENT_ORCHESTRATION.md"
       - "docs/development/**"
+      - ".github/workflows/agent-governance.yml"
 
 permissions:
   contents: read
@@ -29,14 +37,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Compile collision checker
-        run: python -m py_compile scripts/check_agent_collisions.py
+      - name: Run deterministic governance gate
+        run: python scripts/validate_agent_governance.py
 
-      - name: Validate example plans are collision-free
-        run: |
-          python scripts/check_agent_collisions.py             .provoware/examples/plan-agent-web.json             .provoware/examples/plan-agent-core.json             | tee AGENT_GOVERNANCE_AUSWERTUNG.txt
-
-      - name: Upload governance report
+      - name: Upload TXT governance report
         if: always()
         uses: actions/upload-artifact@v4
         with:
