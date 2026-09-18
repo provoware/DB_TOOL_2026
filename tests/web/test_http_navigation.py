@@ -110,8 +110,14 @@ class ReadOnlyHttpNavigationTests(unittest.TestCase):
         self.assertIn("Hersteller", entry)
         self.assertIn("text · Pflichtfeld", entry)
 
-    def test_http_surface_is_read_only(self) -> None:
-        status, headers, _ = _request(self.app, method="POST")
+    def test_static_css_is_served_read_only_and_unknown_paths_stay_blocked(self) -> None:
+        status, headers, css = _request(self.app, path="/static/app.css")
+        self.assertEqual(status, "200 OK")
+        self.assertEqual(headers["Content-Type"], "text/css; charset=utf-8")
+        self.assertEqual(headers["Cache-Control"], "no-store")
+        self.assertIn("--accent", css)
+
+        status, headers, _ = _request(self.app, method="POST", path="/static/app.css")
         self.assertEqual(status, "405 Method Not Allowed")
         self.assertEqual(headers["Allow"], "GET")
 

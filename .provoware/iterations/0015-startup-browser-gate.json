@@ -1,0 +1,55 @@
+{
+  "iteration": 15,
+  "agent": "browser-gate-agent-cp07h-15",
+  "size": "M",
+  "goal": "Run the first real validated local-start Chromium gate and preserve one 1440x900 baseline",
+  "write_files": [
+    "src/provoware_db/web/http_app.py",
+    "tests/web/test_http_navigation.py",
+    ".provoware/iterations/0015-startup-browser-gate.json",
+    "docs/development/screenshots/iteration-0015/README.md",
+    "docs/development/screenshots/iteration-0015/main-1440x900-preview.jpg"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_http_navigation.py",
+    "real loopback HTTP static CSS check",
+    "Chromium 1440x900 navigation screenshot"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "additional browser viewports",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "tests/web/test_http_navigation.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py"
+    ]
+  },
+  "browser_gate": {
+    "viewport": "1440x900",
+    "navigation": "category -> entry -> fields",
+    "loopback_only": true,
+    "write_route_expected": false
+  },
+  "screenshot_required": true,
+  "browser_result": {
+    "transport": "real loopback server responses rendered in Chromium via test bridge because browser network access to 127.0.0.1 is administratively blocked in this environment",
+    "viewport": "1440x900",
+    "category_query": "/?category_id=cat_fixture_tools",
+    "entry_query": "/?entry_id=ent_fixture_driver&category_id=cat_fixture_tools",
+    "selected_items": 2,
+    "panels": 3,
+    "buttons": 10,
+    "field_visible": "Marke",
+    "css_background": "rgb(9, 7, 18)",
+    "screenshot_sha256": "89329bdd0bb51716ec0bf01c65edd5fcbfe0268d8f5f3e792a2e3f44857c4a99",
+    "static_css_http_status": 200,
+    "unknown_write_path_status": 404,
+    "post_status": 405
+  }
+}

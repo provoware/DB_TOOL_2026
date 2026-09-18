@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs
 from wsgiref.simple_server import make_server
@@ -9,6 +10,7 @@ from .read_adapter import CatalogReadPort, WebCatalogReadAdapter
 from .render import render_page
 
 StartResponse = Callable[[str, list[tuple[str, str]]], Any]
+_STATIC_CSS = Path(__file__).with_name("static") / "app.css"
 
 
 def _one(params: dict[str, list[str]], name: str) -> str | None:
@@ -37,7 +39,21 @@ def make_app(catalog: CatalogReadPort) -> Callable[[dict[str, Any], StartRespons
             )
             return [body]
 
-        if str(environ.get("PATH_INFO", "/")) != "/":
+        path = str(environ.get("PATH_INFO", "/"))
+        if path == "/static/app.css":
+            body = _STATIC_CSS.read_bytes()
+            start_response(
+                "200 OK",
+                [
+                    ("Content-Type", "text/css; charset=utf-8"),
+                    ("Content-Length", str(len(body))),
+                    ("Cache-Control", "no-store"),
+                    ("X-Content-Type-Options", "nosniff"),
+                ],
+            )
+            return [body]
+
+        if path != "/":
             body = b"Nicht gefunden."
             start_response(
                 "404 Not Found",
