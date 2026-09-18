@@ -1,0 +1,37 @@
+{
+  "iteration": 9,
+  "agent": "change-agent-cp07h-infra-09",
+  "size": "M",
+  "goal": "Import five exact infrastructure dependencies required by CatalogService",
+  "write_files": [
+    "src/provoware_db/storage/sqlite/constants.py",
+    "src/provoware_db/storage/sqlite/errors.py",
+    "src/provoware_db/storage/sqlite/schema_manifest.py",
+    "src/provoware_db/storage/sqlite/schema_guard.py",
+    "src/provoware_db/storage/sqlite/unit_of_work.py"
+  ],
+  "tests_required": [
+    "py_compile on all five files",
+    "targeted infrastructure validation: 5 tests"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite",
+    "migration suite",
+    "database deep gate",
+    "browser screenshot"
+  ],
+  "frozen_sha256": {
+    "constants.py": "c546f52d52e00d6358d63bfb9a7aa27b8bf7403ad87456769e7307e94060fb93",
+    "errors.py": "15651cb1f25ec58ad1e69ae696ce9f5765323e440463fe5b0809f6151ddcaedc",
+    "schema_manifest.py": "76297b5f6f502951b4f70ac759a039ddc75a162f09296e33dba33ee34cb405d9",
+    "schema_guard.py": "751bcbd6c02447801302c321527286f665a5afe03c6d8471f35994bc0cce50af",
+    "unit_of_work.py": "3ab2e5e567f767b14a51b96e20a844aa413cd2e3aa8effde2f4b553f1808b010"
+  },
+  "git_blob_match": true,
+  "non_changes": [
+    "no schema migration",
+    "no core edits",
+    "no web write route"
+  ],
+  "screenshot_required": false
+}
