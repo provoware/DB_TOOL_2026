@@ -22,13 +22,18 @@ def main() -> int:
     )
     parser.add_argument("plan", help="JSON-Iterationsplan")
     parser.add_argument("--base", default="main", help="Git-Basisbranch")
+    parser.add_argument(
+        "--changed-file",
+        action="append",
+        default=[],
+        help="Optional: geänderte Datei explizit angeben (für deterministische Selbsttests).",
+    )
     args = parser.parse_args()
 
     plan = json.loads(Path(args.plan).read_text(encoding="utf-8"))
     planned = {str(p) for p in plan.get("write_files", [])}
-    changed = git_changed(args.base)
+    changed = set(args.changed_file) if args.changed_file else git_changed(args.base)
 
-    # Governance-/Dokumentationsdateien dürfen separat vom Produktiv-Scope entstehen.
     allowed_meta_prefixes = (
         ".provoware/",
         ".github/",
@@ -37,7 +42,8 @@ def main() -> int:
     allowed_meta_files = {"AGENTS.md", "CONTRIBUTING.md", "README.md"}
 
     unexpected = {
-        p for p in changed
+        p
+        for p in changed
         if p not in planned
         and p not in allowed_meta_files
         and not p.startswith(allowed_meta_prefixes)
