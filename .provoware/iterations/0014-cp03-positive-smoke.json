@@ -1,0 +1,43 @@
+{
+  "iteration": 14,
+  "agent": "test-agent-cp07h-cp03-smoke-14",
+  "size": "M",
+  "goal": "Close the positive CP-03 validation gap with a real frozen schema fixture and real CLI smoke",
+  "write_files": [
+    "tests/fixtures/cp03_main_schema_v1.sql",
+    "tests/fixtures/README_CP03_MAIN.md",
+    "tests/web/test_cp03_positive_smoke.py",
+    ".provoware/iterations/0014-cp03-positive-smoke.json"
+  ],
+  "tests_required": [
+    "compile direct smoke test",
+    "tests/web/test_cp03_positive_smoke.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration",
+    "migration suite"
+  ],
+  "ci": {
+    "compile": [
+      "tests/web/test_cp03_positive_smoke.py"
+    ],
+    "python_tests": [
+      "tests/web/test_cp03_positive_smoke.py"
+    ]
+  },
+  "fixture": {
+    "path": "tests/fixtures/cp03_main_schema_v1.sql",
+    "sha256": "4119f49eef696cb7bafaed5bf4147c03e8340848381946adaed77227c76c81f6",
+    "git_blob": "58d38dae615b0528f1e4ca4b5b8dfee49a95d601",
+    "expected_schema_fingerprint": "3376adc9284f6668d86bd20a673938227ab2c95c22d0810f0186c708ef162d48"
+  },
+  "non_changes": [
+    "no product logic change",
+    "no schema migration",
+    "no CP-03 source edit",
+    "no web write route"
+  ],
+  "screenshot_required": false
+}
