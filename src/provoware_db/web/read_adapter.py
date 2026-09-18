@@ -26,6 +26,7 @@ class CatalogReadPort(Protocol):
     def list_fields(self, entry_id: str) -> Sequence[object]: ...
     def list_fields_with_values(self, entry_id: str) -> Sequence[tuple[object, object | Sequence[object] | None]]: ...
     def get_field_value(self, entry_id: str, field_id: str) -> object | Sequence[object] | None: ...
+    def search(self, query: str, *, limit: int = 50) -> Sequence[object]: ...
 
 
 @dataclass(frozen=True)
@@ -42,6 +43,16 @@ class WebFieldItem:
     field_type: str
     required: bool
     value: str
+
+
+@dataclass(frozen=True)
+class WebSearchItem:
+    entity_type: str
+    entity_id: str
+    label: str
+    kind_label: str
+    category_id: str | None
+    entry_id: str | None
 
 
 def _format_scalar(value: object, field: object, raw_type: str) -> str:
@@ -132,3 +143,21 @@ class WebCatalogReadAdapter:
                 )
             )
         return tuple(rows)
+
+    def search(self, query: str) -> tuple[WebSearchItem, ...]:
+        kind_labels = {
+            "category": "Kategorie",
+            "entry": "Eintrag",
+            "field_definition": "Feld",
+        }
+        return tuple(
+            WebSearchItem(
+                entity_type=str(item.entity_type),
+                entity_id=str(item.entity_id),
+                label=str(item.label),
+                kind_label=kind_labels.get(str(item.entity_type), str(item.entity_type)),
+                category_id=None if item.category_id is None else str(item.category_id),
+                entry_id=None if item.entry_id is None else str(item.entry_id),
+            )
+            for item in self._catalog.search(query)
+        )

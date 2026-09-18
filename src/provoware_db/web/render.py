@@ -4,7 +4,7 @@ from html import escape
 from pathlib import Path
 from urllib.parse import urlencode
 
-from .read_adapter import WebCatalogReadAdapter, WebFieldItem, WebNavItem
+from .read_adapter import WebCatalogReadAdapter, WebFieldItem, WebNavItem, WebSearchItem
 
 
 _TEMPLATE = Path(__file__).with_name("templates") / "index.html"
@@ -49,6 +49,59 @@ def _nav_markup(
     return "".join(rows)
 
 
+def _search_target(item: WebSearchItem) -> str | None:
+    params: dict[str, str] = {}
+    if item.category_id:
+        params["category_id"] = item.category_id
+    if item.entry_id and item.category_id:
+        params["entry_id"] = item.entry_id
+    if not params:
+        return None
+    return "/?" + urlencode(params)
+
+
+def _search_markup(adapter: WebCatalogReadAdapter, query: str | None) -> str:
+    value = "" if query is None else query
+    form = (
+        '<section class="panel" id="search" aria-labelledby="search-title">'
+        '<h2 id="search-title">Suche</h2>'
+        '<form method="get" action="/" role="search" aria-labelledby="search-title">'
+        '<label for="search-query">Suchbegriff</label> '
+        f'<input id="search-query" name="q" type="search" value="{escape(value, quote=True)}" '
+        'autocomplete="off"> '
+        '<button type="submit">Suchen</button></form>'
+    )
+
+    if query is None or not query.strip():
+        return form + '<p id="search-results">Suchbegriff eingeben.</p></section>'
+
+    hits = adapter.search(query)
+    if not hits:
+        return (
+            form
+            + f'<p id="search-results" role="status">Keine Treffer für „{escape(query.strip())}“.</p>'
+            + '</section>'
+        )
+
+    rows: list[str] = []
+    for item in hits:
+        target = _search_target(item)
+        label = f'{escape(item.kind_label)} · {escape(item.label)}'
+        if target is None:
+            rows.append(f'<li><span>{label}</span></li>')
+        else:
+            rows.append(
+                f'<li><a href="{escape(target, quote=True)}">{label}</a></li>'
+            )
+    return (
+        form
+        + f'<p id="search-results" role="status">{len(hits)} Treffer</p>'
+        + '<ul aria-label="Suchergebnisse">'
+        + "".join(rows)
+        + '</ul></section>'
+    )
+
+
 def _field_markup(items: tuple[WebFieldItem, ...]) -> str:
     if not items:
         return '<p class="placeholder">Keine Felder vorhanden.</p>'
@@ -72,6 +125,7 @@ def render_page(
     *,
     category_id: str | None = None,
     entry_id: str | None = None,
+    search_query: str | None = None,
 ) -> str:
     """Render the read-only three-stage page without database access."""
     template = _TEMPLATE.read_text(encoding="utf-8")
@@ -81,6 +135,11 @@ def render_page(
 
     return (
         template.replace(
+            '<main class="workspace" aria-label="Datenbank-Arbeitsbereich">',
+            _search_markup(adapter, search_query)
+            + '<main class="workspace" aria-label="Datenbank-Arbeitsbereich">',
+        )
+        .replace(
             "<!-- CATEGORIES -->",
             _nav_markup(
                 categories,
