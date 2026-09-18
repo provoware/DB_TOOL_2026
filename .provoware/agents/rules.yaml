@@ -1,0 +1,25 @@
+version: 1
+
+rules:
+  one_writer_per_file: true
+  reviewers_never_modify_product_code: true
+  planner_never_modify_product_code: true
+  orchestrator_never_modify_product_code: true
+  require_change_manifest: true
+  require_relevant_tests: true
+  full_repo_scan_by_exception_only: true
+  frozen_core_requires_explicit_plan: true
+  screenshot_every_n_iterations: 5
+  screenshot_short_summary_required: true
+  queue_items_must_end_in_done_or_blocked: true
+
+review_scope:
+  include:
+    - changed_files
+    - direct_dependencies
+    - affected_tests
+    - freeze_manifests
+  exclude_by_default:
+    - unrelated_modules
+    - generated_files
+    - build_artifacts
