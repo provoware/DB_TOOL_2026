@@ -23,7 +23,7 @@ REQUIRED_AGENT_RULE_MARKERS = (
     "Keine unnötigen Tests",
     "Dateibesitz und Kollisionsschutz",
     "Screenshot-Regel",
-    "genau den nächsten zwei Schritten",
+    "exakt die nächsten zwei Schritte",
 )
 
 REQUIRED_MACHINE_RULES = (
