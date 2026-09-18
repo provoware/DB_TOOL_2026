@@ -12,6 +12,7 @@
       <div>
         <p class="eyebrow">PROVOWARE</p>
         <h1>DB TOOL 2026</h1>
+        <p class="readonly-badge" role="status">🔒 NUR LESEN</p>
       </div>
       <div class="health-summary" role="status" aria-live="polite">
         <span>✓ Datenbank</span>
@@ -44,17 +45,17 @@
     </main>
 
     <section class="actions" aria-label="Aktionen">
-      <button type="button">+ Neu</button>
-      <button type="button">Bearbeiten</button>
-      <button type="button">Undo</button>
-      <button type="button">Papierkorb</button>
+      <button type="button" disabled aria-disabled="true" title="Im Nur-Lese-Modus nicht verfügbar">+ Neu</button>
+      <button type="button" disabled aria-disabled="true" title="Im Nur-Lese-Modus nicht verfügbar">Bearbeiten</button>
+      <button type="button" disabled aria-disabled="true" title="Im Nur-Lese-Modus nicht verfügbar">Undo</button>
+      <button type="button" disabled aria-disabled="true" title="Im Nur-Lese-Modus nicht verfügbar">Papierkorb</button>
       <button type="button">Hilfe</button>
     </section>
 
     <aside class="events" aria-labelledby="events-title">
       <h2 id="events-title">Letzte Ereignisse</h2>
       <ol>
-        <li>UI-Grundlage bereit.</li>
+        <li>Nur-Lese-Oberfläche bereit.</li>
       </ol>
     </aside>
   </div>

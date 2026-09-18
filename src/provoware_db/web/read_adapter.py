@@ -4,6 +4,20 @@ from dataclasses import dataclass
 from typing import Protocol, Sequence
 
 
+_FIELD_TYPE_LABELS = {
+    "text": "Text",
+    "long_text": "Langer Text",
+    "integer": "Ganzzahl",
+    "decimal": "Dezimalzahl",
+    "money": "Geldbetrag",
+    "date": "Datum",
+    "datetime": "Datum und Uhrzeit",
+    "boolean": "Ja / Nein",
+    "single_choice": "Einfachauswahl",
+    "multi_choice": "Mehrfachauswahl",
+}
+
+
 class CatalogReadPort(Protocol):
     def list_categories(self) -> Sequence[object]: ...
     def list_entries(self, category_id: str) -> Sequence[object]: ...
@@ -56,7 +70,7 @@ class WebCatalogReadAdapter:
                 WebFieldItem(
                     id=str(item.id),
                     label=str(item.name),
-                    field_type=field_type,
+                    field_type=_FIELD_TYPE_LABELS.get(field_type, field_type),
                     required=bool(item.is_required),
                 )
             )
