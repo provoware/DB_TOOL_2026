@@ -1,0 +1,36 @@
+name: Repository Foundation
+
+on:
+  push:
+    branches:
+      - main
+      - "chore/**"
+      - "feature/**"
+      - "fix/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate shell syntax
+        run: bash -n scripts/repo_self_check.sh
+
+      - name: Run repository self-check
+        run: |
+          chmod +x scripts/repo_self_check.sh
+          ./scripts/repo_self_check.sh
+
+      - name: Upload TXT report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-self-check
+          path: REPO_SELF_CHECK_*.txt
+          if-no-files-found: warn
