@@ -1,0 +1,38 @@
+{
+  "iteration": 18,
+  "agent": "proof-agent-cp07h-value-format-18",
+  "size": "S",
+  "phase": "proof-before-patch",
+  "goal": "Prove or reject value-format and N+1 findings before changing product code",
+  "write_files": [
+    "tests/web/test_value_format_query_guard.py",
+    ".provoware/iterations/0018-value-format-query-guard.json"
+  ],
+  "tests_required": [
+    "compile proof test",
+    "tests/web/test_value_format_query_guard.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "tests/web/test_value_format_query_guard.py"
+    ],
+    "python_tests": [
+      "tests/web/test_value_format_query_guard.py"
+    ]
+  },
+  "acceptance": {
+    "date": "18.09.2026",
+    "datetime": "18.09.2026, 21:30",
+    "money": "123,45 EUR",
+    "decimal_with_unit": "18,5 V",
+    "boolean": ["Ja", "Nein"],
+    "max_selects_for_12_scalar_fields": 8
+  },
+  "product_change_allowed_only_after_reproducible_failure": true,
+  "screenshot_required": false
+}
