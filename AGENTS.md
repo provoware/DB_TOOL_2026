@@ -237,18 +237,32 @@ Kosmetik darf niemals Stabilität oder Testaufwand dominieren.
 
 ## 13. Abschlussformat
 
-Jede größere Entwicklungsantwort endet mit:
+Jede größere Entwicklungsantwort endet mit einer kompakten Abschlusskarte.
+
+Pflichtfelder:
 - Projektname
 - Repo
 - Branch/PR
-- Checkpoint
-- Fortschritt
-- Änderungsvolumen
+- Checkpoint / Iteration
+- Entwicklungsfortschritt als Prozentzahl und Balken
+- Änderungsvolumen: neu / geändert / gelöscht / Tests / ungefähre Zeilen
 - Gate-Status
 - Freeze-Status
-- Tooldetails
-- Optimierungsempfehlung
-- genau den nächsten zwei Schritten
+- relevante Tooldetails
+- wichtigste Optimierungsempfehlung
+- exakt die nächsten zwei Schritte
+
+Statusdarstellung:
+- 🟢 GRÜN = vollständig bestanden
+- 🟡 GELB = unvollständig, blockiert oder Review-Finding
+- 🔴 ROT = echter Fehler, Regression oder Schutzverletzung
+- 🔒 FROZEN = geschützter Bereich unverändert
+- 📸 SCREENSHOT = Screenshot-Meilenstein erreicht
+
+Beispiel Fortschritt:
+`█████████░ 93 %`
+
+Die Abschlusskarte soll auf einen Blick lesbar sein und keine langen Wiederholungen der vorherigen Detailanalyse enthalten.
 
 ## 14. Goldene Regel
 

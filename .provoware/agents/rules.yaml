@@ -18,6 +18,9 @@ rules:
   frozen_core_requires_explicit_plan: true
   screenshot_every_n_iterations: 5
   screenshot_short_summary_required: true
+  final_progress_percent_required: true
+  final_visual_status_required: true
+  exactly_two_next_steps_required: true
   queue_items_must_end_in_done_or_blocked: true
   unplanned_file_changes_are_gate_findings: true
   dependency_upgrades_require_explicit_plan: true

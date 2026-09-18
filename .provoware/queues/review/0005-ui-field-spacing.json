@@ -1,0 +1,15 @@
+{
+  "iteration": 5,
+  "source_agent": "screenshot-agent",
+  "severity": "MEDIUM",
+  "created_at": "2026-09-18",
+  "affected_files": [
+    "src/provoware_db/web/static/app.css",
+    "src/provoware_db/web/render.py"
+  ],
+  "reason": "Field label and metadata are visually concatenated in the rendered HTML.",
+  "required_action": "Plan a minimal styling or markup patch that separates label and metadata without changing data flow.",
+  "status": "review",
+  "source_pr": 7,
+  "preserved_during_checkpoint_consolidation": true
+}
