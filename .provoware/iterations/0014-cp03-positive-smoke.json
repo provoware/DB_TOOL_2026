@@ -39,5 +39,9 @@
     "no CP-03 source edit",
     "no web write route"
   ],
-  "screenshot_required": false
+  "screenshot_required": false,
+  "validation": {
+    "mode": "pr-triggered-targeted-ci",
+    "reason": "Ensure the real CP-03 positive smoke is executed in GitHub Actions after the direct main commit."
+  }
 }
