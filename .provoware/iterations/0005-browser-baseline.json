@@ -1,0 +1,30 @@
+{
+  "iteration": 5,
+  "agent": "screenshot-agent",
+  "size": "S",
+  "goal": "Create first deterministic Chromium baseline screenshot and developer summary",
+  "write_files": [
+    "docs/development/screenshots/iteration-0005/README.md",
+    "docs/development/screenshots/iteration-0005/main-1440x900.png",
+    ".provoware/queues/review/0005-ui-field-spacing.json"
+  ],
+  "read_files": [
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/web/static/app.css"
+  ],
+  "direct_dependencies": [],
+  "tests_required": [],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "database integration",
+    "multi-viewport screenshots"
+  ],
+  "risks": [],
+  "non_changes": [
+    "product code",
+    "CP-03 frozen schema",
+    "CP-06 frozen core"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": true
+}
