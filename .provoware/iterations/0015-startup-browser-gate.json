@@ -36,5 +36,20 @@
     "loopback_only": true,
     "write_route_expected": false
   },
-  "screenshot_required": true
+  "screenshot_required": true,
+  "browser_result": {
+    "transport": "real loopback server responses rendered in Chromium via test bridge because browser network access to 127.0.0.1 is administratively blocked in this environment",
+    "viewport": "1440x900",
+    "category_query": "/?category_id=cat_fixture_tools",
+    "entry_query": "/?entry_id=ent_fixture_driver&category_id=cat_fixture_tools",
+    "selected_items": 2,
+    "panels": 3,
+    "buttons": 10,
+    "field_visible": "Marke",
+    "css_background": "rgb(9, 7, 18)",
+    "screenshot_sha256": "89329bdd0bb51716ec0bf01c65edd5fcbfe0268d8f5f3e792a2e3f44857c4a99",
+    "static_css_http_status": 200,
+    "unknown_write_path_status": 404,
+    "post_status": 405
+  }
 }
