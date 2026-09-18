@@ -60,6 +60,17 @@ class CatalogService:
             raise NotFoundError("DOM-101: Eintrag wurde nicht gefunden.")
         return self.fields.list_visible_for_entry(entry.id, entry.category_id)
 
+    def list_fields_with_values(
+        self,
+        entry_id: str,
+    ) -> list[tuple[FieldDefinition, ScalarValue | FieldOption | list[FieldOption] | None]]:
+        entry = self.entries.get_active(entry_id)
+        if entry is None:
+            raise NotFoundError("DOM-101: Eintrag wurde nicht gefunden.")
+        fields = self.fields.list_visible_for_entry(entry.id, entry.category_id)
+        values = self.fields.list_values_for_entry(entry.id)
+        return [(field, values.get(field.id)) for field in fields]
+
     def get_field_value(
         self,
         entry_id: str,

@@ -19,8 +19,8 @@ class FieldRepository:
         row=self.con.execute(sql,((category_id if scope is FieldScope.CATEGORY else entry_id),name_key)).fetchone()
         return None if row is None else self.get_active_definition(str(row[0]))
     def list_visible_for_entry(self,entry_id:str,category_id:str)->list[FieldDefinition]:
-        rows=self.con.execute("SELECT id FROM field_definitions WHERE deleted_at IS NULL AND ((scope='category' AND category_id=?) OR (scope='entry' AND entry_id=?)) ORDER BY sort_order,name_key,id",(category_id,entry_id)).fetchall()
-        return [f for r in rows if (f:=self.get_active_definition(str(r[0]))) is not None]
+        rows=self.con.execute("SELECT id,scope,category_id,entry_id,name,name_key,field_type,is_required,sort_order,help_text,placeholder,unit_label,currency_code,revision FROM field_definitions WHERE deleted_at IS NULL AND ((scope='category' AND category_id=?) OR (scope='entry' AND entry_id=?)) ORDER BY sort_order,name_key,id",(category_id,entry_id)).fetchall()
+        return [self._definition(r) for r in rows]
     def update_definition(self,field_id:str,*,name:str,is_required:bool,sort_order:int,help_text:str|None,placeholder:str|None,unit_label:str|None,expected_revision:int)->FieldDefinition:
         n=clean_text(name);key=make_key(n)
         cur=self.con.execute("UPDATE field_definitions SET name=?,name_key=?,is_required=?,sort_order=?,help_text=?,placeholder=?,unit_label=?,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now'),revision=revision+1 WHERE id=? AND deleted_at IS NULL AND revision=?",(n,key,int(is_required),sort_order,help_text,placeholder,unit_label,field_id,expected_revision))
@@ -54,5 +54,17 @@ class FieldRepository:
         self.con.executemany("INSERT INTO multi_choice_values(entry_id,field_definition_id,option_id) VALUES(?,?,?)",[(entry_id,field_id,x) for x in option_ids])
     def get_multi_choice(self,entry_id:str,field_id:str)->list[str]:
         return [str(r[0]) for r in self.con.execute("SELECT option_id FROM multi_choice_values WHERE entry_id=? AND field_definition_id=? ORDER BY option_id",(entry_id,field_id)).fetchall()]
+    def list_values_for_entry(self,entry_id:str)->dict[str,ScalarValue|FieldOption|list[FieldOption]]:
+        values:dict[str,ScalarValue|FieldOption|list[FieldOption]]={}
+        for r in self.con.execute("SELECT field_definition_id,value_kind,value_text,value_integer,value_real FROM scalar_field_values WHERE entry_id=?",(entry_id,)).fetchall():
+            values[str(r["field_definition_id"])]=ScalarValue(value_kind=r["value_kind"],value_text=r["value_text"],value_integer=r["value_integer"],value_real=r["value_real"])
+        for r in self.con.execute("SELECT s.field_definition_id,o.id,o.field_definition_id AS option_field_definition_id,o.label,o.option_key,o.sort_order FROM single_choice_values s JOIN field_options o ON o.id=s.option_id WHERE s.entry_id=? AND o.deleted_at IS NULL",(entry_id,)).fetchall():
+            values[str(r["field_definition_id"])]=FieldOption(id=r["id"],field_definition_id=r["option_field_definition_id"],label=r["label"],option_key=r["option_key"],sort_order=r["sort_order"])
+        for r in self.con.execute("SELECT m.field_definition_id,o.id,o.field_definition_id AS option_field_definition_id,o.label,o.option_key,o.sort_order FROM multi_choice_values m JOIN field_options o ON o.id=m.option_id WHERE m.entry_id=? AND o.deleted_at IS NULL ORDER BY m.field_definition_id,o.sort_order,o.option_key,o.id",(entry_id,)).fetchall():
+            field_id=str(r["field_definition_id"])
+            option=FieldOption(id=r["id"],field_definition_id=r["option_field_definition_id"],label=r["label"],option_key=r["option_key"],sort_order=r["sort_order"])
+            current=values.setdefault(field_id,[])
+            if isinstance(current,list): current.append(option)
+        return values
     def search(self,q:str,limit:int=50):
         like=f"%{make_key(q)}%";return self.con.execute("SELECT f.id,f.scope,f.category_id,f.entry_id,f.name FROM field_definitions f LEFT JOIN categories c ON f.scope='category' AND c.id=f.category_id LEFT JOIN entries e ON f.scope='entry' AND e.id=f.entry_id LEFT JOIN categories ec ON e.category_id=ec.id WHERE f.deleted_at IS NULL AND f.name_key LIKE ? AND ((f.scope='category' AND c.deleted_at IS NULL) OR (f.scope='entry' AND e.deleted_at IS NULL AND ec.deleted_at IS NULL)) ORDER BY f.name_key,f.id LIMIT ?",(like,limit)).fetchall()
