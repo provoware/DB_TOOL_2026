@@ -1,0 +1,45 @@
+name: Agent Governance
+
+on:
+  push:
+    paths:
+      - ".provoware/**"
+      - "scripts/check_agent_collisions.py"
+      - "docs/AGENT_ORCHESTRATION.md"
+      - "docs/development/**"
+  pull_request:
+    paths:
+      - ".provoware/**"
+      - "scripts/check_agent_collisions.py"
+      - "docs/AGENT_ORCHESTRATION.md"
+      - "docs/development/**"
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile collision checker
+        run: python -m py_compile scripts/check_agent_collisions.py
+
+      - name: Validate example plans are collision-free
+        run: |
+          python scripts/check_agent_collisions.py             .provoware/examples/plan-agent-web.json             .provoware/examples/plan-agent-core.json             | tee AGENT_GOVERNANCE_AUSWERTUNG.txt
+
+      - name: Upload governance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-governance-report
+          path: AGENT_GOVERNANCE_AUSWERTUNG.txt
+          if-no-files-found: error
