@@ -45,35 +45,18 @@ def _real_read_service(con: sqlite3.Connection) -> CatalogService:
     service.categories = CategoryRepository(con)
     service.entries = EntryRepository(con)
     service.fields = FieldRepository(con)
-
     service.categories.insert(Category.new("cat-1", "Werkzeug"))
     service.entries.insert(Entry.new("ent-1", "cat-1", "Akkuschrauber"))
-    service.fields.insert_definition(
-        FieldDefinition.new(
-            id="fld-1",
-            scope=FieldScope.CATEGORY,
-            category_id="cat-1",
-            name="Hersteller",
-            field_type=FieldType.TEXT,
-            is_required=True,
-        )
-    )
+    service.fields.insert_definition(FieldDefinition.new(id="fld-1", scope=FieldScope.CATEGORY, category_id="cat-1", name="Hersteller", field_type=FieldType.TEXT, is_required=True))
     return service
 
 
 def _request(app, *, query: str = "", method: str = "GET", path: str = "/") -> tuple[str, dict[str, str], str]:
     captured: dict[str, object] = {}
-
     def start_response(status, headers):
         captured["status"] = status
         captured["headers"] = dict(headers)
-
-    environ = {
-        "REQUEST_METHOD": method,
-        "PATH_INFO": path,
-        "QUERY_STRING": query,
-        "wsgi.input": io.BytesIO(),
-    }
+    environ = {"REQUEST_METHOD": method, "PATH_INFO": path, "QUERY_STRING": query, "wsgi.input": io.BytesIO()}
     body = b"".join(app(environ, start_response)).decode("utf-8")
     return str(captured["status"]), dict(captured["headers"]), body
 
@@ -91,17 +74,12 @@ class ReadOnlyHttpNavigationTests(unittest.TestCase):
         self.assertEqual(status, "200 OK")
         self.assertIn("Werkzeug", root)
         self.assertNotIn("✓ Ausgewählt", root)
-
         status, _, category = _request(self.app, query="category_id=cat-1")
         self.assertEqual(status, "200 OK")
         self.assertIn("Akkuschrauber", category)
         self.assertIn('data-id="cat-1" aria-current="true"', category)
         self.assertEqual(category.count("✓ Ausgewählt"), 1)
-
-        status, headers, entry = _request(
-            self.app,
-            query="category_id=cat-1&entry_id=ent-1",
-        )
+        status, headers, entry = _request(self.app, query="category_id=cat-1&entry_id=ent-1")
         self.assertEqual(status, "200 OK")
         self.assertEqual(headers["Cache-Control"], "no-store")
         self.assertIn('data-id="cat-1" aria-current="true"', entry)
@@ -110,12 +88,18 @@ class ReadOnlyHttpNavigationTests(unittest.TestCase):
         self.assertIn("Hersteller", entry)
         self.assertIn("text · Pflichtfeld", entry)
 
-    def test_http_surface_is_read_only(self) -> None:
+    def test_http_surface_is_read_only_and_serves_only_fixed_css_asset(self) -> None:
+        status, headers, css = _request(self.app, path="/static/app.css")
+        self.assertEqual(status, "200 OK")
+        self.assertIn("text/css", headers["Content-Type"])
+        self.assertEqual(headers["Cache-Control"], "no-store")
+        self.assertIn(":root", css)
         status, headers, _ = _request(self.app, method="POST")
         self.assertEqual(status, "405 Method Not Allowed")
         self.assertEqual(headers["Allow"], "GET")
-
         status, _, _ = _request(self.app, path="/write")
+        self.assertEqual(status, "404 Not Found")
+        status, _, _ = _request(self.app, path="/static/anything-else.css")
         self.assertEqual(status, "404 Not Found")
 
 
