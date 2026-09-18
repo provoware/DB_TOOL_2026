@@ -1,0 +1,89 @@
+name: Targeted Iteration
+
+on:
+  push:
+    paths:
+      - ".provoware/iterations/**"
+      - "src/provoware_db/web/**"
+      - "tests/web/**"
+      - ".github/workflows/targeted-iteration.yml"
+  pull_request:
+    paths:
+      - ".provoware/iterations/**"
+      - "src/provoware_db/web/**"
+      - "tests/web/**"
+      - ".github/workflows/targeted-iteration.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  targeted:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run latest manifest targets
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          root = Path(".")
+          manifests = sorted((root / ".provoware/iterations").glob("*.json"))
+          if not manifests:
+              raise SystemExit("No iteration manifest found.")
+
+          manifest_path = manifests[-1]
+          data = json.loads(manifest_path.read_text(encoding="utf-8"))
+          ci = data.get("ci")
+          if not isinstance(ci, dict):
+              raise SystemExit(f"{manifest_path}: missing ci section")
+
+          def safe(path_text: str) -> str:
+              path = Path(path_text)
+              if path.is_absolute() or ".." in path.parts:
+                  raise SystemExit(f"unsafe target: {path_text}")
+              if not path.is_file():
+                  raise SystemExit(f"missing target: {path_text}")
+              return path_text
+
+          compile_targets = [safe(p) for p in ci.get("compile", [])]
+          test_targets = [safe(p) for p in ci.get("python_tests", [])]
+
+          if compile_targets:
+              subprocess.run(
+                  [sys.executable, "-m", "py_compile", *compile_targets],
+                  check=True,
+              )
+
+          env = os.environ.copy()
+          src_path = str((root / "src").resolve())
+          env["PYTHONPATH"] = (
+              src_path
+              if not env.get("PYTHONPATH")
+              else src_path + os.pathsep + env["PYTHONPATH"]
+          )
+
+          for target in test_targets:
+              subprocess.run(
+                  [sys.executable, "-W", "error", target],
+                  check=True,
+                  env=env,
+              )
+
+          print(f"TARGETED MANIFEST: {manifest_path}")
+          print(f"COMPILE TARGETS: {len(compile_targets)}")
+          print(f"TEST TARGETS: {len(test_targets)}")
+          print("GESAMTSTATUS: GRÜN")
+          PY
