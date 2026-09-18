@@ -4,8 +4,9 @@
 **Viewport:** 1440 × 900  
 **Theme:** Neon Violett  
 **Browser:** System-Chromium über Playwright  
-**Referenzdatei:** `main-1440x900.png`  
-**SHA-256:** `2c5f64545922aa251b0f0cf8907b796c507d8cee4209672bf458004d55ad61b5`
+**Browser-Original:** 1440 × 900 PNG, SHA-256 `2c5f64545922aa251b0f0cf8907b796c507d8cee4209672bf458004d55ad61b5`  
+**Repo-Vorschau:** [main-1440x900-preview.jpg](main-1440x900-preview.jpg)  
+Die Repo-Vorschau ist platzsparend verkleinert; geprüft wurde das 1440×900-Original.
 
 ## Deterministische Demo-Daten
 
