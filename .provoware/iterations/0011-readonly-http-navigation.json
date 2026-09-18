@@ -1,0 +1,47 @@
+{
+  "iteration": 11,
+  "agent": "change-agent-cp07h-web-11",
+  "size": "M",
+  "goal": "Add a minimal local GET-only navigation path over the real CatalogService read methods",
+  "write_files": [
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_http_navigation.py",
+    ".provoware/iterations/0011-readonly-http-navigation.json",
+    ".github/workflows/targeted-iteration.yml"
+  ],
+  "read_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/static/app.css"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_http_navigation.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "write-path integration",
+    "browser screenshot"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_http_navigation.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py"
+    ]
+  },
+  "risks": [
+    "CatalogService construction includes write infrastructure; the targeted test intentionally instantiates its real read methods without constructing the write coordinator"
+  ],
+  "non_changes": [
+    "no schema change",
+    "no web write route",
+    "no runtime dependency",
+    "no direct SQL in web modules"
+  ],
+  "screenshot_required": false
+}
