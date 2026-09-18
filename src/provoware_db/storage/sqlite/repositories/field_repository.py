@@ -40,7 +40,7 @@ class FieldRepository:
     def list_active_options(self,field_id:str)->list[FieldOption]:
         return [FieldOption(**dict(r)) for r in self.con.execute("SELECT id,field_definition_id,label,option_key,sort_order FROM field_options WHERE field_definition_id=? AND deleted_at IS NULL ORDER BY sort_order,option_key,id",(field_id,)).fetchall()]
     def find_option_by_key(self,field_id:str,key:str)->FieldOption|None:
-        row=self.con.execute("SELECT id,field_definition_id,label,option_key,sort_order FROM field_options WHERE field_definition_id=? AND option_key=? AND deleted_at IS NULL",(field_id,key)).fetchone();return None if row is None else self.get_active_option(str(row[0]))
+        row=self.con.execute("SELECT id,field_definition_id,label,option_key,sort_order FROM field_options WHERE field_definition_id=? AND option_key=? AND deleted_at IS NULL",(field_id,key)).fetchone();return None if row is None else FieldOption(**dict(row))
     def get_scalar_value(self,entry_id:str,field_id:str)->ScalarValue|None:
         row=self.con.execute("SELECT value_kind,value_text,value_integer,value_real FROM scalar_field_values WHERE entry_id=? AND field_definition_id=?",(entry_id,field_id)).fetchone();return None if row is None else ScalarValue(**dict(row))
     def upsert_scalar_value(self,entry_id:str,field_id:str,value:ScalarValue)->None:
