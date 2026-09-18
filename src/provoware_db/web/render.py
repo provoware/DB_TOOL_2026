@@ -60,7 +60,9 @@ def _field_markup(items: tuple[WebFieldItem, ...]) -> str:
             '<div class="data-row field-row" '
             f'data-id="{escape(item.id, quote=True)}">'
             f'<strong>{escape(item.label)}</strong>'
-            f'<span> · {escape(item.field_type + required)}</span></div>'
+            f'<span> · {escape(item.field_type + required)}</span>'
+            f'<div class="field-value"><span>Wert: </span>'
+            f'<strong>{escape(item.value)}</strong></div></div>'
         )
     return "".join(rows)
 

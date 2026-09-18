@@ -60,6 +60,33 @@ class CatalogService:
             raise NotFoundError("DOM-101: Eintrag wurde nicht gefunden.")
         return self.fields.list_visible_for_entry(entry.id, entry.category_id)
 
+    def get_field_value(
+        self,
+        entry_id: str,
+        field_id: str,
+    ) -> ScalarValue | FieldOption | list[FieldOption] | None:
+        entry = self.entries.get_active(entry_id)
+        field = self.fields.get_active_definition(field_id)
+        if entry is None:
+            raise NotFoundError("DOM-101: Eintrag wurde nicht gefunden.")
+        if field is None:
+            raise NotFoundError("DOM-105: Feld wurde nicht gefunden.")
+        assert_field_applies_to_entry(field, entry)
+
+        if field.field_type is FieldType.SINGLE_CHOICE:
+            option_id = self.fields.get_single_choice(entry_id, field_id)
+            return None if option_id is None else self.fields.get_active_option(option_id)
+
+        if field.field_type is FieldType.MULTI_CHOICE:
+            options: list[FieldOption] = []
+            for option_id in self.fields.get_multi_choice(entry_id, field_id):
+                option = self.fields.get_active_option(option_id)
+                if option is not None:
+                    options.append(option)
+            return options
+
+        return self.fields.get_scalar_value(entry_id, field_id)
+
     def create_category(self, name: str, *, description: str | None = None, sort_order: int = 0) -> Category:
         category = Category.new(self._new_id("cat"), name, description, sort_order)
 
