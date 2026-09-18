@@ -1,0 +1,15 @@
+{
+  "iteration": 0,
+  "agent": "change-agent-id",
+  "size": "S",
+  "goal": "Kurzes Iterationsziel",
+  "write_files": [],
+  "read_files": [],
+  "direct_dependencies": [],
+  "tests_required": [],
+  "tests_explicitly_not_run": [],
+  "risks": [],
+  "non_changes": [],
+  "expected_side_effects": [],
+  "screenshot_required": false
+}
