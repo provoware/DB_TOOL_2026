@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Protocol, Sequence
 
@@ -23,6 +24,7 @@ class CatalogReadPort(Protocol):
     def list_categories(self) -> Sequence[object]: ...
     def list_entries(self, category_id: str) -> Sequence[object]: ...
     def list_fields(self, entry_id: str) -> Sequence[object]: ...
+    def list_fields_with_values(self, entry_id: str) -> Sequence[tuple[object, object | Sequence[object] | None]]: ...
     def get_field_value(self, entry_id: str, field_id: str) -> object | Sequence[object] | None: ...
 
 
@@ -48,7 +50,14 @@ def _format_scalar(value: object, field: object, raw_type: str) -> str:
     value_real = getattr(value, "value_real", None)
 
     if value_text is not None:
-        rendered = str(value_text)
+        if raw_type == "date":
+            rendered = date.fromisoformat(str(value_text)).strftime("%d.%m.%Y")
+        elif raw_type == "datetime":
+            rendered = datetime.fromisoformat(str(value_text)).strftime("%d.%m.%Y, %H:%M")
+        elif raw_type == "decimal":
+            rendered = str(value_text).replace(".", ",")
+        else:
+            rendered = str(value_text)
     elif value_integer is not None:
         if raw_type == "boolean":
             rendered = "Ja" if int(value_integer) else "Nein"
@@ -111,9 +120,8 @@ class WebCatalogReadAdapter:
 
     def fields(self, entry_id: str) -> tuple[WebFieldItem, ...]:
         rows: list[WebFieldItem] = []
-        for item in self._catalog.list_fields(entry_id):
+        for item, value in self._catalog.list_fields_with_values(entry_id):
             raw_type = str(getattr(item.field_type, "value", item.field_type))
-            value = self._catalog.get_field_value(entry_id, str(item.id))
             rows.append(
                 WebFieldItem(
                     id=str(item.id),

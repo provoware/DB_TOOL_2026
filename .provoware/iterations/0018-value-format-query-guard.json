@@ -1,10 +1,13 @@
 {
   "iteration": 18,
   "agent": "proof-agent-cp07h-value-format-18",
-  "size": "S",
-  "phase": "proof-before-patch",
+  "size": "M",
+  "phase": "minimal-patch-after-proof",
   "goal": "Prove or reject value-format and N+1 findings before changing product code",
   "write_files": [
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
     "tests/web/test_value_format_query_guard.py",
     ".provoware/iterations/0018-value-format-query-guard.json"
   ],
@@ -19,6 +22,9 @@
   ],
   "ci": {
     "compile": [
+      "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+      "src/provoware_db/application/catalog_service.py",
+      "src/provoware_db/web/read_adapter.py",
       "tests/web/test_value_format_query_guard.py"
     ],
     "python_tests": [
@@ -30,9 +36,35 @@
     "datetime": "18.09.2026, 21:30",
     "money": "123,45 EUR",
     "decimal_with_unit": "18,5 V",
-    "boolean": ["Ja", "Nein"],
+    "boolean": [
+      "Ja",
+      "Nein"
+    ],
     "max_selects_for_12_scalar_fields": 8
   },
   "product_change_allowed_only_after_reproducible_failure": true,
-  "screenshot_required": false
+  "screenshot_required": false,
+  "proof": {
+    "targeted_run": 34,
+    "date_actual": "2026-09-18",
+    "date_expected": "18.09.2026",
+    "fields_measured": 12,
+    "selects_before": 50,
+    "max_selects_target": 8,
+    "product_patch_justified": true
+  },
+  "patch_scope": [
+    "load visible field definitions in one repository query",
+    "load scalar/single/multi values in three repository queries",
+    "expose one service list_fields_with_values read method",
+    "format date/datetime/decimal values for beginner-facing web output"
+  ],
+  "non_changes": [
+    "no schema change",
+    "no write route",
+    "no web SQL",
+    "no runtime dependency",
+    "no full suite",
+    "no screenshot"
+  ]
 }
