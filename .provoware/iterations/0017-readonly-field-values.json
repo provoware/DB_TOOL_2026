@@ -1,0 +1,46 @@
+{
+  "iteration": 17,
+  "agent": "change-agent-cp07h-field-values-17",
+  "size": "M",
+  "goal": "Expose existing scalar and choice values through the read-only service/adapter/render path",
+  "write_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_readonly_field_values.py",
+    ".provoware/iterations/0017-readonly-field-values.json"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_readonly_field_values.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/application/catalog_service.py",
+      "src/provoware_db/web/read_adapter.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_readonly_field_values.py"
+    ],
+    "python_tests": [
+      "tests/web/test_readonly_field_values.py"
+    ]
+  },
+  "read_path": [
+    "CatalogService.get_field_value",
+    "FieldRepository existing getters",
+    "WebCatalogReadAdapter.fields",
+    "render_page"
+  ],
+  "non_changes": [
+    "no new SQL in web modules",
+    "no web write route",
+    "no schema change",
+    "no new runtime dependency"
+  ],
+  "screenshot_required": false
+}

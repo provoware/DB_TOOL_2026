@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Protocol, Sequence
 
 
@@ -22,6 +23,7 @@ class CatalogReadPort(Protocol):
     def list_categories(self) -> Sequence[object]: ...
     def list_entries(self, category_id: str) -> Sequence[object]: ...
     def list_fields(self, entry_id: str) -> Sequence[object]: ...
+    def get_field_value(self, entry_id: str, field_id: str) -> object | Sequence[object] | None: ...
 
 
 @dataclass(frozen=True)
@@ -37,6 +39,52 @@ class WebFieldItem:
     label: str
     field_type: str
     required: bool
+    value: str
+
+
+def _format_scalar(value: object, field: object, raw_type: str) -> str:
+    value_text = getattr(value, "value_text", None)
+    value_integer = getattr(value, "value_integer", None)
+    value_real = getattr(value, "value_real", None)
+
+    if value_text is not None:
+        rendered = str(value_text)
+    elif value_integer is not None:
+        if raw_type == "boolean":
+            rendered = "Ja" if int(value_integer) else "Nein"
+        elif raw_type == "money":
+            amount = Decimal(int(value_integer)) / Decimal(100)
+            rendered = f"{amount:.2f}".replace(".", ",")
+            currency = getattr(field, "currency_code", None)
+            if currency:
+                rendered += f" {currency}"
+        else:
+            rendered = str(value_integer)
+    elif value_real is not None:
+        rendered = f"{float(value_real):g}"
+    else:
+        return "Nicht gesetzt"
+
+    unit = getattr(field, "unit_label", None)
+    if unit and raw_type != "money":
+        rendered += f" {unit}"
+    return rendered
+
+
+def _format_value(value: object | Sequence[object] | None, field: object, raw_type: str) -> str:
+    if value is None:
+        return "Nicht gesetzt"
+
+    if raw_type == "single_choice":
+        label = getattr(value, "label", None)
+        return str(label) if label else "Nicht gesetzt"
+
+    if raw_type == "multi_choice":
+        labels = [str(getattr(item, "label", "")) for item in value]
+        labels = [label for label in labels if label]
+        return ", ".join(labels) if labels else "Nicht gesetzt"
+
+    return _format_scalar(value, field, raw_type)
 
 
 class WebCatalogReadAdapter:
@@ -64,14 +112,15 @@ class WebCatalogReadAdapter:
     def fields(self, entry_id: str) -> tuple[WebFieldItem, ...]:
         rows: list[WebFieldItem] = []
         for item in self._catalog.list_fields(entry_id):
-            raw_type = item.field_type
-            field_type = str(getattr(raw_type, "value", raw_type))
+            raw_type = str(getattr(item.field_type, "value", item.field_type))
+            value = self._catalog.get_field_value(entry_id, str(item.id))
             rows.append(
                 WebFieldItem(
                     id=str(item.id),
                     label=str(item.name),
-                    field_type=_FIELD_TYPE_LABELS.get(field_type, field_type),
+                    field_type=_FIELD_TYPE_LABELS.get(raw_type, raw_type),
                     required=bool(item.is_required),
+                    value=_format_value(value, item, raw_type),
                 )
             )
         return tuple(rows)
