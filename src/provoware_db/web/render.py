@@ -16,6 +16,7 @@ def _nav_markup(
     *,
     param_name: str,
     category_id: str | None = None,
+    selected_id: str | None = None,
 ) -> str:
     if not items:
         return f'<p class="placeholder">{escape(empty_text)}</p>'
@@ -27,6 +28,9 @@ def _nav_markup(
             params["category_id"] = category_id
         params[param_name] = item.id
         query = urlencode(params)
+        selected = item.id == selected_id
+        current = ' aria-current="true"' if selected else ""
+        selected_label = '<span>✓ Ausgewählt · </span>' if selected else ""
 
         rows.append(
             f'<form method="get" action="/?{escape(query, quote=True)}">'
@@ -38,8 +42,8 @@ def _nav_markup(
                 else ""
             )
             + '<button type="submit" class="data-row" '
-            f'data-id="{escape(item.id, quote=True)}">'
-            f'<strong>{escape(item.label)}</strong>'
+            f'data-id="{escape(item.id, quote=True)}"{current}>'
+            f'{selected_label}<strong>{escape(item.label)}</strong>'
             f'<span> · {escape(item.meta)}</span></button></form>'
         )
     return "".join(rows)
@@ -80,6 +84,7 @@ def render_page(
                 categories,
                 "Keine Kategorien vorhanden.",
                 param_name="category_id",
+                selected_id=category_id,
             ),
         )
         .replace(
@@ -89,6 +94,7 @@ def render_page(
                 "Bitte zuerst eine Kategorie wählen.",
                 param_name="entry_id",
                 category_id=category_id,
+                selected_id=entry_id,
             ),
         )
         .replace("<!-- FIELDS -->", _field_markup(fields))

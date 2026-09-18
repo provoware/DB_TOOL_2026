@@ -86,16 +86,17 @@ class ReadOnlyHttpNavigationTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.con.close()
 
-    def test_category_entry_field_navigation_uses_real_catalog_service_reads(self) -> None:
+    def test_category_entry_field_navigation_marks_current_selection(self) -> None:
         status, _, root = _request(self.app)
         self.assertEqual(status, "200 OK")
         self.assertIn("Werkzeug", root)
-        self.assertNotIn("Akkuschrauber", root)
+        self.assertNotIn("✓ Ausgewählt", root)
 
         status, _, category = _request(self.app, query="category_id=cat-1")
         self.assertEqual(status, "200 OK")
         self.assertIn("Akkuschrauber", category)
-        self.assertIn('name="entry_id"', category)
+        self.assertIn('data-id="cat-1" aria-current="true"', category)
+        self.assertEqual(category.count("✓ Ausgewählt"), 1)
 
         status, headers, entry = _request(
             self.app,
@@ -103,6 +104,9 @@ class ReadOnlyHttpNavigationTests(unittest.TestCase):
         )
         self.assertEqual(status, "200 OK")
         self.assertEqual(headers["Cache-Control"], "no-store")
+        self.assertIn('data-id="cat-1" aria-current="true"', entry)
+        self.assertIn('data-id="ent-1" aria-current="true"', entry)
+        self.assertEqual(entry.count("✓ Ausgewählt"), 2)
         self.assertIn("Hersteller", entry)
         self.assertIn("text · Pflichtfeld", entry)
 

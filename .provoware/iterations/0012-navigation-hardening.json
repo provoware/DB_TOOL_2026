@@ -1,0 +1,40 @@
+{
+  "iteration": 12,
+  "agent": "change-agent-cp07h-web-12",
+  "size": "M",
+  "goal": "Close the resolved UI queue finding and make the active category and entry explicit in the read-only navigation",
+  "write_files": [
+    "src/provoware_db/web/render.py",
+    "tests/web/test_http_navigation.py",
+    ".provoware/queues/done/0005-ui-field-spacing.json",
+    ".provoware/iterations/0012-navigation-hardening.json"
+  ],
+  "delete_files": [
+    ".provoware/queues/review/0005-ui-field-spacing.json"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_http_navigation.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/render.py",
+      "tests/web/test_http_navigation.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py"
+    ]
+  },
+  "non_changes": [
+    "no CSS patch",
+    "no schema change",
+    "no web write route",
+    "no runtime dependency"
+  ],
+  "screenshot_required": false
+}
