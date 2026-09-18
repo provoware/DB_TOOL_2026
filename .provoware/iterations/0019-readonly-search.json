@@ -1,0 +1,53 @@
+{
+  "iteration": 19,
+  "agent": "change-agent-cp07h-readonly-search-19",
+  "size": "M",
+  "goal": "Expose the existing CatalogService.search path as a GET-only accessible web search",
+  "write_files": [
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/http_app.py",
+    "tests/web/test_readonly_search.py",
+    ".provoware/iterations/0019-readonly-search.json"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_readonly_search.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/read_adapter.py",
+      "src/provoware_db/web/render.py",
+      "src/provoware_db/web/http_app.py",
+      "tests/web/test_readonly_search.py"
+    ],
+    "python_tests": [
+      "tests/web/test_readonly_search.py"
+    ]
+  },
+  "read_path": [
+    "GET q parameter",
+    "WebCatalogReadAdapter.search",
+    "CatalogService.search",
+    "existing repositories"
+  ],
+  "accessibility": [
+    "native GET search form",
+    "labelled search input",
+    "native links for navigable hits",
+    "role=status for result state"
+  ],
+  "non_changes": [
+    "no web SQL",
+    "no write route",
+    "no schema change",
+    "no CSS side patch",
+    "no new runtime dependency"
+  ],
+  "screenshot_required": false
+}

@@ -67,11 +67,13 @@ def make_app(catalog: CatalogReadPort) -> Callable[[dict[str, Any], StartRespons
         params = parse_qs(str(environ.get("QUERY_STRING", "")), keep_blank_values=False)
         category_id = _one(params, "category_id")
         entry_id = _one(params, "entry_id")
+        search_query = _one(params, "q")
 
         page = render_page(
             adapter,
             category_id=category_id,
             entry_id=entry_id,
+            search_query=search_query,
         ).encode("utf-8")
 
         start_response(
