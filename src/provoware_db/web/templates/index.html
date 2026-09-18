@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PROVOWARE DB TOOL 2026</title>
+  <link rel="stylesheet" href="../static/app.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PROVOWARE</p>
+        <h1>DB TOOL 2026</h1>
+      </div>
+      <div class="health-summary" role="status" aria-live="polite">
+        <span>✓ Datenbank</span>
+        <span>✓ Recovery</span>
+        <span>✓ Schema</span>
+      </div>
+    </header>
+
+    <nav class="stepbar" aria-label="Arbeitsschritte">
+      <button type="button" class="step is-active" data-step="1">1 Kategorie</button>
+      <button type="button" class="step" data-step="2">2 Eintrag</button>
+      <button type="button" class="step" data-step="3">3 Felder</button>
+    </nav>
+
+    <main class="workspace" aria-label="Datenbank-Arbeitsbereich">
+      <section class="panel" id="categories" aria-labelledby="categories-title">
+        <h2 id="categories-title">1 Kategorie</h2>
+        <div class="placeholder">Kategorien werden hier geladen.</div>
+      </section>
+
+      <section class="panel" id="entries" aria-labelledby="entries-title">
+        <h2 id="entries-title">2 Eintrag</h2>
+        <div class="placeholder">Einträge erscheinen nach der Kategorieauswahl.</div>
+      </section>
+
+      <section class="panel" id="fields" aria-labelledby="fields-title">
+        <h2 id="fields-title">3 Felder</h2>
+        <div class="placeholder">Felder und Werte erscheinen nach der Eintragsauswahl.</div>
+      </section>
+    </main>
+
+    <section class="actions" aria-label="Aktionen">
+      <button type="button">+ Neu</button>
+      <button type="button">Bearbeiten</button>
+      <button type="button">Undo</button>
+      <button type="button">Papierkorb</button>
+      <button type="button">Hilfe</button>
+    </section>
+
+    <aside class="events" aria-labelledby="events-title">
+      <h2 id="events-title">Letzte Ereignisse</h2>
+      <ol>
+        <li>UI-Grundlage bereit.</li>
+      </ol>
+    </aside>
+  </div>
+</body>
+</html>
