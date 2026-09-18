@@ -5,7 +5,7 @@
   "goal": "Create first deterministic Chromium baseline screenshot and developer summary",
   "write_files": [
     "docs/development/screenshots/iteration-0005/README.md",
-    "docs/development/screenshots/iteration-0005/main-1440x900.png",
+    "docs/development/screenshots/iteration-0005/main-1440x900.webp",
     ".provoware/queues/review/0005-ui-field-spacing.json"
   ],
   "read_files": [
