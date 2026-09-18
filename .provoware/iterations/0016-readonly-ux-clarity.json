@@ -1,0 +1,38 @@
+{
+  "iteration": 16,
+  "agent": "change-agent-cp07h-readonly-ux-16",
+  "size": "M",
+  "goal": "Make read-only mode unmistakable and localize technical field types without expanding functionality",
+  "write_files": [
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/web/static/app.css",
+    "tests/web/test_readonly_ux.py",
+    ".provoware/iterations/0016-readonly-ux-clarity.json"
+  ],
+  "tests_required": [
+    "compile read adapter and direct UX test",
+    "tests/web/test_readonly_ux.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/read_adapter.py",
+      "tests/web/test_readonly_ux.py"
+    ],
+    "python_tests": [
+      "tests/web/test_readonly_ux.py"
+    ]
+  },
+  "non_changes": [
+    "no write route",
+    "no schema change",
+    "no CatalogService write exposure",
+    "no new runtime dependency"
+  ],
+  "screenshot_required": false
+}
