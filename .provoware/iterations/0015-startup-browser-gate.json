@@ -1,0 +1,40 @@
+{
+  "iteration": 15,
+  "agent": "browser-gate-agent-cp07h-15",
+  "size": "M",
+  "goal": "Run the first real validated local-start Chromium gate and preserve one 1440x900 baseline",
+  "write_files": [
+    "src/provoware_db/web/http_app.py",
+    "tests/web/test_http_navigation.py",
+    ".provoware/iterations/0015-startup-browser-gate.json",
+    "docs/development/screenshots/iteration-0015/README.md",
+    "docs/development/screenshots/iteration-0015/main-1440x900-preview.jpg"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_http_navigation.py",
+    "real loopback HTTP static CSS check",
+    "Chromium 1440x900 navigation screenshot"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "additional browser viewports",
+    "write-path integration"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "tests/web/test_http_navigation.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py"
+    ]
+  },
+  "browser_gate": {
+    "viewport": "1440x900",
+    "navigation": "category -> entry -> fields",
+    "loopback_only": true,
+    "write_route_expected": false
+  },
+  "screenshot_required": true
+}
