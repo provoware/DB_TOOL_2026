@@ -1,0 +1,54 @@
+{
+  "iteration": 13,
+  "agent": "change-agent-cp07h-startup-13",
+  "size": "M",
+  "goal": "Add a beginner-friendly validated read-only local startup path",
+  "write_files": [
+    "src/provoware_db/storage/sqlite/connection.py",
+    "src/provoware_db/web/startup.py",
+    "scripts/start_readonly_web.py",
+    "tests/web/test_readonly_startup.py",
+    ".provoware/iterations/0013-readonly-local-startup.json"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "tests/web/test_readonly_startup.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot",
+    "write-path integration",
+    "migration suite"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/storage/sqlite/connection.py",
+      "src/provoware_db/web/startup.py",
+      "scripts/start_readonly_web.py",
+      "tests/web/test_readonly_startup.py"
+    ],
+    "python_tests": [
+      "tests/web/test_readonly_startup.py"
+    ]
+  },
+  "frozen_import": {
+    "path": "src/provoware_db/storage/sqlite/connection.py",
+    "sha256": "15d7cf2bc63eb3467b732843cb8dd7cc14205127ca4e2a898b3fd5b9477ff12b",
+    "git_blob": "deefe0118cc2978e4031716617fd91d26210861d"
+  },
+  "safety": [
+    "SQLite mode=ro",
+    "PRAGMA query_only=ON",
+    "fast schema/identity validation before CatalogService exposure",
+    "server host fixed to 127.0.0.1",
+    "database connection always closed after server returns",
+    "no web write route"
+  ],
+  "non_changes": [
+    "no schema migration",
+    "no CP-03 edit",
+    "no CP-06 source edit",
+    "no runtime dependency"
+  ],
+  "screenshot_required": false
+}
