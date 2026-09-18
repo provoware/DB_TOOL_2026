@@ -1,0 +1,50 @@
+{
+  "iteration": 6,
+  "agent": "change-agent-cp06-read-core-06",
+  "size": "M",
+  "goal": "Import the first exact frozen CP-06 read-core slice required by CatalogService",
+  "write_files": [
+    "src/provoware_db/domain/errors.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/domain/normalization.py",
+    "src/provoware_db/domain/rules.py",
+    "tests/core/test_cp06_domain_frozen_import.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "src/provoware_db/web/read_adapter.py",
+    "CP-06 frozen source package"
+  ],
+  "direct_dependencies": [
+    "domain/errors.py",
+    "domain/normalization.py",
+    "domain/models.py",
+    "domain/rules.py"
+  ],
+  "catalog_service_transitive_file_count": 18,
+  "planned_followup_blocks": [
+    "repository read slice",
+    "storage validation slice",
+    "CatalogService exact import and adapter integration"
+  ],
+  "tests_required": [
+    "PYTHONPATH=src python3 -m pytest -q -W error tests/core/test_cp06_domain_frozen_import.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "database integration",
+    "CatalogService construction",
+    "write-path tests"
+  ],
+  "risks": [
+    "CatalogService still cannot be imported until remaining frozen storage/repository dependencies are added"
+  ],
+  "non_changes": [
+    "CP-03 schema",
+    "frozen CP-06 file contents",
+    "web write routes",
+    "runtime dependencies"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": false
+}
