@@ -1,0 +1,53 @@
+{
+  "iteration": 8,
+  "agent": "change-agent-cp07h-repo-08",
+  "size": "M",
+  "goal": "Import FieldRepository, close repository package exports, and recalculate CatalogService import scope",
+  "write_files": [
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/__init__.py",
+    "tests/repository/test_read_core_b.py",
+    "docs/development/CATALOG_SERVICE_SCOPE_AFTER_ITERATION_8.md"
+  ],
+  "read_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/audit.py",
+    "src/provoware_db/storage/sqlite/coordinator.py",
+    "src/provoware_db/storage/sqlite/operation_journal.py",
+    "src/provoware_db/validation/gates.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "src/provoware_db/domain/errors.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/domain/normalization.py",
+    "src/provoware_db/storage/sqlite/repositories/category_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/entry_repository.py"
+  ],
+  "tests_required": [
+    "PYTHONPATH=src python3 -m py_compile src/provoware_db/storage/sqlite/repositories/field_repository.py src/provoware_db/storage/sqlite/repositories/__init__.py",
+    "PYTHONPATH=src python3 -m pytest -q -W error tests/repository/test_read_core_b.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "CatalogService integration test",
+    "database migration tests",
+    "browser screenshot"
+  ],
+  "risks": [
+    "unchanged CatalogService still has 10 missing transitive local files after this iteration"
+  ],
+  "non_changes": [
+    "CP-03 schema",
+    "domain source",
+    "CategoryRepository",
+    "EntryRepository",
+    "web write routes"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": false,
+  "frozen_hashes": {
+    "field_repository.py": "483c6f0eb8a982dc6d8811b9b62e3a67e667bedb377ec27a8badde160167eee6",
+    "repositories/__init__.py": "ebbae8b25bf252fc8001fc9380dcaa772dd508b47dfdab9cd0b06efb9b1b3a0e"
+  }
+}

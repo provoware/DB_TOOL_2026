@@ -1,0 +1,39 @@
+{
+  "iteration": 4,
+  "agent": "change-agent-cp07h-web-04",
+  "size": "M",
+  "goal": "Connect the HTML shell to a read-only application-service adapter for categories, entries and fields",
+  "write_files": [
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/templates/index.html",
+    "tests/web/test_read_adapter.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/tui/view_models.py"
+  ],
+  "direct_dependencies": [],
+  "tests_required": [
+    "PYTHONPATH=src python3 -m pytest -q -W error tests/web/test_read_adapter.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser screenshot gate",
+    "database integration",
+    "write-path tests"
+  ],
+  "risks": [
+    "Concrete CatalogService implementation is not yet imported into this stacked product branch"
+  ],
+  "non_changes": [
+    "CP-03 frozen schema",
+    "CP-06 frozen core",
+    "runtime dependencies",
+    "write operations",
+    "direct SQL"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": false
+}

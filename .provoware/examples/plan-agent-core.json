@@ -1,0 +1,14 @@
+{
+  "iteration": 1,
+  "agent": "agent-core-01",
+  "write_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "tests/application/test_catalog_service.py"
+  ],
+  "read_files": [
+    "src/provoware_db/domain/models.py"
+  ],
+  "tests_required": [
+    "tests/application/test_catalog_service.py"
+  ]
+}

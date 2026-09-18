@@ -1,0 +1,59 @@
+{
+  "iteration": 10,
+  "agent": "change-agent-cp07h-service-10",
+  "size": "M",
+  "goal": "Import the final five exact CatalogService dependencies, prove the real read path through WebCatalogReadAdapter, and create the mandatory Chromium reference",
+  "write_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/audit.py",
+    "src/provoware_db/storage/sqlite/coordinator.py",
+    "src/provoware_db/storage/sqlite/operation_journal.py",
+    "src/provoware_db/validation/gates.py"
+  ],
+  "read_files": [
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/templates/index.html",
+    "AGENTS.md"
+  ],
+  "tests_required": [
+    "py_compile on all five imported source files",
+    "temporary real CatalogService -> WebCatalogReadAdapter -> renderer integration test",
+    "SHA-256 and Git-blob identity checks",
+    "Chromium render at 1440x900"
+  ],
+  "tests_result": {
+    "real_read_integration": "2 passed with -W error",
+    "browser_panels": 3,
+    "browser_buttons": 14,
+    "categories": 3,
+    "entries": 3,
+    "fields": 3
+  },
+  "tests_explicitly_not_run": [
+    "full suite",
+    "write-path integration",
+    "additional screenshot viewports"
+  ],
+  "frozen_sha256": {
+    "catalog_service.py": "4e143e64efa8be937e6af76c2a7f2d3f2851d2fee6d8d236386b3d49b1cf73cd",
+    "audit.py": "b9294596d13ae34be6d287e85494cdba49c5e86aae70c4f3d3c52104f77b1fcc",
+    "coordinator.py": "9987c6f8a99da46b37a6034a3b466706c0e25ff5a70eabb0605da2ec36267b88",
+    "operation_journal.py": "4747b60544940e303dcdfb914257a3aabe7e0c810a8299db5d812114672864e9",
+    "gates.py": "e8adf826dd020f1ba67943589efd18347cb92f7f1e61fba674384edc8e5de746"
+  },
+  "git_blob_sha": {
+    "catalog_service.py": "2995376014f27d18f509b8a04662e72551bf5fa9",
+    "audit.py": "e27c487f6b0fc0002a54295c4b46dbf171f61356",
+    "coordinator.py": "7825d85c66d00b771e8bc59aacfb22deb5fa0330",
+    "operation_journal.py": "06c4b02a4e31ee0a2cb68efcdb3c06bbdc11ff60",
+    "gates.py": "2a9a23749f66879bc319ffc03740befae1c689eb"
+  },
+  "web_boundary": {
+    "direct_sql": false,
+    "write_api_exposed": false,
+    "read_methods": ["list_categories", "list_entries", "list_fields"]
+  },
+  "screenshot_required": true,
+  "screenshot_sha256": "dc4ddd69e4efc44f8c22b5b65d9fb71c7d93af332a91826d6fe9a1499fdeacc9"
+}

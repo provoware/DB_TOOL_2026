@@ -1,0 +1,35 @@
+{
+  "iteration": 5,
+  "agent": "screenshot-agent",
+  "size": "S",
+  "goal": "Create the first mandatory Chromium reference screenshot and developer summary",
+  "write_files": [
+    "docs/development/screenshots/iteration-0005/README.md",
+    "docs/development/ITERATION_LOG.md"
+  ],
+  "read_files": [
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/web/static/app.css"
+  ],
+  "direct_dependencies": [],
+  "tests_required": [
+    "Chromium render at 1440x900",
+    "3 panels present",
+    "14 buttons present",
+    "visual inspection"
+  ],
+  "tests_explicitly_not_run": [
+    "additional viewports",
+    "full test suite"
+  ],
+  "risks": [
+    "first visual baseline has no earlier screenshot for pixel comparison"
+  ],
+  "non_changes": [
+    "product code",
+    "CP-03 frozen schema",
+    "CP-06 frozen core"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": true
+}

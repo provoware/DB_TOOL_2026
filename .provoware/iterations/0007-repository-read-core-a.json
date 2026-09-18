@@ -1,0 +1,47 @@
+{
+  "iteration": 7,
+  "agent": "change-agent-cp07h-repo-07",
+  "size": "M",
+  "goal": "Import CategoryRepository and EntryRepository as the first read-only repository core block",
+  "write_files": [
+    "src/provoware_db/storage/sqlite/repositories/category_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/entry_repository.py",
+    "tests/repository/test_read_core_a.py"
+  ],
+  "read_files": [
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/domain/errors.py",
+    "src/provoware_db/domain/normalization.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/domain/errors.py",
+    "src/provoware_db/domain/normalization.py"
+  ],
+  "tests_required": [
+    "PYTHONPATH=src python3 -m py_compile src/provoware_db/storage/sqlite/repositories/category_repository.py src/provoware_db/storage/sqlite/repositories/entry_repository.py",
+    "PYTHONPATH=src python3 -m pytest -q -W error tests/repository/test_read_core_a.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "field repository tests",
+    "database migration tests",
+    "browser screenshot"
+  ],
+  "risks": [
+    "repositories/__init__.py intentionally not imported yet because it also imports FieldRepository"
+  ],
+  "non_changes": [
+    "CP-03 schema",
+    "domain source",
+    "FieldRepository",
+    "web write routes"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": false,
+  "frozen_hashes": {
+    "category_repository.py": "c0e5f07b76343903014d6efc8f29c7b2911d5f1d0fb360b51c675e3e113c94d3",
+    "entry_repository.py": "1050127190801d04745104e27d054990e4bb91cdf527510969bf0d025f56223d"
+  }
+}

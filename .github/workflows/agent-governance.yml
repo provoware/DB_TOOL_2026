@@ -1,0 +1,49 @@
+name: Agent Governance
+
+on:
+  push:
+    paths:
+      - "AGENTS.md"
+      - ".provoware/**"
+      - "scripts/check_agent_collisions.py"
+      - "scripts/check_iteration_scope.py"
+      - "scripts/validate_agent_governance.py"
+      - "docs/AGENT_ORCHESTRATION.md"
+      - "docs/development/**"
+      - ".github/workflows/agent-governance.yml"
+  pull_request:
+    paths:
+      - "AGENTS.md"
+      - ".provoware/**"
+      - "scripts/check_agent_collisions.py"
+      - "scripts/check_iteration_scope.py"
+      - "scripts/validate_agent_governance.py"
+      - "docs/AGENT_ORCHESTRATION.md"
+      - "docs/development/**"
+      - ".github/workflows/agent-governance.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run deterministic governance gate
+        run: python scripts/validate_agent_governance.py
+
+      - name: Upload TXT governance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-governance-report
+          path: AGENT_GOVERNANCE_AUSWERTUNG.txt
+          if-no-files-found: error

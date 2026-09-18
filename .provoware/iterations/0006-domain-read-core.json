@@ -1,0 +1,48 @@
+{
+  "iteration": 6,
+  "agent": "change-agent-cp07h-core-06",
+  "size": "M",
+  "goal": "Import the first exact CP-06 read-core block required before concrete CatalogService integration",
+  "write_files": [
+    "src/provoware_db/domain/errors.py",
+    "src/provoware_db/domain/normalization.py",
+    "src/provoware_db/domain/rules.py",
+    "src/provoware_db/domain/models.py",
+    "tests/domain/test_read_core_contract.py"
+  ],
+  "read_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "src/provoware_db/domain/errors.py",
+    "src/provoware_db/domain/normalization.py",
+    "src/provoware_db/domain/rules.py",
+    "src/provoware_db/domain/models.py"
+  ],
+  "tests_required": [
+    "PYTHONPATH=src python3 -m pytest -q -W error tests/domain/test_read_core_contract.py"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "repository tests",
+    "database integration",
+    "browser screenshot"
+  ],
+  "risks": [
+    "Concrete CatalogService still depends on repository/audit/coordinator files not yet imported"
+  ],
+  "non_changes": [
+    "No edits to imported CP-06 domain source",
+    "No schema change",
+    "No web write route"
+  ],
+  "expected_side_effects": [],
+  "screenshot_required": false,
+  "frozen_hashes": {
+    "errors.py": "c06c0b021d2dbe984cbc31478ec6123c7bfdfaefd78558f44a5acbf52e6bf60e",
+    "normalization.py": "771aecdedfad390be06da2bd4c34628ae65ce3764b88269f64fb11ab0c4bce47",
+    "rules.py": "7f4c3142e5b70df6058e3fdcbe507b82f1e4ddfe4fdb8eb25cfd7418e62f6022",
+    "models.py": "bd55a189c0db1f8944e28bbeff1709e9044e06dd56962cddc8b951a0bcfeffa4"
+  }
+}

@@ -1,0 +1,45 @@
+version: 1
+
+agents:
+  change:
+    id: change-agent
+    can_write_code: true
+    scope: assigned_files_only
+    output: change_manifest
+
+  review:
+    id: review-agent
+    can_write_code: false
+    scope: changed_files_plus_direct_dependencies
+    output: review_findings
+
+  analysis:
+    id: analysis-agent
+    can_write_code: false
+    scope: review_queue
+    output: normalized_findings
+
+  planner:
+    id: planning-agent
+    can_write_code: false
+    scope: normalized_findings
+    output: iteration_plan
+
+  orchestrator:
+    id: orchestrator-agent
+    can_write_code: false
+    scope: plans_and_ownership
+    output: execution_order
+
+  gate:
+    id: gate-agent
+    can_write_code: false
+    scope: affected_tests_and_gates
+    output: gate_report
+
+  screenshot:
+    id: screenshot-agent
+    can_write_code: false
+    scope: ui_only
+    cadence_iterations: 5
+    output: screenshot_and_summary
