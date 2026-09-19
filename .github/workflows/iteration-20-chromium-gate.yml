@@ -92,6 +92,7 @@ jobs:
           from selenium.webdriver.common.by import By
           from selenium.webdriver.common.keys import Keys
           from selenium.webdriver.support.ui import WebDriverWait
+          from selenium.common.exceptions import StaleElementReferenceException
 
           out = Path("runtime")
           out.mkdir(exist_ok=True)
@@ -106,7 +107,7 @@ jobs:
           options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 
           driver = webdriver.Chrome(options=options)
-          wait = WebDriverWait(driver, 5)
+          wait = WebDriverWait(driver, 5, ignored_exceptions=(StaleElementReferenceException,))
           checks: dict[str, object] = {}
 
           def body() -> str:
