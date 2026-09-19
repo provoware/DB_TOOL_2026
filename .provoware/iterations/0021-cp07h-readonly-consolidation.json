@@ -1,0 +1,64 @@
+{
+  "iteration": 21,
+  "agent": "checkpoint-consolidation-agent-cp07h-21",
+  "size": "S",
+  "goal": "Consolidate the validated CP-07H read-only browser slice after Iteration 20 without changing product behavior or any frozen core area",
+  "write_files": [
+    ".provoware/iterations/0021-cp07h-readonly-consolidation.json",
+    "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_21.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0020-browser-search-gate.json",
+    "docs/development/ITERATION_LOG.md",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_http_navigation.py",
+    "tests/web/test_readonly_search.py"
+  ],
+  "direct_dependencies": [
+    "Iteration 20 FROZEN_I20 real Chromium search/navigation gate",
+    "Iteration 19 merged read-only catalog search"
+  ],
+  "tests_required": [
+    "compile the directly validated read-only web path",
+    "run HTTP navigation regression",
+    "run read-only search regression",
+    "preserve CP-03/schema/frozen-core boundaries"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "write-path integration",
+    "unrelated repository tests",
+    "new browser screenshot because no visual/product code changes are allowed"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "src/provoware_db/web/read_adapter.py",
+      "src/provoware_db/web/render.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_readonly_search.py"
+    ]
+  },
+  "risks": [
+    "this consolidation proves the already validated read-only slice only; it does not freeze unfinished Textual runtime work",
+    "write-path behavior remains outside this iteration"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no product code changes",
+    "no CSS changes",
+    "no write routes",
+    "no dependency changes"
+  ],
+  "expected_side_effects": [
+    "documentation-only checkpoint boundary for the validated CP-07H read-only browser slice"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_VALIDATION_ONLY"
+}
