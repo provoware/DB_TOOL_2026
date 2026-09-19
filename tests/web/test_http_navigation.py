@@ -35,6 +35,24 @@ def _connection() -> sqlite3.Connection:
           created_at TEXT DEFAULT '', updated_at TEXT DEFAULT '', deleted_at TEXT,
           revision INTEGER NOT NULL DEFAULT 1
         );
+        CREATE TABLE field_options(
+          id TEXT PRIMARY KEY, field_definition_id TEXT NOT NULL,
+          label TEXT NOT NULL, option_key TEXT NOT NULL,
+          sort_order INTEGER NOT NULL DEFAULT 0, deleted_at TEXT
+        );
+        CREATE TABLE scalar_field_values(
+          entry_id TEXT NOT NULL, field_definition_id TEXT NOT NULL,
+          value_kind TEXT NOT NULL, value_text TEXT, value_integer INTEGER,
+          value_real REAL
+        );
+        CREATE TABLE single_choice_values(
+          entry_id TEXT NOT NULL, field_definition_id TEXT NOT NULL,
+          option_id TEXT NOT NULL
+        );
+        CREATE TABLE multi_choice_values(
+          entry_id TEXT NOT NULL, field_definition_id TEXT NOT NULL,
+          option_id TEXT NOT NULL
+        );
         """
     )
     return con
