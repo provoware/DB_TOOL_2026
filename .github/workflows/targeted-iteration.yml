@@ -58,8 +58,15 @@ jobs:
                   raise SystemExit(f"missing target: {path_text}")
               return path_text
 
+          requirement_targets = [safe(p) for p in data.get("pip_requirements", [])]
           compile_targets = [safe(p) for p in ci.get("compile", [])]
           test_targets = [safe(p) for p in ci.get("python_tests", [])]
+
+          for requirement in requirement_targets:
+              subprocess.run(
+                  [sys.executable, "-m", "pip", "install", "-r", requirement],
+                  check=True,
+              )
 
           if compile_targets:
               subprocess.run(
@@ -83,6 +90,7 @@ jobs:
               )
 
           print(f"TARGETED MANIFEST: {manifest_path}")
+          print(f"REQUIREMENT TARGETS: {len(requirement_targets)}")
           print(f"COMPILE TARGETS: {len(compile_targets)}")
           print(f"TEST TARGETS: {len(test_targets)}")
           print("GESAMTSTATUS: GRÜN")

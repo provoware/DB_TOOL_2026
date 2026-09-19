@@ -1,0 +1,70 @@
+{
+  "iteration": 24,
+  "agent": "cp07t-minimal-shell-agent-24",
+  "size": "M",
+  "goal": "Implement the smallest read-only Textual shell over injected TuiDataPort with category navigation and responsive layout classification",
+  "write_files": [
+    ".provoware/iterations/0024-cp07t-minimal-shell.json",
+    "requirements-cp07t.txt",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py",
+    ".github/workflows/targeted-iteration.yml"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_22_SCOPE.md",
+    "docs/development/ITERATION_23_CP07T_RUNTIME_INVENTORY.md",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/layout_policy.py",
+    "tests/tui/test_layout_policy.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "TuiDataPort read-only protocol",
+    "classify_layout responsive policy",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile only the new runtime and its targeted test",
+    "80x24 compact viewport smoke",
+    "160x40 wide viewport smoke",
+    "keyboard focus and up/down category navigation",
+    "guard against direct storage/SQLite/execute access from the runtime"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "screenshot because Iteration 24 is not a 5th-iteration screenshot milestone and no visual reference parity is claimed"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "Textual 8.2.8 becomes an explicit scoped CP-07T runtime dependency",
+    "this slice proves category navigation only; entries and fields remain intentionally outside scope"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "new optional CP-07T shell module and one targeted dependency file",
+    "targeted CI can install only requirements explicitly declared by an iteration manifest"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
