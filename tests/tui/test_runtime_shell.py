@@ -57,6 +57,14 @@ async def _exercise_large_viewport() -> None:
         assert app.query_one("#category-list", ListView).has_focus
 
 
+def test_compact_viewport_navigation_and_focus() -> None:
+    asyncio.run(_exercise_compact_navigation())
+
+
+def test_large_viewport_layout_and_focus() -> None:
+    asyncio.run(_exercise_large_viewport())
+
+
 def test_runtime_has_no_storage_or_sql_imports() -> None:
     source = (
         Path(__file__).parents[2]
@@ -72,6 +80,6 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(_exercise_compact_navigation())
-    asyncio.run(_exercise_large_viewport())
+    test_compact_viewport_navigation_and_focus()
+    test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
