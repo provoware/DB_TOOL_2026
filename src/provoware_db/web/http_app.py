@@ -53,6 +53,17 @@ def make_app(catalog: CatalogReadPort) -> Callable[[dict[str, Any], StartRespons
             )
             return [body]
 
+        if path == "/favicon.ico":
+            start_response(
+                "204 No Content",
+                [
+                    ("Content-Length", "0"),
+                    ("Cache-Control", "no-store"),
+                    ("X-Content-Type-Options", "nosniff"),
+                ],
+            )
+            return [b""]
+
         if path != "/":
             body = b"Nicht gefunden."
             start_response(
