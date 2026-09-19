@@ -45,6 +45,12 @@ Beim anschließend aktivierten gezielten Regressionstest wurden zwei reine Test-
 
 Beides verändert keinen Produktpfad.
 
+## Harness-Retry
+
+Der erste Evidence-/Freeze-Rerun traf beim Seitenwechsel auf eine transiente Selenium-`StaleElementReferenceException`. Das war kein Produktfehler. Der Browser-Harness ignoriert diese kurzlebige Navigation-Staleness nun innerhalb von `WebDriverWait` und wiederholt dieselbe Assertion.
+
+Der exakt wiederholte Chromium-Gate auf Head `7f6db1e7...` lief anschließend vollständig grün. Das Original-PNG ist pixelidentisch zum vorherigen grünen Lauf (identische SHA-256).
+
 ## Screenshot
 
 - Repository-Vorschau: `main-1440x900-preview.jpg`

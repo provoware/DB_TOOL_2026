@@ -67,10 +67,10 @@
     "new iteration-20 browser evidence only when the real gate has actually run"
   ],
   "screenshot_required": true,
-  "status": "GATE_RETRY_PENDING",
+  "status": "FROZEN_I20",
   "browser_result": {
-    "workflow_run_id": 35455431882,
-    "validated_head_sha": "afd5f5a85b824b17d009fd4bbab531cb503fe0d6",
+    "workflow_run_id": 35455757175,
+    "validated_head_sha": "7f6db1e7a22b1f463853af20a4f1464ace70f260",
     "browser": "Google Chrome 152.0.7977.82",
     "platform": "linux / GitHub Actions ubuntu-24.04",
     "viewport": "1440x900",
@@ -98,8 +98,8 @@
     "evidence_json_sha256": "975b9b3c8b06a11b740aa6639ccd7ac65233994efda21b70e8ddb302c04ba3ec",
     "original_png_sha256": "594e14a9c13a548bd0a14b7085e08d9ac68e7f23df32fb2f066dcb7eeb2977dc",
     "repo_preview_jpg_sha256": "1a24c7b778e809b35443768b56d0a572ce524b52c7e4d5c267512f8b5dbabd40",
-    "artifact_id": 10587887987,
-    "artifact_digest": "sha256:7ef0f97379e1afff0eb1d206bdc5a079f32e71ea05bea0be7d1f4bd9b409675e"
+    "artifact_id": 10587918124,
+    "artifact_digest": "sha256:03ab210b05829c086f2758943e11725174df5ac182c4bb40dc3ea21f82a141ae"
   },
   "findings": [
     {
@@ -122,5 +122,16 @@
     "baseline": "iteration-0015",
     "blocking_regression": false,
     "conclusion": "Three-stage layout remains stable at 1440x900. Expected later changes are visible: read-only actions are disabled, field type labels are localized, field values are shown, and the iteration-19 search panel is present."
+  },
+  "freeze": {
+    "evidence_bound_to_head": "7f6db1e7a22b1f463853af20a4f1464ace70f260",
+    "workflow_run_id": 35455757175,
+    "targeted_iteration": "GREEN",
+    "agent_governance": "GREEN",
+    "real_chromium": "GREEN",
+    "full_suite_run": false,
+    "cp03_unchanged": true,
+    "schema_migrations_unchanged": true,
+    "frozen_core_unchanged": true
   }
 }

@@ -71,17 +71,17 @@ Fazit:
 ## Iteration 0020 – realer Chromium-Such-/Navigations-Gate
 
 - Ziel: den in Iteration 19 gemergten Nur-Lese-Suchpfad im echten Chromium inklusive Navigation, Tastatur, Leerzustand und Browser-Konsole abnehmen
-- Validierter Head: `afd5f5a85b824b17d009fd4bbab531cb503fe0d6`
+- Validierter Head: `7f6db1e7a22b1f463853af20a4f1464ace70f260`
 - Chromium: 152.0.7977.82 / Linux
 - Viewport: 1440 × 900
 - Screenshot: `docs/development/screenshots/iteration-0020/main-1440x900-preview.jpg`
 - Evidence: `docs/development/screenshots/iteration-0020/iteration-20-evidence.json`
-- Workflow-Run: `35455431882`
+- Workflow-Run: `35455757175`
 - Browserprüfung: 🟢 Start / Nur-Lese / Kategorie → Eintrag → Felder / 3 Suchpfade / Leerzustand / Tastatur / Enter-Suche
 - Browser-Konsole: 🟢 0 SEVERE
 - Konkreter Produktbefund: erster Lauf meldete ausschließlich `/favicon.ico → 404`; minimal auf `204 No Content` behoben und gezielt regressionsgetestet
 - Test-Harness: Value-Tabellen ergänzt; alte technische Erwartung `text · Pflichtfeld` an bereits eingefrorene Lokalisierung `Text · Pflichtfeld` angepasst
-- CP-03 / Schema / Migrationen / Frozen Core: unverändert
+- Harness-Retry: transiente Selenium-Stale-Element-Navigation minimal im Test-Harness gehärtet; exakt wiederholter Browser-Gate 🟢\n- CP-03 / Schema / Migrationen / Frozen Core: unverändert
 - Full Suite: nicht ausgeführt
 - Gate: 🟢 GRÜN / `FROZEN_I20`
 - Visuelle Regression: keine blockierende Regression gegenüber Iteration 0015; Drei-Stufen-Layout stabil
