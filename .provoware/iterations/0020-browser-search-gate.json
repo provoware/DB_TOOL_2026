@@ -1,0 +1,137 @@
+{
+  "iteration": 20,
+  "agent": "browser-gate-agent-cp07h-search-20",
+  "size": "S",
+  "goal": "Validate the merged read-only search and navigation path in a real Chromium browser without changing frozen product areas unless a reproducible finding requires a minimal patch",
+  "write_files": [
+    ".provoware/iterations/0020-browser-search-gate.json",
+    ".github/workflows/iteration-20-chromium-gate.yml",
+    "src/provoware_db/web/http_app.py",
+    "tests/web/test_http_navigation.py",
+    "docs/development/screenshots/iteration-0020/README.md",
+    "docs/development/screenshots/iteration-0020/main-1440x900-preview.jpg",
+    "docs/development/screenshots/iteration-0020/iteration-20-evidence.json",
+    "docs/development/ITERATION_LOG.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0019-readonly-search.json",
+    ".provoware/iterations/0015-startup-browser-gate.json",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.css",
+    "tests/web/test_readonly_search.py",
+    "tests/web/test_http_navigation.py"
+  ],
+  "direct_dependencies": [
+    "iteration 19 merged read-only search",
+    "iteration 15 validated loopback browser startup path"
+  ],
+  "tests_required": [
+    "real Chromium 1440x900 search -> category -> entry -> fields navigation",
+    "keyboard focus traversal through search and navigation controls",
+    "empty search result state",
+    "read-only boundary remains visibly clear",
+    "browser console has no new errors",
+    "favicon request does not create a severe browser-console error",
+    "compare against iteration 15 visual baseline for regressions"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "write-path integration",
+    "unrelated repository tests",
+    "additional browser viewports unless the 1440x900 gate exposes a responsive finding"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py"
+    ]
+  },
+  "risks": [
+    "search was merged without a browser screenshot gate",
+    "visual or focus regressions may exist despite targeted Python tests",
+    "first automated Chromium run exposed a severe console entry caused only by GET /favicon.ico returning 404"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no frozen repository/core changes",
+    "no CSS cleanup without a concrete browser finding",
+    "no write routes",
+    "no runtime dependency changes"
+  ],
+  "expected_side_effects": [
+    "GET /favicon.ico returns an empty 204 response to keep Chromium console clean",
+    "new iteration-20 browser evidence only when the real gate has actually run"
+  ],
+  "screenshot_required": true,
+  "status": "FROZEN_I20",
+  "browser_result": {
+    "workflow_run_id": 35455757175,
+    "validated_head_sha": "7f6db1e7a22b1f463853af20a4f1464ace70f260",
+    "browser": "Google Chrome 152.0.7977.82",
+    "platform": "linux / GitHub Actions ubuntu-24.04",
+    "viewport": "1440x900",
+    "loopback_url": "http://127.0.0.1:8765/",
+    "startup": true,
+    "readonly_visible": true,
+    "mutating_controls_disabled": true,
+    "category_to_entry": true,
+    "entry_to_fields": true,
+    "visible_fields": [
+      "Hersteller",
+      "Zustand",
+      "Kaufdatum"
+    ],
+    "search_category": true,
+    "search_entry": true,
+    "search_field": true,
+    "empty_search_state": true,
+    "keyboard_search_reached": true,
+    "keyboard_button_reached": true,
+    "keyboard_enter_search": true,
+    "browser_console_severe": [],
+    "failed": [],
+    "status": "GREEN",
+    "evidence_json_sha256": "975b9b3c8b06a11b740aa6639ccd7ac65233994efda21b70e8ddb302c04ba3ec",
+    "original_png_sha256": "594e14a9c13a548bd0a14b7085e08d9ac68e7f23df32fb2f066dcb7eeb2977dc",
+    "repo_preview_jpg_sha256": "1a24c7b778e809b35443768b56d0a572ce524b52c7e4d5c267512f8b5dbabd40",
+    "artifact_id": 10587918124,
+    "artifact_digest": "sha256:03ab210b05829c086f2758943e11725174df5ac182c4bb40dc3ea21f82a141ae"
+  },
+  "findings": [
+    {
+      "severity": "fixed",
+      "finding": "First automated Chromium run produced one SEVERE console entry because /favicon.ico returned 404.",
+      "resolution": "Minimal GET-only 204 No Content response for /favicon.ico plus targeted regression coverage."
+    },
+    {
+      "severity": "test_harness_only",
+      "finding": "Targeted navigation fixture lacked value tables and retained the pre-localization expectation 'text · Pflichtfeld'.",
+      "resolution": "Fixture aligned with the existing read path and expectation updated to 'Text · Pflichtfeld'; no frozen core or schema changed."
+    },
+    {
+      "severity": "test_harness_only",
+      "finding": "Evidence/freeze rerun hit Selenium StaleElementReferenceException while the page was navigating.",
+      "resolution": "WebDriverWait now ignores transient stale-element references and retries the same browser assertion; no product code changed."
+    }
+  ],
+  "visual_regression": {
+    "baseline": "iteration-0015",
+    "blocking_regression": false,
+    "conclusion": "Three-stage layout remains stable at 1440x900. Expected later changes are visible: read-only actions are disabled, field type labels are localized, field values are shown, and the iteration-19 search panel is present."
+  },
+  "freeze": {
+    "evidence_bound_to_head": "7f6db1e7a22b1f463853af20a4f1464ace70f260",
+    "workflow_run_id": 35455757175,
+    "targeted_iteration": "GREEN",
+    "agent_governance": "GREEN",
+    "real_chromium": "GREEN",
+    "full_suite_run": false,
+    "cp03_unchanged": true,
+    "schema_migrations_unchanged": true,
+    "frozen_core_unchanged": true
+  }
+}

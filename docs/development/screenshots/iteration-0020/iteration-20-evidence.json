@@ -1,0 +1,47 @@
+{
+  "iteration": 20,
+  "gate": "real Chromium 1440x900",
+  "workflow_run_id": 35455757175,
+  "validated_head_sha": "7f6db1e7a22b1f463853af20a4f1464ace70f260",
+  "browser": "152.0.7977.82",
+  "platform": "linux",
+  "url": "http://127.0.0.1:8765/",
+  "checks": {
+    "startup": true,
+    "readonly_visible": true,
+    "mutating_controls_disabled": true,
+    "mutating_control_states": {
+      "Neu": true,
+      "Bearbeiten": true,
+      "Undo": true,
+      "Papierkorb": true
+    },
+    "category_to_entry": true,
+    "entry_to_fields": true,
+    "fields": [
+      "Hersteller",
+      "Zustand",
+      "Kaufdatum"
+    ],
+    "search_category": true,
+    "search_entry": true,
+    "search_field": true,
+    "empty_search_state": true,
+    "keyboard_search_reached": true,
+    "keyboard_button_reached": true,
+    "keyboard_enter_search": true,
+    "browser_console_severe": []
+  },
+  "status": "GREEN",
+  "failed": [],
+  "hashes": {
+    "source_artifact_digest": "sha256:03ab210b05829c086f2758943e11725174df5ac182c4bb40dc3ea21f82a141ae",
+    "original_png_sha256": "594e14a9c13a548bd0a14b7085e08d9ac68e7f23df32fb2f066dcb7eeb2977dc",
+    "repo_preview_jpg_sha256": "1a24c7b778e809b35443768b56d0a572ce524b52c7e4d5c267512f8b5dbabd40"
+  },
+  "harness_retry": {
+    "previous_failure": "Selenium StaleElementReferenceException during navigation wait",
+    "resolution": "WebDriverWait ignores transient StaleElementReferenceException and retries the same assertion",
+    "product_code_changed": false
+  }
+}
