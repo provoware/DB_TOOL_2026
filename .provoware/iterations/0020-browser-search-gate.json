@@ -5,6 +5,9 @@
   "goal": "Validate the merged read-only search and navigation path in a real Chromium browser without changing frozen product areas unless a reproducible finding requires a minimal patch",
   "write_files": [
     ".provoware/iterations/0020-browser-search-gate.json",
+    ".github/workflows/iteration-20-chromium-gate.yml",
+    "src/provoware_db/web/http_app.py",
+    "tests/web/test_http_navigation.py",
     "docs/development/screenshots/iteration-0020/README.md",
     "docs/development/screenshots/iteration-0020/main-1440x900-preview.jpg"
   ],
@@ -14,7 +17,8 @@
     "src/provoware_db/web/http_app.py",
     "src/provoware_db/web/render.py",
     "src/provoware_db/web/static/app.css",
-    "tests/web/test_readonly_search.py"
+    "tests/web/test_readonly_search.py",
+    "tests/web/test_http_navigation.py"
   ],
   "direct_dependencies": [
     "iteration 19 merged read-only search",
@@ -26,6 +30,7 @@
     "empty search result state",
     "read-only boundary remains visibly clear",
     "browser console has no new errors",
+    "favicon request does not create a severe browser-console error",
     "compare against iteration 15 visual baseline for regressions"
   ],
   "tests_explicitly_not_run": [
@@ -35,12 +40,17 @@
     "additional browser viewports unless the 1440x900 gate exposes a responsive finding"
   ],
   "ci": {
-    "compile": [],
-    "python_tests": []
+    "compile": [
+      "src/provoware_db/web/http_app.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py"
+    ]
   },
   "risks": [
     "search was merged without a browser screenshot gate",
-    "visual or focus regressions may exist despite targeted Python tests"
+    "visual or focus regressions may exist despite targeted Python tests",
+    "first automated Chromium run exposed a severe console entry caused only by GET /favicon.ico returning 404"
   ],
   "non_changes": [
     "no CP-03 changes",
@@ -51,8 +61,9 @@
     "no runtime dependency changes"
   ],
   "expected_side_effects": [
+    "GET /favicon.ico returns an empty 204 response to keep Chromium console clean",
     "new iteration-20 browser evidence only when the real gate has actually run"
   ],
   "screenshot_required": true,
-  "status": "PLANNED_NOT_VALIDATED"
+  "status": "GATE_FAILED_MINIMAL_PATCH"
 }
