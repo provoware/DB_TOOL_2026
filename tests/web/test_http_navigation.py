@@ -126,7 +126,7 @@ class ReadOnlyHttpNavigationTests(unittest.TestCase):
         self.assertIn('data-id="ent-1" aria-current="true"', entry)
         self.assertEqual(entry.count("✓ Ausgewählt"), 2)
         self.assertIn("Hersteller", entry)
-        self.assertIn("text · Pflichtfeld", entry)
+        self.assertIn("Text · Pflichtfeld", entry)
 
     def test_static_favicon_and_unknown_paths_preserve_read_only_boundary(self) -> None:
         status, headers, css = _request(self.app, path="/static/app.css")
