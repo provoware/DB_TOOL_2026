@@ -20,6 +20,11 @@ class FakePort:
         )
 
     def entries(self, category_id: str) -> Sequence[NavItem]:
+        if category_id == "cat-a":
+            return (
+                NavItem("entry-a1", "Eintrag A1"),
+                NavItem("entry-a2", "Eintrag A2"),
+            )
         return ()
 
     def fields(self, entry_id: str) -> Sequence[FieldRow]:
@@ -49,6 +54,22 @@ async def _exercise_compact_navigation() -> None:
         assert category_list.index == 0
 
 
+async def _exercise_category_to_entry_read() -> None:
+    app = ProvowareDbTui(FakePort())
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        category_list = app.query_one("#category-list", ListView)
+        entry_list = app.query_one("#entry-list", ListView)
+
+        await pilot.press("enter")
+        await pilot.pause()
+
+        assert category_list.index == 0
+        assert len(entry_list.children) == 2
+        assert entry_list.index == 0
+        assert entry_list.has_focus
+
+
 async def _exercise_large_viewport() -> None:
     app = ProvowareDbTui(FakePort())
     async with app.run_test(size=(160, 40)) as pilot:
@@ -59,6 +80,10 @@ async def _exercise_large_viewport() -> None:
 
 def test_compact_viewport_navigation_and_focus() -> None:
     asyncio.run(_exercise_compact_navigation())
+
+
+def test_category_selection_loads_entries_and_moves_focus() -> None:
+    asyncio.run(_exercise_category_to_entry_read())
 
 
 def test_large_viewport_layout_and_focus() -> None:
@@ -81,5 +106,6 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
 
 if __name__ == "__main__":
     test_compact_viewport_navigation_and_focus()
+    test_category_selection_loads_entries_and_moves_focus()
     test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
