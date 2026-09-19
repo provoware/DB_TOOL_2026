@@ -67,7 +67,7 @@
     "new iteration-20 browser evidence only when the real gate has actually run"
   ],
   "screenshot_required": true,
-  "status": "FROZEN_I20",
+  "status": "GATE_RETRY_PENDING",
   "browser_result": {
     "workflow_run_id": 35455431882,
     "validated_head_sha": "afd5f5a85b824b17d009fd4bbab531cb503fe0d6",
@@ -111,6 +111,11 @@
       "severity": "test_harness_only",
       "finding": "Targeted navigation fixture lacked value tables and retained the pre-localization expectation 'text · Pflichtfeld'.",
       "resolution": "Fixture aligned with the existing read path and expectation updated to 'Text · Pflichtfeld'; no frozen core or schema changed."
+    },
+    {
+      "severity": "test_harness_only",
+      "finding": "Evidence/freeze rerun hit Selenium StaleElementReferenceException while the page was navigating.",
+      "resolution": "WebDriverWait now ignores transient stale-element references and retries the same browser assertion; no product code changed."
     }
   ],
   "visual_regression": {
