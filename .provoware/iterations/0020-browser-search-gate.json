@@ -1,0 +1,54 @@
+{
+  "iteration": 20,
+  "agent": "browser-gate-agent-cp07h-search-20",
+  "size": "S",
+  "goal": "Validate the merged read-only search and navigation path in a real Chromium browser without changing frozen product areas unless a reproducible finding requires a minimal patch",
+  "write_files": [
+    ".provoware/iterations/0020-browser-search-gate.json",
+    "docs/development/screenshots/iteration-0020/README.md",
+    "docs/development/screenshots/iteration-0020/main-1440x900-preview.jpg"
+  ],
+  "read_files": [
+    ".provoware/iterations/0019-readonly-search.json",
+    ".provoware/iterations/0015-startup-browser-gate.json",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.css",
+    "tests/web/test_readonly_search.py"
+  ],
+  "direct_dependencies": [
+    "iteration 19 merged read-only search",
+    "iteration 15 validated loopback browser startup path"
+  ],
+  "tests_required": [
+    "real Chromium 1440x900 search -> category -> entry -> fields navigation",
+    "keyboard focus traversal through search and navigation controls",
+    "empty search result state",
+    "read-only boundary remains visibly clear",
+    "browser console has no new errors",
+    "compare against iteration 15 visual baseline for regressions"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "write-path integration",
+    "unrelated repository tests",
+    "additional browser viewports unless the 1440x900 gate exposes a responsive finding"
+  ],
+  "risks": [
+    "search was merged without a browser screenshot gate",
+    "visual or focus regressions may exist despite targeted Python tests"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no frozen repository/core changes",
+    "no CSS cleanup without a concrete browser finding",
+    "no write routes",
+    "no runtime dependency changes"
+  ],
+  "expected_side_effects": [
+    "new iteration-20 browser evidence only when the real gate has actually run"
+  ],
+  "screenshot_required": true,
+  "status": "PLANNED_NOT_VALIDATED"
+}
