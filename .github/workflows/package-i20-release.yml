@@ -1,0 +1,354 @@
+name: Package I20 Release ZIP
+
+on:
+  push:
+    branches:
+      - "release/i20-package"
+    paths:
+      - ".github/workflows/package-i20-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact frozen main
+        uses: actions/checkout@v4
+        with:
+          ref: "00539c3de678b1cd634caeb64ea774733cc73384"
+          fetch-depth: 0
+
+      - name: Build clean release tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          PKG="$RUNNER_TEMP/PROVOWARE_DB_I20_RELEASE"
+          rm -rf "$PKG"
+          mkdir -p "$PKG"
+          git archive --format=tar HEAD | tar -xf - -C "$PKG"
+
+          cat > "$PKG/selfcheck.sh" <<'EOF'
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          MODE="${1:-full}"
+
+          ok() { printf '🟢 %s\n' "$*"; }
+          fail() { printf '🔴 %s\n' "$*" >&2; exit 1; }
+
+          printf '\n============================================================\n'
+          printf 'PROVOWARE DB TOOL 2026 – SELBSTVALIDIERUNG\n'
+          printf '============================================================\n\n'
+
+          command -v python3 >/dev/null 2>&1 || fail "Python 3 wurde nicht gefunden."
+          PYVER="$(python3 --version 2>&1)"
+          printf 'Python: %s\n' "$PYVER"
+
+          python3 - <<'PY' || exit 1
+          import sys
+          if sys.version_info < (3, 10):
+              raise SystemExit("ROT – Python 3.10 oder neuer wird benötigt.")
+          print("🟢 Python-Version geeignet")
+          PY
+
+          for f in             "scripts/start_readonly_web.py"             "src/provoware_db/web/http_app.py"             "src/provoware_db/web/render.py"             "src/provoware_db/web/startup.py"             "tests/fixtures/cp03_main_schema_v1.sql"             ".provoware/iterations/0020-browser-search-gate.json"; do
+            test -f "$ROOT/$f" || fail "Pflichtdatei fehlt: $f"
+          done
+          ok "Pflichtdateien vorhanden"
+
+          EXPECTED_FIXTURE="4119f49eef696cb7bafaed5bf4147c03e8340848381946adaed77227c76c81f6"
+          ACTUAL_FIXTURE="$(sha256sum "$ROOT/tests/fixtures/cp03_main_schema_v1.sql" | awk '{print $1}')"
+          test "$ACTUAL_FIXTURE" = "$EXPECTED_FIXTURE" || fail "CP-03-Testfixture stimmt nicht mit dem eingefrorenen Stand überein."
+          ok "CP-03-Testfixture unverändert"
+
+          python3 -m py_compile             "$ROOT/scripts/start_readonly_web.py"             "$ROOT/src/provoware_db/web/http_app.py"             "$ROOT/src/provoware_db/web/render.py"             "$ROOT/src/provoware_db/web/startup.py"
+          ok "Kritische Python-Dateien kompilieren"
+
+          if [[ "$MODE" == "--quick" || "$MODE" == "quick" ]]; then
+            printf '\nGESAMTSTATUS: GRÜN – Schnellprüfung bestanden.\n'
+            exit 0
+          fi
+
+          printf '\nGezielte Regressionstests werden ausgeführt …\n'
+          export PYTHONPATH="$ROOT/src"
+          python3 -W error "$ROOT/tests/web/test_http_navigation.py"
+          python3 -W error "$ROOT/tests/web/test_readonly_search.py"
+          python3 -W error "$ROOT/tests/web/test_cp03_positive_smoke.py"
+          ok "Gezielte Read-only-/Browser-nahe Regressionstests"
+
+          printf '\n============================================================\n'
+          printf 'GESAMTSTATUS: GRÜN\n'
+          printf 'Keine Volltests ausgeführt; nur die release-relevanten Gates.\n'
+          printf '============================================================\n'
+          EOF
+
+          cat > "$PKG/start.sh" <<'EOF'
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+
+          ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          RUNTIME="$ROOT/runtime-test"
+          DB="$RUNTIME/main.db"
+          LOG="$RUNTIME/server.log"
+          PIDFILE="$RUNTIME/server.pid"
+
+          printf '\n============================================================\n'
+          printf 'PROVOWARE DB TOOL 2026 – I20 TEST/RELEASE\n'
+          printf '============================================================\n'
+
+          "$ROOT/selfcheck.sh" --quick
+
+          mkdir -p "$RUNTIME"
+
+          if [[ ! -f "$DB" ]]; then
+            printf '\nErzeuge sichere Demo-Datenbank …\n'
+            PYTHONPATH="$ROOT/src" python3 - "$ROOT" "$DB" <<'PY'
+          import runpy
+          import sys
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          db = Path(sys.argv[2])
+          ns = runpy.run_path(str(root / "tests/web/test_cp03_positive_smoke.py"))
+          ns["_create_cp03_db"](db)
+          print(f"🟢 Demo-Datenbank erstellt: {db}")
+          PY
+          else
+            printf '🟢 Vorhandene lokale Demo-Datenbank wird verwendet: %s\n' "$DB"
+          fi
+
+          PORT="$(python3 - <<'PY'
+          import socket
+          for port in range(8765, 8786):
+              s = socket.socket()
+              try:
+                  s.bind(("127.0.0.1", port))
+              except OSError:
+                  s.close()
+                  continue
+              s.close()
+              print(port)
+              break
+          else:
+              raise SystemExit("Kein freier lokaler Port 8765–8785 gefunden.")
+          PY
+          )"
+          URL="http://127.0.0.1:$PORT/"
+
+          cleanup() {
+            if [[ -f "$PIDFILE" ]]; then
+              PID="$(cat "$PIDFILE" 2>/dev/null || true)"
+              if [[ -n "${PID:-}" ]]; then
+                kill "$PID" 2>/dev/null || true
+                wait "$PID" 2>/dev/null || true
+              fi
+              rm -f "$PIDFILE"
+            fi
+          }
+          trap cleanup EXIT INT TERM
+
+          printf '\nStarte PROVOWARE ausschließlich lokal …\n'
+          PYTHONUNBUFFERED=1 python3 "$ROOT/scripts/start_readonly_web.py"             --main-db "$DB"             --port "$PORT" >"$LOG" 2>&1 &
+          PID=$!
+          printf '%s\n' "$PID" > "$PIDFILE"
+
+          python3 - "$URL" <<'PY'
+          import sys
+          import time
+          import urllib.request
+
+          url = sys.argv[1]
+          deadline = time.monotonic() + 8
+          while time.monotonic() < deadline:
+              try:
+                  with urllib.request.urlopen(url, timeout=0.4) as response:
+                      if response.status == 200:
+                          print(f"🟢 Lokaler Server erreichbar: {url}")
+                          raise SystemExit(0)
+              except OSError:
+                  time.sleep(0.1)
+          raise SystemExit("ROT – Lokaler Server wurde nicht rechtzeitig erreichbar.")
+          PY
+
+          if command -v chromium >/dev/null 2>&1; then
+            chromium --new-window "$URL" >/dev/null 2>&1 &
+          elif command -v chromium-browser >/dev/null 2>&1; then
+            chromium-browser --new-window "$URL" >/dev/null 2>&1 &
+          elif command -v google-chrome >/dev/null 2>&1; then
+            google-chrome --new-window "$URL" >/dev/null 2>&1 &
+          elif command -v google-chrome-stable >/dev/null 2>&1; then
+            google-chrome-stable --new-window "$URL" >/dev/null 2>&1 &
+          elif command -v xdg-open >/dev/null 2>&1; then
+            xdg-open "$URL" >/dev/null 2>&1 &
+          else
+            printf '\nBrowser bitte manuell öffnen: %s\n' "$URL"
+          fi
+
+          printf '\n============================================================\n'
+          printf '🟢 PROVOWARE läuft im NUR-LESEN-Modus.\n'
+          printf 'Adresse: %s\n' "$URL"
+          printf 'Beenden: Strg + C in diesem Terminal.\n'
+          printf 'Log: %s\n' "$LOG"
+          printf '============================================================\n\n'
+
+          wait "$PID"
+          EOF
+
+          cat > "$PKG/stop.sh" <<'EOF'
+          #!/usr/bin/env bash
+          set -Eeuo pipefail
+          ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          PIDFILE="$ROOT/runtime-test/server.pid"
+          if [[ ! -f "$PIDFILE" ]]; then
+            echo "🟢 Kein PROVOWARE-Testserver läuft über diese Startdatei."
+            exit 0
+          fi
+          PID="$(cat "$PIDFILE")"
+          if kill "$PID" 2>/dev/null; then
+            echo "🟢 PROVOWARE-Testserver beendet."
+          else
+            echo "🟡 Prozess war bereits beendet."
+          fi
+          rm -f "$PIDFILE"
+          EOF
+
+          cat > "$PKG/START_HIER.txt" <<'EOF'
+          PROVOWARE DB TOOL 2026 – I20 TEST/RELEASE
+          ============================================================
+
+          NUMMERIERTE LAIEN-ANLEITUNG
+
+          1. ZIP entpacken.
+
+          2. Den entpackten Ordner öffnen.
+
+          3. In diesem Ordner ein Terminal öffnen.
+             Unter Kubuntu geht das im Dateimanager meist über:
+             Rechtsklick → „Terminal hier öffnen“.
+
+          4. Einmalig Startdateien ausführbar machen:
+
+             chmod +x start.sh selfcheck.sh stop.sh
+
+          5. PROVOWARE starten:
+
+             ./start.sh
+
+             Die Startdatei:
+             - prüft Python und wichtige Projektdateien,
+             - prüft das eingefrorene CP-03-Testfixture,
+             - erstellt nur im Paketordner eine sichere Demo-Datenbank,
+             - startet den Server ausschließlich auf 127.0.0.1,
+             - sucht automatisch einen freien Port 8765–8785,
+             - öffnet Chromium/Chrome automatisch, wenn vorhanden.
+
+          6. Anwendung testen.
+             Erwartet werden u. a.:
+             - „NUR LESEN“
+             - Kategorie „Werkzeug“
+             - Eintrag „Akkuschrauber“
+             - Felder „Hersteller“, „Zustand“, „Kaufdatum“
+             - Suchfeld
+             - deaktivierte Aktionen „Neu“, „Bearbeiten“, „Undo“, „Papierkorb“
+
+          7. Beenden:
+
+             Strg + C
+
+             Falls das Terminal bereits geschlossen wurde:
+
+             ./stop.sh
+
+          8. Vollständige release-relevante Selbstvalidierung:
+
+             ./selfcheck.sh
+
+             Erwartetes Ende:
+
+             GESAMTSTATUS: GRÜN
+
+          WICHTIG
+          ------------------------------------------------------------
+          - Es werden keine echten Nutzerdaten benötigt.
+          - Die automatisch erzeugte main.db liegt nur unter runtime-test/.
+          - Der Server bindet nur an 127.0.0.1.
+          - CP-03, Schema/Migrationen und der eingefrorene Core werden nicht verändert.
+          - Die Paketbasis ist exakt der nach PR #27 grüne main-Commit.
+          EOF
+
+          cat > "$PKG/RELEASE_INFO.txt" <<'EOF'
+          PROVOWARE DB TOOL 2026
+          Paket: I20 Test/Release
+          Basis-Commit: 00539c3de678b1cd634caeb64ea774733cc73384
+          PR: #27 – squash-merged
+          Iteration 20: FROZEN
+          Post-Merge Gates:
+            - Repository Foundation: GRÜN
+            - Targeted Iteration: GRÜN
+            - Agent Governance: GRÜN
+          Browser-Gate vor Merge:
+            - Real Chromium: GRÜN
+            - 1440x900
+            - Browser-Konsole SEVERE: 0
+          CP-03: unverändert
+          Schema/Migrationen: unverändert
+          Frozen Core: unverändert
+          EOF
+
+          chmod +x "$PKG/start.sh" "$PKG/selfcheck.sh" "$PKG/stop.sh"
+
+          echo "PKG=$PKG" >> "$GITHUB_ENV"
+
+      - name: Validate packaged release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$PKG"
+          ./selfcheck.sh
+
+      - name: Create ZIP and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/out"
+          mkdir -p "$OUT"
+          ZIP="$OUT/PROVOWARE_DB_TOOL_2026_I20_RELEASE_00539c3.zip"
+
+          python3 - "$PKG" "$ZIP" <<'PY'
+          import os
+          import sys
+          import zipfile
+          from pathlib import Path
+
+          root = Path(sys.argv[1])
+          target = Path(sys.argv[2])
+
+          with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+              for path in sorted(root.rglob("*")):
+                  if path.is_dir():
+                      continue
+                  rel = Path(root.name) / path.relative_to(root)
+                  info = zipfile.ZipInfo.from_file(path, arcname=str(rel))
+                  info.compress_type = zipfile.ZIP_DEFLATED
+                  with path.open("rb") as src:
+                      zf.writestr(info, src.read(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+          PY
+
+          python3 -m zipfile -t "$ZIP"
+          sha256sum "$ZIP" > "$ZIP.sha256"
+          ls -lh "$ZIP" "$ZIP.sha256"
+
+      - name: Upload release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PROVOWARE_DB_TOOL_2026_I20_RELEASE
+          path: |
+            ${{ runner.temp }}/out/PROVOWARE_DB_TOOL_2026_I20_RELEASE_00539c3.zip
+            ${{ runner.temp }}/out/PROVOWARE_DB_TOOL_2026_I20_RELEASE_00539c3.zip.sha256
+          if-no-files-found: error
+          retention-days: 90
