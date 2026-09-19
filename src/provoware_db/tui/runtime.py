@@ -28,6 +28,7 @@ class ProvowareDbTui(App[None]):
             *(ListItem(Label(item.label)) for item in self._data_port.categories()),
             id="category-list",
         )
+        yield ListView(id="entry-list")
         yield Static(id="layout-status")
         yield Footer()
 
@@ -37,6 +38,25 @@ class ProvowareDbTui(App[None]):
             category_list.index = 0
         category_list.focus()
         self._sync_layout(self.size.width)
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        if event.list_view.id != "category-list":
+            return
+
+        categories = self._data_port.categories()
+        index = event.list_view.index
+        if index is None or index >= len(categories):
+            return
+
+        entry_list = self.query_one("#entry-list", ListView)
+        entry_list.clear()
+        entry_list.extend(
+            ListItem(Label(item.label))
+            for item in self._data_port.entries(categories[index].id)
+        )
+        if entry_list.children:
+            entry_list.index = 0
+            entry_list.focus()
 
     def on_resize(self, event: events.Resize) -> None:
         self._sync_layout(event.size.width)
