@@ -9,7 +9,9 @@
     "src/provoware_db/web/http_app.py",
     "tests/web/test_http_navigation.py",
     "docs/development/screenshots/iteration-0020/README.md",
-    "docs/development/screenshots/iteration-0020/main-1440x900-preview.jpg"
+    "docs/development/screenshots/iteration-0020/main-1440x900-preview.jpg",
+    "docs/development/screenshots/iteration-0020/iteration-20-evidence.json",
+    "docs/development/ITERATION_LOG.md"
   ],
   "read_files": [
     ".provoware/iterations/0019-readonly-search.json",
@@ -65,5 +67,55 @@
     "new iteration-20 browser evidence only when the real gate has actually run"
   ],
   "screenshot_required": true,
-  "status": "GATE_FAILED_MINIMAL_PATCH"
+  "status": "FROZEN_I20",
+  "browser_result": {
+    "workflow_run_id": 35455431882,
+    "validated_head_sha": "afd5f5a85b824b17d009fd4bbab531cb503fe0d6",
+    "browser": "Google Chrome 152.0.7977.82",
+    "platform": "linux / GitHub Actions ubuntu-24.04",
+    "viewport": "1440x900",
+    "loopback_url": "http://127.0.0.1:8765/",
+    "startup": true,
+    "readonly_visible": true,
+    "mutating_controls_disabled": true,
+    "category_to_entry": true,
+    "entry_to_fields": true,
+    "visible_fields": [
+      "Hersteller",
+      "Zustand",
+      "Kaufdatum"
+    ],
+    "search_category": true,
+    "search_entry": true,
+    "search_field": true,
+    "empty_search_state": true,
+    "keyboard_search_reached": true,
+    "keyboard_button_reached": true,
+    "keyboard_enter_search": true,
+    "browser_console_severe": [],
+    "failed": [],
+    "status": "GREEN",
+    "evidence_json_sha256": "975b9b3c8b06a11b740aa6639ccd7ac65233994efda21b70e8ddb302c04ba3ec",
+    "original_png_sha256": "594e14a9c13a548bd0a14b7085e08d9ac68e7f23df32fb2f066dcb7eeb2977dc",
+    "repo_preview_jpg_sha256": "1a24c7b778e809b35443768b56d0a572ce524b52c7e4d5c267512f8b5dbabd40",
+    "artifact_id": 10587887987,
+    "artifact_digest": "sha256:7ef0f97379e1afff0eb1d206bdc5a079f32e71ea05bea0be7d1f4bd9b409675e"
+  },
+  "findings": [
+    {
+      "severity": "fixed",
+      "finding": "First automated Chromium run produced one SEVERE console entry because /favicon.ico returned 404.",
+      "resolution": "Minimal GET-only 204 No Content response for /favicon.ico plus targeted regression coverage."
+    },
+    {
+      "severity": "test_harness_only",
+      "finding": "Targeted navigation fixture lacked value tables and retained the pre-localization expectation 'text · Pflichtfeld'.",
+      "resolution": "Fixture aligned with the existing read path and expectation updated to 'Text · Pflichtfeld'; no frozen core or schema changed."
+    }
+  ],
+  "visual_regression": {
+    "baseline": "iteration-0015",
+    "blocking_regression": false,
+    "conclusion": "Three-stage layout remains stable at 1440x900. Expected later changes are visible: read-only actions are disabled, field type labels are localized, field values are shown, and the iteration-19 search panel is present."
+  }
 }
