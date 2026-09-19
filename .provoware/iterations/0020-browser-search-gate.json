@@ -34,6 +34,10 @@
     "unrelated repository tests",
     "additional browser viewports unless the 1440x900 gate exposes a responsive finding"
   ],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
   "risks": [
     "search was merged without a browser screenshot gate",
     "visual or focus regressions may exist despite targeted Python tests"
