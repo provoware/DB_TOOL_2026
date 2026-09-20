@@ -22,6 +22,7 @@ class ProvowareDbTui(App[None]):
         self._data_port = data_port
         self._categories = tuple(data_port.categories())
         self._health = tuple(data_port.health())
+        self._recent_events = tuple(data_port.recent_events(limit=10))[:10]
         self._entries: tuple[NavItem, ...] = ()
         self.read_status = ""
         self.layout_mode = LayoutMode.COMPACT
@@ -35,6 +36,7 @@ class ProvowareDbTui(App[None]):
         yield ListView(id="entry-list")
         yield ListView(id="field-list")
         yield Static(self._health_summary(), id="health-status")
+        yield Static(self._event_summary(), id="event-status")
         yield Static(id="read-status")
         yield Static(id="layout-status")
         yield Footer()
@@ -163,6 +165,16 @@ class ProvowareDbTui(App[None]):
             f" · {warning_count} Warnung"
             f" · {error_count} Fehler"
         )
+
+    def _event_summary(self) -> str:
+        if not self._recent_events:
+            return "Letzte Ereignisse: keine Ereignisse vorhanden"
+        lines = ["Letzte Ereignisse:"]
+        lines.extend(
+            f"{item.time_label} · {item.symbol} · {item.text}"
+            for item in self._recent_events
+        )
+        return "\n".join(lines)
 
     def _set_read_status(self, message: str) -> None:
         self.read_status = message
