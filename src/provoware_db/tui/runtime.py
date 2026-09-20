@@ -56,6 +56,9 @@ class ProvowareDbTui(App[None]):
         category_list.clear()
         entry_list.clear()
         field_list.clear()
+        category_list.index = None
+        entry_list.index = None
+        field_list.index = None
         category_list.extend(
             ListItem(Label(item.label))
             for item in self._categories
