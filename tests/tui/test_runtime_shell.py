@@ -48,6 +48,28 @@ class EmptyCategoriesPort(FakePort):
         return ()
 
 
+class EmptyAfterRefreshPort(FakePort):
+    def __init__(self) -> None:
+        self.category_reads = 0
+
+    def categories(self) -> Sequence[NavItem]:
+        self.category_reads += 1
+        if self.category_reads == 1:
+            return super().categories()
+        return ()
+
+
+class EmptyThenPopulatedPort(FakePort):
+    def __init__(self) -> None:
+        self.category_reads = 0
+
+    def categories(self) -> Sequence[NavItem]:
+        self.category_reads += 1
+        if self.category_reads == 1:
+            return ()
+        return (NavItem("cat-new", "Kategorie Neu"),)
+
+
 class ReorderingPort(FakePort):
     def __init__(self) -> None:
         self.category_reads = 0
@@ -127,6 +149,78 @@ async def _exercise_no_categories_initial_state() -> None:
         assert category_list.index is None
         assert app.read_status == "Keine Kategorien vorhanden."
         assert category_list.has_focus
+
+
+async def _exercise_refresh_reloads_categories_and_clears_dependents() -> None:
+    port = ReorderingPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+
+        await pilot.press("enter")
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+
+        entry_list = app.query_one("#entry-list", ListView)
+        field_list = app.query_one("#field-list", ListView)
+        assert field_list.has_focus
+        assert len(entry_list.children) == 2
+        assert len(field_list.children) == 2
+
+        await pilot.press("r")
+        await pilot.pause()
+
+        category_list = app.query_one("#category-list", ListView)
+        assert port.category_reads == 2
+        assert len(category_list.children) == 3
+        assert category_list.index == 0
+        assert category_list.query_one(Label).render().plain == "Kategorie C"
+        assert len(entry_list.children) == 0
+        assert entry_list.index is None
+        assert len(field_list.children) == 0
+        assert field_list.index is None
+        assert category_list.has_focus
+        assert app.read_status == "Kategorien neu geladen."
+
+
+async def _exercise_refresh_to_empty_categories() -> None:
+    port = EmptyAfterRefreshPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        await pilot.press("r")
+        await pilot.pause()
+
+        category_list = app.query_one("#category-list", ListView)
+        assert port.category_reads == 2
+        assert len(category_list.children) == 0
+        assert category_list.index is None
+        assert app.query_one("#entry-list", ListView).index is None
+        assert app.query_one("#field-list", ListView).index is None
+        assert category_list.has_focus
+        assert app.read_status == "Keine Kategorien vorhanden."
+
+
+async def _exercise_refresh_from_empty_to_populated() -> None:
+    port = EmptyThenPopulatedPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+
+        category_list = app.query_one("#category-list", ListView)
+        assert len(category_list.children) == 0
+        assert app.read_status == "Keine Kategorien vorhanden."
+
+        await pilot.press("r")
+        await pilot.pause()
+
+        assert port.category_reads == 2
+        assert len(category_list.children) == 1
+        assert category_list.index == 0
+        assert category_list.query_one(Label).render().plain == "Kategorie Neu"
+        assert category_list.has_focus
+        assert app.read_status == "Kategorien neu geladen."
 
 
 async def _exercise_category_to_entry_read() -> None:
@@ -293,6 +387,18 @@ def test_no_categories_initial_state_is_clear_and_keyboard_stable() -> None:
     asyncio.run(_exercise_no_categories_initial_state())
 
 
+def test_refresh_reloads_categories_clears_dependents_and_resets_focus() -> None:
+    asyncio.run(_exercise_refresh_reloads_categories_and_clears_dependents())
+
+
+def test_refresh_to_empty_categories_is_clear_and_keyboard_stable() -> None:
+    asyncio.run(_exercise_refresh_to_empty_categories())
+
+
+def test_refresh_from_empty_to_populated_selects_first_category() -> None:
+    asyncio.run(_exercise_refresh_from_empty_to_populated())
+
+
 def test_category_selection_loads_entries_and_moves_focus() -> None:
     asyncio.run(_exercise_category_to_entry_read())
 
@@ -338,6 +444,9 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
 if __name__ == "__main__":
     test_compact_viewport_navigation_and_focus()
     test_no_categories_initial_state_is_clear_and_keyboard_stable()
+    test_refresh_reloads_categories_clears_dependents_and_resets_focus()
+    test_refresh_to_empty_categories_is_clear_and_keyboard_stable()
+    test_refresh_from_empty_to_populated_selects_first_category()
     test_category_selection_loads_entries_and_moves_focus()
     test_category_selection_uses_rendered_category_identity()
     test_entry_selection_loads_fields_and_moves_focus()

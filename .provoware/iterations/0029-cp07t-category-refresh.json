@@ -1,0 +1,72 @@
+{
+  "iteration": 29,
+  "agent": "cp07t-category-refresh-agent-29",
+  "size": "S",
+  "goal": "Add only a read-only category refresh that reloads categories, clears dependent entry/field views and restores deterministic category-level focus",
+  "write_files": [
+    ".provoware/iterations/0029-cp07t-category-refresh.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0028-cp07t-no-categories.json",
+    "src/provoware_db/tui/view_models.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "TuiDataPort.categories read-only protocol",
+    "Iteration 28 zero-category startup handling",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted runtime test",
+    "r refresh re-reads categories through TuiDataPort.categories",
+    "refresh clears dependent entry and field lists",
+    "refresh restores category-list focus and index zero when categories exist",
+    "refresh to zero categories keeps no index and reports clear empty status",
+    "refresh from zero to populated categories selects the first category deterministically",
+    "existing category-entry-field and empty-state regressions",
+    "existing 80x24 and 160x40 layout/focus regressions",
+    "guard against direct storage/SQLite/execute access"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "new screenshot because Iteration 29 is not a fifth-iteration screenshot milestone"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "refresh is manual only and intentionally does not poll or mutate persistent data",
+    "refresh resets category selection to the first available category rather than preserving prior selection"
+  ],
+  "non_changes": [
+    "no automatic polling",
+    "no new navigation level",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "pressing r re-reads categories and clears stale dependent views",
+    "focus always returns to category-list after refresh",
+    "populated refresh selects index zero; empty refresh keeps index None"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
