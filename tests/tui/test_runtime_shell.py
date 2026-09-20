@@ -70,6 +70,35 @@ class EmptyThenPopulatedPort(FakePort):
         return (NavItem("cat-new", "Kategorie Neu"),)
 
 
+class PreserveSelectedCategoryPort(FakePort):
+    def __init__(self) -> None:
+        self.category_reads = 0
+
+    def categories(self) -> Sequence[NavItem]:
+        self.category_reads += 1
+        if self.category_reads == 1:
+            return super().categories()
+        return (
+            NavItem("cat-c", "Kategorie C"),
+            NavItem("cat-a", "Kategorie A"),
+            NavItem("cat-b", "Kategorie B"),
+        )
+
+
+class RemovedSelectedCategoryPort(FakePort):
+    def __init__(self) -> None:
+        self.category_reads = 0
+
+    def categories(self) -> Sequence[NavItem]:
+        self.category_reads += 1
+        if self.category_reads == 1:
+            return super().categories()
+        return (
+            NavItem("cat-c", "Kategorie C"),
+            NavItem("cat-a", "Kategorie A"),
+        )
+
+
 class ReorderingPort(FakePort):
     def __init__(self) -> None:
         self.category_reads = 0
@@ -174,8 +203,14 @@ async def _exercise_refresh_reloads_categories_and_clears_dependents() -> None:
         category_list = app.query_one("#category-list", ListView)
         assert port.category_reads == 2
         assert len(category_list.children) == 3
-        assert category_list.index == 0
-        assert category_list.query_one(Label).render().plain == "Kategorie C"
+        assert category_list.index == 2
+        assert (
+            category_list.children[category_list.index]
+            .query_one(Label)
+            .render()
+            .plain
+            == "Kategorie A"
+        )
         assert len(entry_list.children) == 0
         assert entry_list.index is None
         assert len(field_list.children) == 0
@@ -219,6 +254,65 @@ async def _exercise_refresh_from_empty_to_populated() -> None:
         assert len(category_list.children) == 1
         assert category_list.index == 0
         assert category_list.query_one(Label).render().plain == "Kategorie Neu"
+        assert category_list.has_focus
+        assert app.read_status == "Kategorien neu geladen."
+
+
+async def _exercise_refresh_preserves_selected_category_identity() -> None:
+    port = PreserveSelectedCategoryPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        category_list = app.query_one("#category-list", ListView)
+
+        await pilot.press("down")
+        assert category_list.index == 1
+        assert (
+            category_list.children[category_list.index]
+            .query_one(Label)
+            .render()
+            .plain
+            == "Kategorie B"
+        )
+
+        await pilot.press("r")
+        await pilot.pause()
+
+        assert port.category_reads == 2
+        assert category_list.index == 2
+        assert (
+            category_list.children[category_list.index]
+            .query_one(Label)
+            .render()
+            .plain
+            == "Kategorie B"
+        )
+        assert category_list.has_focus
+        assert app.read_status == "Kategorien neu geladen."
+
+
+async def _exercise_refresh_falls_back_when_selected_category_disappears() -> None:
+    port = RemovedSelectedCategoryPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        category_list = app.query_one("#category-list", ListView)
+
+        await pilot.press("down")
+        assert category_list.index == 1
+
+        await pilot.press("r")
+        await pilot.pause()
+
+        assert port.category_reads == 2
+        assert category_list.index == 0
+        assert (
+            category_list.children[category_list.index]
+            .query_one(Label)
+            .render()
+            .plain
+            == "Kategorie C"
+        )
         assert category_list.has_focus
         assert app.read_status == "Kategorien neu geladen."
 
@@ -379,6 +473,63 @@ async def _capture_iteration_25_evidence() -> None:
         )
 
 
+async def _capture_iteration_30_evidence() -> None:
+    port = PreserveSelectedCategoryPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(160, 40)) as pilot:
+        await pilot.pause()
+        category_list = app.query_one("#category-list", ListView)
+
+        await pilot.press("down")
+        await pilot.press("r")
+        await pilot.pause()
+
+        assert app.layout_mode is LayoutMode.WIDE
+        assert category_list.index == 2
+        assert category_list.has_focus
+        assert (
+            category_list.children[category_list.index]
+            .query_one(Label)
+            .render()
+            .plain
+            == "Kategorie B"
+        )
+
+        out = Path("runtime/iteration-30")
+        out.mkdir(parents=True, exist_ok=True)
+        screenshot_path = out / "main-160x40.svg"
+        evidence_path = out / "iteration-30-evidence.json"
+        screenshot_path.write_text(app.export_screenshot(), encoding="utf-8")
+        evidence_path.write_text(
+            json.dumps(
+                {
+                    "iteration": 30,
+                    "viewport": "160x40",
+                    "theme": "Textual default",
+                    "layout": app.layout_mode.value,
+                    "categories_after_refresh": [
+                        "Kategorie C",
+                        "Kategorie A",
+                        "Kategorie B",
+                    ],
+                    "preserved_category_id": "cat-b",
+                    "preserved_category_label": "Kategorie B",
+                    "selected_index_after_refresh": 2,
+                    "focused": "category-list",
+                    "visual_regression": (
+                        "selection preserved after reorder; "
+                        "no blocking overlap or missing category content"
+                    ),
+                    "status": "GREEN",
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+
 def test_compact_viewport_navigation_and_focus() -> None:
     asyncio.run(_exercise_compact_navigation())
 
@@ -397,6 +548,14 @@ def test_refresh_to_empty_categories_is_clear_and_keyboard_stable() -> None:
 
 def test_refresh_from_empty_to_populated_selects_first_category() -> None:
     asyncio.run(_exercise_refresh_from_empty_to_populated())
+
+
+def test_refresh_preserves_selected_category_by_stable_identity() -> None:
+    asyncio.run(_exercise_refresh_preserves_selected_category_identity())
+
+
+def test_refresh_falls_back_to_first_when_selected_category_disappears() -> None:
+    asyncio.run(_exercise_refresh_falls_back_when_selected_category_disappears())
 
 
 def test_category_selection_loads_entries_and_moves_focus() -> None:
@@ -447,6 +606,8 @@ if __name__ == "__main__":
     test_refresh_reloads_categories_clears_dependents_and_resets_focus()
     test_refresh_to_empty_categories_is_clear_and_keyboard_stable()
     test_refresh_from_empty_to_populated_selects_first_category()
+    test_refresh_preserves_selected_category_by_stable_identity()
+    test_refresh_falls_back_to_first_when_selected_category_disappears()
     test_category_selection_loads_entries_and_moves_focus()
     test_category_selection_uses_rendered_category_identity()
     test_entry_selection_loads_fields_and_moves_focus()
@@ -456,3 +617,4 @@ if __name__ == "__main__":
     test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
     asyncio.run(_capture_iteration_25_evidence())
+    asyncio.run(_capture_iteration_30_evidence())

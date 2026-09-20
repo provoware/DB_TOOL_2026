@@ -103,3 +103,20 @@ Fazit:
 - Full Suite: nicht ausgeführt
 - Gate: Evidence 🟢; finaler PR-Head nach Commit der Evidence erneut triggerbasiert zu prüfen
 - Nächste Empfehlung: erst nach komplett grünem Re-Gate Review-Threads schließen, finalen Diff kontrollieren und Iteration 25 squash-mergen.
+
+
+## Iteration 0030 – CP-07T Kategorie-Refresh mit stabiler Auswahl
+
+- Ziel: beim manuellen Nur-Lese-Refresh die aktuell ausgewählte Kategorie über ihre stabile ID erhalten; bei Entfernen sauber auf erste Kategorie bzw. Leerzustand zurückfallen
+- Viewport: 160 × 40 Terminalzellen
+- Theme: Textual default
+- Screenshot: `docs/development/screenshots/iteration-0030/main-160x40.svg`
+- Evidence: `docs/development/screenshots/iteration-0030/iteration-30-evidence.json`
+- Evidence-Quelle: Targeted-Run `35482135835`, Head `b6ff5cf658c2cfca596d22247c2f84e502f748e5`
+- Prüfung: Kategorie B vor Refresh ausgewählt; Reihenfolge danach C → A → B; stabile ID `cat-b` auf neuem Index 2 erhalten; Fokus auf Kategorienliste; Layout `wide`
+- Visuelle Regression: keine blockierende Überlagerung und kein fehlender Kategorieinhalt
+- Gate-Finding: erste I30-Targeted-Ausführung scheiterte ausschließlich an der veralteten I29-Erwartung „Refresh → Index 0“; Regression auf die neue stabile-ID-Semantik korrigiert, Produktcode unverändert
+- CP-03 / CP-06 / Schema / Migrationen / SQLite-Repositories / CP-07H / Persistence / CRUD / Theme: unverändert
+- Full Suite: nicht ausgeführt
+- Gate: Evidence 🟢; finaler PR-Head nach Commit der Evidence erneut triggerbasiert zu prüfen
+- Nächste Empfehlung: erst nach komplett grünem Re-Gate finalen Diff kontrollieren, dann squash-mergen und Iteration 30 einfrieren.

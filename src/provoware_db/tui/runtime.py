@@ -47,11 +47,17 @@ class ProvowareDbTui(App[None]):
         self._sync_layout(self.size.width)
 
     async def action_refresh_categories(self) -> None:
-        self._categories = tuple(self._data_port.categories())
-        self._entries = ()
         category_list = self.query_one("#category-list", ListView)
         entry_list = self.query_one("#entry-list", ListView)
         field_list = self.query_one("#field-list", ListView)
+
+        selected_category_id: str | None = None
+        selected_index = category_list.index
+        if selected_index is not None and selected_index < len(self._categories):
+            selected_category_id = self._categories[selected_index].id
+
+        self._categories = tuple(self._data_port.categories())
+        self._entries = ()
 
         await category_list.clear()
         await entry_list.clear()
@@ -65,7 +71,14 @@ class ProvowareDbTui(App[None]):
                 ListItem(Label(item.label))
                 for item in self._categories
             )
-            category_list.index = 0
+            category_list.index = next(
+                (
+                    index
+                    for index, item in enumerate(self._categories)
+                    if item.id == selected_category_id
+                ),
+                0,
+            )
             self._set_read_status("Kategorien neu geladen.")
         else:
             self._set_read_status("Keine Kategorien vorhanden.")

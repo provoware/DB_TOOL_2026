@@ -1,0 +1,17 @@
+{
+  "iteration": 30,
+  "viewport": "160x40",
+  "theme": "Textual default",
+  "layout": "wide",
+  "categories_after_refresh": [
+    "Kategorie C",
+    "Kategorie A",
+    "Kategorie B"
+  ],
+  "preserved_category_id": "cat-b",
+  "preserved_category_label": "Kategorie B",
+  "selected_index_after_refresh": 2,
+  "focused": "category-list",
+  "visual_regression": "selection preserved after reorder; no blocking overlap or missing category content",
+  "status": "GREEN"
+}

@@ -1,0 +1,84 @@
+{
+  "iteration": 30,
+  "agent": "cp07t-preserve-category-refresh-agent-30",
+  "size": "M",
+  "goal": "Preserve the currently selected category by stable rendered ID during manual read-only refresh, with deterministic fallback and required fifth-iteration visual evidence",
+  "write_files": [
+    ".provoware/iterations/0030-cp07t-preserve-category-refresh.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py",
+    "docs/development/screenshots/iteration-0030/main-160x40.svg",
+    "docs/development/screenshots/iteration-0030/iteration-30-evidence.json",
+    "docs/development/ITERATION_LOG.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0029-cp07t-category-refresh.json",
+    ".provoware/iterations/0025-cp07t-category-entry-read.json",
+    "src/provoware_db/tui/view_models.py",
+    ".github/workflows/targeted-iteration.yml",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "TuiDataPort.categories read-only protocol",
+    "Iteration 29 manual category refresh",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted runtime test",
+    "selected category survives refresh reorder by stable ID",
+    "removed selected category falls back to index zero when categories remain",
+    "empty refresh falls back to index None and existing empty-state behavior",
+    "refresh still clears dependent entry and field views",
+    "existing category-entry-field and keyboard/focus regressions",
+    "existing 80x24 and 160x40 layout regressions",
+    "guard against direct storage/SQLite/execute access",
+    "160x40 Textual SVG screenshot evidence after preserving selection across reorder"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "selection preservation applies only to category identity; entries and fields remain intentionally cleared on category refresh",
+    "if the selected category disappears, fallback intentionally selects the first remaining category",
+    "visual evidence is terminal SVG and does not claim pixel parity with the HTML frontend"
+  ],
+  "non_changes": [
+    "no automatic polling",
+    "no new navigation level",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "manual r refresh preserves the selected category when its stable ID still exists",
+    "missing selected category falls back to the first remaining category",
+    "CI emits Iteration 30 SVG and JSON visual evidence"
+  ],
+  "screenshot_required": true,
+  "screenshot_viewport": "160x40",
+  "screenshot_theme": "Textual default",
+  "status": "EVIDENCE_CAPTURED_AWAITING_FINAL_GATE",
+  "screenshot_path": "docs/development/screenshots/iteration-0030/main-160x40.svg",
+  "evidence_path": "docs/development/screenshots/iteration-0030/iteration-30-evidence.json",
+  "evidence_source_run": 35482135835,
+  "evidence_source_head": "b6ff5cf658c2cfca596d22247c2f84e502f748e5",
+  "visual_regression": "GREEN: selection preserved after reorder; no blocking overlap or missing category content"
+}
