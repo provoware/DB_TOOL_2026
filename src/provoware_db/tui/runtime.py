@@ -22,7 +22,8 @@ class ProvowareDbTui(App[None]):
         self._data_port = data_port
         self._categories = tuple(data_port.categories())
         self._health = tuple(data_port.health())
-        self._recent_events = tuple(data_port.recent_events(limit=10))[:10]
+        event_reader = getattr(data_port, "recent_events")
+        self._recent_events = tuple(event_reader(limit=10))[:10]
         self._entries: tuple[NavItem, ...] = ()
         self.read_status = ""
         self.layout_mode = LayoutMode.COMPACT
