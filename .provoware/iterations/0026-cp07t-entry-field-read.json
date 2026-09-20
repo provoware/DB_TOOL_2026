@@ -1,0 +1,68 @@
+{
+  "iteration": 26,
+  "agent": "cp07t-entry-field-read-agent-26",
+  "size": "S",
+  "goal": "Implement exactly one read-only CP-07T step: selecting a rendered entry loads its fields through TuiDataPort.fields using the stable rendered entry identity",
+  "write_files": [
+    ".provoware/iterations/0026-cp07t-entry-field-read.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0025-cp07t-category-entry-read.json",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/layout_policy.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "TuiDataPort read-only protocol",
+    "Iteration 25 category-to-entry read step",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted runtime test",
+    "existing 80x24 category navigation/focus regression",
+    "existing rendered category identity regression",
+    "entry selection loads fields and moves focus",
+    "rendered entry identity remains stable if the source reorders later",
+    "existing 160x40 layout regression",
+    "guard against direct storage/SQLite/execute access"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "new screenshot because Iteration 26 is not a fifth-iteration screenshot milestone"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "field rendering is intentionally read-only and minimal; no editing semantics are introduced",
+    "empty-field UX remains intentionally outside this slice"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "selecting an entry fills the field list through TuiDataPort.fields",
+    "focus moves to the first rendered field when fields exist"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}

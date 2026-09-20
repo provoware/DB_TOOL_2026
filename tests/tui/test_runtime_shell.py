@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Sequence
 
-from textual.widgets import ListView
+from textual.widgets import Label, ListView
 
 from provoware_db.tui.layout_policy import LayoutMode
 from provoware_db.tui.runtime import ProvowareDbTui
@@ -29,6 +29,11 @@ class FakePort:
         return ()
 
     def fields(self, entry_id: str) -> Sequence[FieldRow]:
+        if entry_id == "entry-a1":
+            return (
+                FieldRow("field-a1", "Name", "Alpha", "text", required=True),
+                FieldRow("field-a2", "Status", "Aktiv", "text"),
+            )
         return ()
 
     def health(self) -> Sequence[HealthItem]:
@@ -56,6 +61,25 @@ class ReorderingPort(FakePort):
     def entries(self, category_id: str) -> Sequence[NavItem]:
         self.entry_category_id = category_id
         return super().entries(category_id)
+
+
+class ReorderingEntryPort(FakePort):
+    def __init__(self) -> None:
+        self.entry_reads = 0
+        self.field_entry_id: str | None = None
+
+    def entries(self, category_id: str) -> Sequence[NavItem]:
+        self.entry_reads += 1
+        if self.entry_reads == 1:
+            return super().entries(category_id)
+        return (
+            NavItem("entry-a2", "Eintrag A2"),
+            NavItem("entry-a1", "Eintrag A1"),
+        )
+
+    def fields(self, entry_id: str) -> Sequence[FieldRow]:
+        self.field_entry_id = entry_id
+        return super().fields(entry_id)
 
 
 async def _exercise_compact_navigation() -> None:
@@ -101,6 +125,41 @@ async def _exercise_rendered_category_identity() -> None:
 
         assert port.category_reads == 1
         assert port.entry_category_id == "cat-a"
+
+
+async def _exercise_entry_to_field_read() -> None:
+    app = ProvowareDbTui(FakePort())
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+
+        field_list = app.query_one("#field-list", ListView)
+        assert len(field_list.children) == 2
+        assert field_list.index == 0
+        assert field_list.has_focus
+
+        labels = [
+            item.query_one(Label).render().plain
+            for item in field_list.children
+        ]
+        assert labels == ["Name: Alpha", "Status: Aktiv"]
+
+
+async def _exercise_rendered_entry_identity() -> None:
+    port = ReorderingEntryPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+
+        assert port.entry_reads == 1
+        assert port.field_entry_id == "entry-a1"
 
 
 async def _exercise_large_viewport() -> None:
@@ -162,6 +221,14 @@ def test_category_selection_uses_rendered_category_identity() -> None:
     asyncio.run(_exercise_rendered_category_identity())
 
 
+def test_entry_selection_loads_fields_and_moves_focus() -> None:
+    asyncio.run(_exercise_entry_to_field_read())
+
+
+def test_entry_selection_uses_rendered_entry_identity() -> None:
+    asyncio.run(_exercise_rendered_entry_identity())
+
+
 def test_large_viewport_layout_and_focus() -> None:
     asyncio.run(_exercise_large_viewport())
 
@@ -184,6 +251,8 @@ if __name__ == "__main__":
     test_compact_viewport_navigation_and_focus()
     test_category_selection_loads_entries_and_moves_focus()
     test_category_selection_uses_rendered_category_identity()
+    test_entry_selection_loads_fields_and_moves_focus()
+    test_entry_selection_uses_rendered_entry_identity()
     test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
     asyncio.run(_capture_iteration_25_evidence())
