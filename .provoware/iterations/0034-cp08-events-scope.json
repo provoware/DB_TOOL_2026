@@ -1,0 +1,62 @@
+{
+  "iteration": 34,
+  "agent": "planning-agent-cp08-events-scope-34",
+  "size": "S",
+  "goal": "Resolve the event/audit UI responsibility boundary after the frozen CP-08 health summary without changing product code",
+  "write_files": [
+    ".provoware/iterations/0034-cp08-events-scope.json",
+    "docs/development/ITERATION_34_CP08_EVENTS_SCOPE.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_32_CP08_STATUS_SCOPE.md",
+    ".provoware/iterations/0033-cp08-health-summary.json",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/runtime.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "I33 frozen read-only health summary",
+    "TuiDataPort.recent_events read-only contract",
+    "EventItem existing UI view model"
+  ],
+  "tests_required": [
+    "documentation/manifest structure only",
+    "repository foundation gate",
+    "governance gate",
+    "verify no product file is changed"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "Textual runtime regression because product code is unchanged",
+    "web/browser regression",
+    "repository/domain regression",
+    "screenshot"
+  ],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "recent_events is an existing UI-port contract but its provider semantics are not reopened by this scope",
+    "event presentation can be confused with audit persistence unless the UI-only boundary remains explicit",
+    "automatic polling or refresh would broaden lifecycle behavior and remains excluded"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite audit/repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo",
+    "no autosave or polling",
+    "no theme or responsive redesign",
+    "no dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "authorizes only a later read-only TUI presentation slice over the already injected TuiDataPort.recent_events contract",
+    "requires a fresh branch after I34 is frozen"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_SCOPE_ONLY"
+}
