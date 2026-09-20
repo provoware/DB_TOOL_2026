@@ -162,6 +162,52 @@ async def _exercise_rendered_entry_identity() -> None:
         assert port.field_entry_id == "entry-a1"
 
 
+async def _exercise_empty_entries_keep_category_focus() -> None:
+    app = ProvowareDbTui(FakePort())
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        category_list = app.query_one("#category-list", ListView)
+        entry_list = app.query_one("#entry-list", ListView)
+        field_list = app.query_one("#field-list", ListView)
+
+        await pilot.press("down")
+        assert category_list.index == 1
+        await pilot.press("enter")
+        await pilot.pause()
+
+        assert len(entry_list.children) == 0
+        assert len(field_list.children) == 0
+        assert app.read_status == "Keine Einträge in dieser Kategorie."
+        assert category_list.has_focus
+
+        await pilot.press("up")
+        assert category_list.index == 0
+
+
+async def _exercise_empty_fields_keep_entry_focus() -> None:
+    app = ProvowareDbTui(FakePort())
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+
+        entry_list = app.query_one("#entry-list", ListView)
+        field_list = app.query_one("#field-list", ListView)
+        assert entry_list.has_focus
+
+        await pilot.press("down")
+        assert entry_list.index == 1
+        await pilot.press("enter")
+        await pilot.pause()
+
+        assert len(field_list.children) == 0
+        assert app.read_status == "Keine Felder in diesem Eintrag."
+        assert entry_list.has_focus
+
+        await pilot.press("up")
+        assert entry_list.index == 0
+
+
 async def _exercise_large_viewport() -> None:
     app = ProvowareDbTui(FakePort())
     async with app.run_test(size=(160, 40)) as pilot:
@@ -229,6 +275,14 @@ def test_entry_selection_uses_rendered_entry_identity() -> None:
     asyncio.run(_exercise_rendered_entry_identity())
 
 
+def test_empty_entries_keep_category_focus_and_keyboard_navigation() -> None:
+    asyncio.run(_exercise_empty_entries_keep_category_focus())
+
+
+def test_empty_fields_keep_entry_focus_and_keyboard_navigation() -> None:
+    asyncio.run(_exercise_empty_fields_keep_entry_focus())
+
+
 def test_large_viewport_layout_and_focus() -> None:
     asyncio.run(_exercise_large_viewport())
 
@@ -253,6 +307,8 @@ if __name__ == "__main__":
     test_category_selection_uses_rendered_category_identity()
     test_entry_selection_loads_fields_and_moves_focus()
     test_entry_selection_uses_rendered_entry_identity()
+    test_empty_entries_keep_category_focus_and_keyboard_navigation()
+    test_empty_fields_keep_entry_focus_and_keyboard_navigation()
     test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
     asyncio.run(_capture_iteration_25_evidence())

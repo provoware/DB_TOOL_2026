@@ -1,0 +1,68 @@
+{
+  "iteration": 27,
+  "agent": "cp07t-empty-states-agent-27",
+  "size": "S",
+  "goal": "Implement only read-only empty states for categories without entries and entries without fields while preserving keyboard focus on the last valid navigation level",
+  "write_files": [
+    ".provoware/iterations/0027-cp07t-empty-states.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0026-cp07t-entry-field-read.json",
+    "src/provoware_db/tui/view_models.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "Iteration 26 category-entry-field read path",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted runtime test",
+    "existing category-entry-field read regressions",
+    "empty category shows read-only empty message and keeps category focus",
+    "keyboard up navigation remains available after empty-entry state",
+    "empty entry shows read-only empty message and keeps entry focus",
+    "keyboard up navigation remains available after empty-field state",
+    "existing 80x24 and 160x40 layout/focus regressions",
+    "guard against direct storage/SQLite/execute access"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "new screenshot because Iteration 27 is not a fifth-iteration screenshot milestone"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "empty state is intentionally a single read-only status line rather than a selectable pseudo-row",
+    "initial state with zero categories remains outside this slice"
+  ],
+  "non_changes": [
+    "no new navigation level",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "empty entry result keeps focus on category list and reports no entries",
+    "empty field result keeps focus on entry list and reports no fields"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}

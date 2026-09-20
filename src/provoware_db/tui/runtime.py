@@ -22,6 +22,7 @@ class ProvowareDbTui(App[None]):
         self._data_port = data_port
         self._categories = tuple(data_port.categories())
         self._entries: tuple[NavItem, ...] = ()
+        self.read_status = ""
         self.layout_mode = LayoutMode.COMPACT
 
     def compose(self) -> ComposeResult:
@@ -32,6 +33,7 @@ class ProvowareDbTui(App[None]):
         )
         yield ListView(id="entry-list")
         yield ListView(id="field-list")
+        yield Static(id="read-status")
         yield Static(id="layout-status")
         yield Footer()
 
@@ -65,9 +67,15 @@ class ProvowareDbTui(App[None]):
             ListItem(Label(item.label))
             for item in self._entries
         )
-        if entry_list.children:
-            entry_list.index = 0
-            entry_list.focus()
+
+        if not entry_list.children:
+            self._set_read_status("Keine Einträge in dieser Kategorie.")
+            category_list.focus()
+            return
+
+        self._set_read_status("")
+        entry_list.index = 0
+        entry_list.focus()
 
     def _select_entry(self, entry_list: ListView) -> None:
         index = entry_list.index
@@ -81,9 +89,19 @@ class ProvowareDbTui(App[None]):
             ListItem(Label(f"{item.label}: {item.value}"))
             for item in fields
         )
-        if field_list.children:
-            field_list.index = 0
-            field_list.focus()
+
+        if not field_list.children:
+            self._set_read_status("Keine Felder in diesem Eintrag.")
+            entry_list.focus()
+            return
+
+        self._set_read_status("")
+        field_list.index = 0
+        field_list.focus()
+
+    def _set_read_status(self, message: str) -> None:
+        self.read_status = message
+        self.query_one("#read-status", Static).update(message)
 
     def on_resize(self, event: events.Resize) -> None:
         self._sync_layout(event.size.width)
