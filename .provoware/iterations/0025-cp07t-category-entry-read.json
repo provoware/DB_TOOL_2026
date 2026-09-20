@@ -69,5 +69,10 @@
   "screenshot_required": true,
   "screenshot_viewport": "160x40",
   "screenshot_theme": "Textual default",
-  "status": "IMPLEMENTED_AWAITING_GATE"
+  "status": "EVIDENCE_CAPTURED_AWAITING_FINAL_GATE",
+  "screenshot_path": "docs/development/screenshots/iteration-0025/main-160x40.svg",
+  "evidence_path": "docs/development/screenshots/iteration-0025/iteration-25-evidence.json",
+  "evidence_source_run": 35481163105,
+  "evidence_source_head": "e8bb8a52bd91db793c373e50d1b31fe9be1de3fe",
+  "visual_regression": "GREEN: no blocking overlap or missing category/entry content"
 }
