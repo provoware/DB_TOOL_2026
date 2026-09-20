@@ -86,3 +86,8 @@ def test_recent_events_are_single_read_limited_and_non_focusable() -> None:
 
 def test_empty_recent_events_state_is_clear_and_keyboard_stable() -> None:
     asyncio.run(_exercise_empty_event_surface())
+
+
+if __name__ == "__main__":
+    test_recent_events_are_single_read_limited_and_non_focusable()
+    test_empty_recent_events_state_is_clear_and_keyboard_stable()
