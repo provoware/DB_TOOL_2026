@@ -1,0 +1,70 @@
+{
+  "iteration": 35,
+  "agent": "cp08-readonly-events-agent-35",
+  "size": "S",
+  "goal": "Implement only the I34-authorized read-only recent-events presentation slice",
+  "write_files": [
+    ".provoware/iterations/0035-cp08-readonly-events.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_events.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_34_CP08_EVENTS_SCOPE.md",
+    "src/provoware_db/tui/view_models.py",
+    "tests/tui/test_runtime_shell.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "I34 frozen CP-08 event scope",
+    "TuiDataPort.recent_events read-only contract",
+    "EventItem existing view model"
+  ],
+  "tests_required": [
+    "compile runtime plus isolated event regression",
+    "recent_events(limit=10) is read exactly once",
+    "at most ten delivered events are rendered",
+    "empty event state is explicit and non-focusable",
+    "category focus and health single-read behavior remain unchanged",
+    "existing runtime-shell regression for 80x24/160x40, category-entry-field, empty-state and refresh behavior",
+    "guard against direct storage/SQLite/execute access"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched"
+  ],
+  "pip_requirements": ["requirements-cp07t.txt"],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_events.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_events.py",
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "event data remains a startup snapshot only",
+    "provider/audit completeness remains outside this UI-only scope",
+    "event text height may expose a compact-layout finding and must be validated before freeze"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite audit or repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo",
+    "no autosave or polling",
+    "no theme redesign",
+    "no dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "one non-focusable read-only event surface is added",
+    "recent_events is consumed only once at startup with limit 10"
+  ],
+  "screenshot_required": true,
+  "screenshot_viewport": "160x40",
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
