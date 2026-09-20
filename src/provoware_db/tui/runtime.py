@@ -5,7 +5,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Footer, Label, ListItem, ListView, Static
 
 from .layout_policy import LayoutMode, classify_layout
-from .view_models import NavItem, TuiDataPort
+from .view_models import HealthLevel, NavItem, TuiDataPort
 
 
 class ProvowareDbTui(App[None]):
@@ -21,6 +21,7 @@ class ProvowareDbTui(App[None]):
         super().__init__()
         self._data_port = data_port
         self._categories = tuple(data_port.categories())
+        self._health = tuple(data_port.health())
         self._entries: tuple[NavItem, ...] = ()
         self.read_status = ""
         self.layout_mode = LayoutMode.COMPACT
@@ -33,6 +34,7 @@ class ProvowareDbTui(App[None]):
         )
         yield ListView(id="entry-list")
         yield ListView(id="field-list")
+        yield Static(self._health_summary(), id="health-status")
         yield Static(id="read-status")
         yield Static(id="layout-status")
         yield Footer()
@@ -139,6 +141,28 @@ class ProvowareDbTui(App[None]):
         self._set_read_status("")
         field_list.index = 0
         field_list.focus()
+
+    def _health_summary(self) -> str:
+        if not self._health:
+            return "Systemstatus: keine Statusdaten"
+
+        ok_count = sum(item.level is HealthLevel.OK for item in self._health)
+        warning_count = sum(item.level is HealthLevel.WARNING for item in self._health)
+        error_count = sum(item.level is HealthLevel.ERROR for item in self._health)
+
+        if error_count:
+            overall = "ROT"
+        elif warning_count:
+            overall = "GELB"
+        else:
+            overall = "GRÜN"
+
+        return (
+            f"Systemstatus: {overall}"
+            f" · {ok_count} OK"
+            f" · {warning_count} Warnung"
+            f" · {error_count} Fehler"
+        )
 
     def _set_read_status(self, message: str) -> None:
         self.read_status = message
