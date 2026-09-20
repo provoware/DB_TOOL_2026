@@ -1,0 +1,58 @@
+{
+  "iteration": 36,
+  "agent": "cp08-consolidation-agent-36",
+  "size": "S",
+  "goal": "Consolidate and freeze the completed CP-08 read-only status boundary without product changes",
+  "write_files": [
+    ".provoware/iterations/0036-cp08-consolidation.json",
+    "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_36.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0035-cp08-readonly-events.json",
+    "docs/development/ITERATION_32_CP08_STATUS_SCOPE.md",
+    "README.md",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "I35 frozen read-only recent-events slice",
+    "I33 frozen read-only health summary",
+    "I32 and I34 CP-08 scope boundaries"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI product regression because no product code changes",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "the next post-CP08 checkpoint is intentionally unresolved",
+    "autosave, undo, restore, audit persistence and crash recovery remain outside this consolidation"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite audit or repository changes",
+    "no CP-07H browser changes",
+    "no TUI product changes",
+    "no CRUD/write/trash/restore/undo",
+    "no autosave or polling",
+    "no theme redesign",
+    "no dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "CP-08 read-only status boundary becomes explicitly consolidated and closed after green gates"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
