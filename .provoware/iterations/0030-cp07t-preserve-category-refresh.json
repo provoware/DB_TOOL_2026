@@ -75,5 +75,10 @@
   "screenshot_required": true,
   "screenshot_viewport": "160x40",
   "screenshot_theme": "Textual default",
-  "status": "IMPLEMENTED_AWAITING_EVIDENCE_GATE"
+  "status": "EVIDENCE_CAPTURED_AWAITING_FINAL_GATE",
+  "screenshot_path": "docs/development/screenshots/iteration-0030/main-160x40.svg",
+  "evidence_path": "docs/development/screenshots/iteration-0030/iteration-30-evidence.json",
+  "evidence_source_run": 35482135835,
+  "evidence_source_head": "b6ff5cf658c2cfca596d22247c2f84e502f748e5",
+  "visual_regression": "GREEN: selection preserved after reorder; no blocking overlap or missing category content"
 }
