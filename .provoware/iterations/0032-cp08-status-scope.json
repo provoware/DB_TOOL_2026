@@ -1,0 +1,66 @@
+{
+  "iteration": 32,
+  "agent": "planning-agent-cp08-status-scope-32",
+  "size": "S",
+  "goal": "Resolve the next post-CP07 masterplan checkpoint as a read-only status foundation without changing product code",
+  "write_files": [
+    ".provoware/iterations/0032-cp08-status-scope.json",
+    "docs/development/ITERATION_32_CP08_STATUS_SCOPE.md"
+  ],
+  "read_files": [
+    "README.md",
+    "docs/PROJECT_STANDARDS.md",
+    "docs/AGENT_ORCHESTRATION.md",
+    "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_31.md",
+    ".provoware/iterations/0031-cp07t-consolidation.json",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/runtime.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "README target: status concept and GREEN/YELLOW/RED self-validation",
+    "TuiDataPort.health read-only contract",
+    "CP-07T frozen read-only Textual runtime"
+  ],
+  "tests_required": [
+    "documentation/manifest structure only",
+    "repository foundation gate",
+    "governance gate",
+    "verify no product file is changed"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "Textual runtime regression because product code is unchanged",
+    "web/browser regression",
+    "repository/domain regression",
+    "screenshot"
+  ],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "CP-08 is newly assigned by this planning iteration because no post-CP07 checkpoint exists in the repository",
+    "health is authorized only as a read-only UI status surface; no source/provider implementation below TuiDataPort is authorized",
+    "recent_events remains outside the first CP-08 functional slice"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo",
+    "no audit/recent-events UI",
+    "no autosave implementation",
+    "no theme or responsive redesign",
+    "no dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "authorizes one later UI-only CP-08 functional slice consuming TuiDataPort.health",
+    "requires a fresh branch after I32 is frozen"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_SCOPE_ONLY"
+}
