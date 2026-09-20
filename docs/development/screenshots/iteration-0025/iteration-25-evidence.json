@@ -1,0 +1,20 @@
+{
+  "iteration": 25,
+  "source_run": 35481163105,
+  "source_head": "e8bb8a52bd91db793c373e50d1b31fe9be1de3fe",
+  "viewport": "160x40",
+  "theme": "Textual default",
+  "layout": "wide",
+  "category": "Kategorie A",
+  "entries": ["Eintrag A1", "Eintrag A2"],
+  "focused": "entry-list",
+  "visual_review": {
+    "category_content_visible": true,
+    "entry_content_visible": true,
+    "focus_visible": true,
+    "blocking_overlap": false,
+    "missing_content": false
+  },
+  "visual_regression": "no blocking overlap or missing category/entry content",
+  "status": "GREEN"
+}

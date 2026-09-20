@@ -1,0 +1,78 @@
+{
+  "iteration": 25,
+  "agent": "cp07t-category-entry-read-agent-25",
+  "size": "M",
+  "goal": "Validate the smallest read-only category-to-entry Textual step, including required fifth-iteration visual evidence",
+  "write_files": [
+    ".provoware/iterations/0025-cp07t-category-entry-read.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py",
+    ".github/workflows/targeted-iteration.yml",
+    "docs/development/screenshots/iteration-0025/main-160x40.svg",
+    "docs/development/screenshots/iteration-0025/iteration-25-evidence.json",
+    "docs/development/ITERATION_LOG.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0024-cp07t-minimal-shell.json",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/layout_policy.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "TuiDataPort read-only protocol",
+    "Iteration 24 CP-07T shell",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted runtime test",
+    "80x24 compact navigation/focus regression",
+    "category selection loads entries and moves focus",
+    "rendered category identity remains stable",
+    "160x40 wide viewport regression",
+    "guard against direct storage/SQLite/execute access",
+    "160x40 Textual SVG screenshot evidence after category-to-entry navigation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "this slice validates category-to-entry read navigation only; entry-to-field navigation remains outside scope",
+    "visual evidence is terminal SVG and does not claim pixel parity with the HTML frontend"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme redesign"
+  ],
+  "expected_side_effects": [
+    "category selection fills the entry list through TuiDataPort.entries",
+    "CI emits Iteration 25 SVG and JSON visual evidence"
+  ],
+  "screenshot_required": true,
+  "screenshot_viewport": "160x40",
+  "screenshot_theme": "Textual default",
+  "status": "EVIDENCE_CAPTURED_AWAITING_FINAL_GATE",
+  "screenshot_path": "docs/development/screenshots/iteration-0025/main-160x40.svg",
+  "evidence_path": "docs/development/screenshots/iteration-0025/iteration-25-evidence.json",
+  "evidence_source_run": 35481163105,
+  "evidence_source_head": "e8bb8a52bd91db793c373e50d1b31fe9be1de3fe",
+  "visual_regression": "GREEN: no blocking overlap or missing category/entry content"
+}

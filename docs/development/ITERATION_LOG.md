@@ -87,3 +87,19 @@ Fazit:
 - Visuelle Regression: keine blockierende Regression gegenüber Iteration 0015; Drei-Stufen-Layout stabil
 - Offene Findings: keine für Iteration 20
 - Nächste Empfehlung: PR #27 nur noch auf die durch diesen Evidence-/Freeze-Commit ausgelösten Gates prüfen und bei komplett Grün squash-mergen.
+
+
+## Iteration 0025 – CP-07T Kategorie → Einträge
+
+- Ziel: kleinster Nur-Lese-Schritt Kategorie → Einträge über den injizierten `TuiDataPort`
+- Viewport: 160 × 40 Terminalzellen
+- Theme: Textual default
+- Screenshot: `docs/development/screenshots/iteration-0025/main-160x40.svg`
+- Evidence: `docs/development/screenshots/iteration-0025/iteration-25-evidence.json`
+- Evidence-Quelle: Targeted-Run `35481163105`, Head `e8bb8a52bd91db793c373e50d1b31fe9be1de3fe`
+- Prüfung: Kategorie A sichtbar; Eintrag A1/A2 sichtbar; Fokus auf Eintragsliste; Layout `wide`
+- Visuelle Regression: keine blockierende Überlagerung und kein fehlender Kategorie-/Eintragsinhalt
+- CP-03 / CP-06 / Schema / Migrationen / SQLite-Repositories / CP-07H: unverändert
+- Full Suite: nicht ausgeführt
+- Gate: Evidence 🟢; finaler PR-Head nach Commit der Evidence erneut triggerbasiert zu prüfen
+- Nächste Empfehlung: erst nach komplett grünem Re-Gate Review-Threads schließen, finalen Diff kontrollieren und Iteration 25 squash-mergen.
