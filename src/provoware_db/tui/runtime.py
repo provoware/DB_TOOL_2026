@@ -41,6 +41,8 @@ class ProvowareDbTui(App[None]):
         category_list = self.query_one("#category-list", ListView)
         if category_list.children:
             category_list.index = 0
+        else:
+            self._set_read_status("Keine Kategorien vorhanden.")
         category_list.focus()
         self._sync_layout(self.size.width)
 
