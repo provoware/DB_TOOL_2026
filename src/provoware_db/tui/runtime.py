@@ -67,9 +67,11 @@ class ProvowareDbTui(App[None]):
         if category_list.children:
             category_list.index = 0
             self._set_read_status("Kategorien neu geladen.")
+            category_list.focus()
         else:
             self._set_read_status("Keine Kategorien vorhanden.")
-        category_list.focus()
+            category_list.focus()
+            category_list.index = None
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         if event.list_view.id == "category-list":
