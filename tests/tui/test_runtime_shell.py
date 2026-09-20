@@ -5,11 +5,11 @@ import json
 from pathlib import Path
 from typing import Sequence
 
-from textual.widgets import Label, ListView
+from textual.widgets import Label, ListView, Static
 
 from provoware_db.tui.layout_policy import LayoutMode
 from provoware_db.tui.runtime import ProvowareDbTui
-from provoware_db.tui.view_models import EventItem, FieldRow, HealthItem, NavItem
+from provoware_db.tui.view_models import EventItem, FieldRow, HealthItem, HealthLevel, NavItem
 
 
 class FakePort:
@@ -41,6 +41,19 @@ class FakePort:
 
     def recent_events(self, limit: int = 10) -> Sequence[EventItem]:
         return ()
+
+
+class HealthPort(FakePort):
+    def __init__(self) -> None:
+        self.health_reads = 0
+
+    def health(self) -> Sequence[HealthItem]:
+        self.health_reads += 1
+        return (
+            HealthItem("Datenbank", HealthLevel.OK, "bereit"),
+            HealthItem("Speicher", HealthLevel.WARNING, "knapp"),
+            HealthItem("Sicherung", HealthLevel.ERROR, "fehlt"),
+        )
 
 
 class EmptyCategoriesPort(FakePort):
@@ -153,6 +166,29 @@ async def _exercise_compact_navigation() -> None:
         assert category_list.index == 1
         await pilot.press("up")
         assert category_list.index == 0
+
+
+async def _exercise_readonly_health_summary() -> None:
+    port = HealthPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+
+        category_list = app.query_one("#category-list", ListView)
+        health_status = app.query_one("#health-status", Static)
+
+        assert port.health_reads == 1
+        assert health_status.render().plain == (
+            "Systemstatus: ROT · 1 OK · 1 Warnung · 1 Fehler"
+        )
+        assert health_status.can_focus is False
+        assert category_list.has_focus
+
+        await pilot.press("r")
+        await pilot.pause()
+
+        assert port.health_reads == 1
+        assert category_list.has_focus
 
 
 async def _exercise_no_categories_initial_state() -> None:
@@ -534,6 +570,10 @@ def test_compact_viewport_navigation_and_focus() -> None:
     asyncio.run(_exercise_compact_navigation())
 
 
+def test_readonly_health_summary_is_single_read_and_non_focusable() -> None:
+    asyncio.run(_exercise_readonly_health_summary())
+
+
 def test_no_categories_initial_state_is_clear_and_keyboard_stable() -> None:
     asyncio.run(_exercise_no_categories_initial_state())
 
@@ -598,10 +638,13 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
     assert "provoware_db.storage" not in source
     assert "sqlite" not in source
     assert "execute(" not in source
+    assert "recent_events(" not in source
+    assert source.count("_data_port.health()") == 1
 
 
 if __name__ == "__main__":
     test_compact_viewport_navigation_and_focus()
+    test_readonly_health_summary_is_single_read_and_non_focusable()
     test_no_categories_initial_state_is_clear_and_keyboard_stable()
     test_refresh_reloads_categories_clears_dependents_and_resets_focus()
     test_refresh_to_empty_categories_is_clear_and_keyboard_stable()
