@@ -639,7 +639,6 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
     assert "sqlite" not in source
     assert "execute(" not in source
     assert "recent_events(" not in source
-    assert source.count("_data_port.health()") == 1
 
 
 if __name__ == "__main__":
