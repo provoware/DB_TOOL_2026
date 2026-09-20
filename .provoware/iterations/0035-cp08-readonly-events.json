@@ -6,11 +6,12 @@
   "write_files": [
     ".provoware/iterations/0035-cp08-readonly-events.json",
     "src/provoware_db/tui/runtime.py",
-    "tests/tui/test_runtime_shell.py"
+    "tests/tui/test_runtime_events.py"
   ],
   "read_files": [
     "docs/development/ITERATION_34_CP08_EVENTS_SCOPE.md",
     "src/provoware_db/tui/view_models.py",
+    "tests/tui/test_runtime_shell.py",
     "AGENTS.md"
   ],
   "direct_dependencies": [
@@ -19,13 +20,12 @@
     "EventItem existing view model"
   ],
   "tests_required": [
-    "compile runtime and targeted runtime test",
+    "compile runtime plus isolated event regression",
     "recent_events(limit=10) is read exactly once",
     "at most ten delivered events are rendered",
     "empty event state is explicit and non-focusable",
     "category focus and health single-read behavior remain unchanged",
-    "existing 80x24 and 160x40 layout/focus regressions",
-    "existing category-entry-field, empty-state and refresh regressions",
+    "existing runtime-shell regression for 80x24/160x40, category-entry-field, empty-state and refresh behavior",
     "guard against direct storage/SQLite/execute access"
   ],
   "tests_explicitly_not_run": [
@@ -37,9 +37,12 @@
   "ci": {
     "compile": [
       "src/provoware_db/tui/runtime.py",
-      "tests/tui/test_runtime_shell.py"
+      "tests/tui/test_runtime_events.py"
     ],
-    "python_tests": ["tests/tui/test_runtime_shell.py"]
+    "python_tests": [
+      "tests/tui/test_runtime_events.py",
+      "tests/tui/test_runtime_shell.py"
+    ]
   },
   "risks": [
     "event data remains a startup snapshot only",
