@@ -1,0 +1,67 @@
+{
+  "iteration": 28,
+  "agent": "cp07t-no-categories-agent-28",
+  "size": "S",
+  "goal": "Handle only the initial read-only state with zero categories using a clear status message and keyboard-stable focus behavior",
+  "write_files": [
+    ".provoware/iterations/0028-cp07t-no-categories.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_shell.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0027-cp07t-empty-states.json",
+    "src/provoware_db/tui/view_models.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "Iteration 27 read-only empty-state handling",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted runtime test",
+    "zero-category startup reports a clear read-only message",
+    "zero-category startup keeps category-list as neutral focus anchor",
+    "up/down/enter are safe no-ops with no category index",
+    "existing category-entry-field and empty-state regressions",
+    "existing 80x24 and 160x40 layout/focus regressions",
+    "guard against direct storage/SQLite/execute access"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "new screenshot because Iteration 28 is not a fifth-iteration screenshot milestone"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "the empty ListView is intentionally retained as the neutral focus anchor; no selectable pseudo-category is introduced",
+    "reload/refresh of categories remains outside this slice"
+  ],
+  "non_changes": [
+    "no new navigation level",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "startup with zero categories reports 'Keine Kategorien vorhanden.'",
+    "empty category list remains focused and keyboard-safe without acquiring an index"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
