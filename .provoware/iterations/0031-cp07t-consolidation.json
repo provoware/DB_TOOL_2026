@@ -1,0 +1,77 @@
+{
+  "iteration": 31,
+  "agent": "checkpoint-consolidation-agent-cp07t-31",
+  "size": "S",
+  "goal": "Consolidate the already validated CP-07T read-only Textual runtime after Iterations 24-30 without introducing any new product feature",
+  "write_files": [
+    ".provoware/iterations/0031-cp07t-consolidation.json",
+    "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_31.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_22_SCOPE.md",
+    "docs/development/ITERATION_23_CP07T_RUNTIME_INVENTORY.md",
+    ".provoware/iterations/0024-cp07t-minimal-shell.json",
+    ".provoware/iterations/0025-cp07t-category-entry-read.json",
+    ".provoware/iterations/0026-cp07t-entry-field-read.json",
+    ".provoware/iterations/0027-cp07t-empty-states.json",
+    ".provoware/iterations/0028-cp07t-no-categories.json",
+    ".provoware/iterations/0029-cp07t-category-refresh.json",
+    ".provoware/iterations/0030-cp07t-preserve-category-refresh.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/view_models.py",
+    "tests/tui/test_runtime_shell.py",
+    "AGENTS.md"
+  ],
+  "direct_dependencies": [
+    "CP-07T scope frozen by Iteration 22 planning",
+    "Iterations 24-30 validated read-only Textual runtime",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile the directly consolidated Textual runtime and targeted runtime test",
+    "run the existing CP-07T runtime regression covering 80x24 and 160x40 layout, keyboard/focus, category-entry-field reads, empty states and manual refresh",
+    "preserve the no-storage/no-SQL runtime guard",
+    "preserve all documented freeze boundaries"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is frozen and untouched",
+    "repository/domain regression because frozen core is untouched",
+    "new screenshot because Iteration 31 is not a fifth-iteration milestone and no visual/product change is allowed",
+    "health/recent-events tests because those port methods were not part of the approved CP-07T functional scope"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "this consolidation freezes only the CP-07T runtime behavior already validated by Iterations 24-30",
+    "TuiDataPort.health and TuiDataPort.recent_events remain unimplemented in the runtime and must not be treated as implicitly approved future scope"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no CRUD/write/trash/restore/undo paths",
+    "no health/recent-events UI",
+    "no automatic polling",
+    "no dependency changes",
+    "no theme or responsive redesign"
+  ],
+  "expected_side_effects": [
+    "documentation-only checkpoint boundary for the validated CP-07T read-only Textual slice"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_VALIDATION_ONLY"
+}
