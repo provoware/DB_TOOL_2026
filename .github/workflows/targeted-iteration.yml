@@ -95,3 +95,11 @@ jobs:
           print(f"TEST TARGETS: {len(test_targets)}")
           print("GESAMTSTATUS: GRÜN")
           PY
+
+      - name: Upload iteration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: targeted-iteration-evidence
+          path: runtime/iteration-*
+          if-no-files-found: ignore
