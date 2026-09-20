@@ -203,8 +203,14 @@ async def _exercise_refresh_reloads_categories_and_clears_dependents() -> None:
         category_list = app.query_one("#category-list", ListView)
         assert port.category_reads == 2
         assert len(category_list.children) == 3
-        assert category_list.index == 0
-        assert category_list.query_one(Label).render().plain == "Kategorie C"
+        assert category_list.index == 2
+        assert (
+            category_list.children[category_list.index]
+            .query_one(Label)
+            .render()
+            .plain
+            == "Kategorie A"
+        )
         assert len(entry_list.children) == 0
         assert entry_list.index is None
         assert len(field_list.children) == 0
