@@ -43,6 +43,11 @@ class FakePort:
         return ()
 
 
+class EmptyCategoriesPort(FakePort):
+    def categories(self) -> Sequence[NavItem]:
+        return ()
+
+
 class ReorderingPort(FakePort):
     def __init__(self) -> None:
         self.category_reads = 0
@@ -97,6 +102,31 @@ async def _exercise_compact_navigation() -> None:
         assert category_list.index == 1
         await pilot.press("up")
         assert category_list.index == 0
+
+
+async def _exercise_no_categories_initial_state() -> None:
+    app = ProvowareDbTui(EmptyCategoriesPort())
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        category_list = app.query_one("#category-list", ListView)
+        entry_list = app.query_one("#entry-list", ListView)
+        field_list = app.query_one("#field-list", ListView)
+
+        assert len(category_list.children) == 0
+        assert category_list.index is None
+        assert len(entry_list.children) == 0
+        assert len(field_list.children) == 0
+        assert app.read_status == "Keine Kategorien vorhanden."
+        assert category_list.has_focus
+
+        await pilot.press("down")
+        await pilot.press("up")
+        await pilot.press("enter")
+        await pilot.pause()
+
+        assert category_list.index is None
+        assert app.read_status == "Keine Kategorien vorhanden."
+        assert category_list.has_focus
 
 
 async def _exercise_category_to_entry_read() -> None:
@@ -259,6 +289,10 @@ def test_compact_viewport_navigation_and_focus() -> None:
     asyncio.run(_exercise_compact_navigation())
 
 
+def test_no_categories_initial_state_is_clear_and_keyboard_stable() -> None:
+    asyncio.run(_exercise_no_categories_initial_state())
+
+
 def test_category_selection_loads_entries_and_moves_focus() -> None:
     asyncio.run(_exercise_category_to_entry_read())
 
@@ -303,6 +337,7 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
 
 if __name__ == "__main__":
     test_compact_viewport_navigation_and_focus()
+    test_no_categories_initial_state_is_clear_and_keyboard_stable()
     test_category_selection_loads_entries_and_moves_focus()
     test_category_selection_uses_rendered_category_identity()
     test_entry_selection_loads_fields_and_moves_focus()
