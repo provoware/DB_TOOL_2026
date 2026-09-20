@@ -20,12 +20,13 @@ class ProvowareDbTui(App[None]):
     def __init__(self, data_port: TuiDataPort) -> None:
         super().__init__()
         self._data_port = data_port
+        self._categories = tuple(data_port.categories())
         self.layout_mode = LayoutMode.COMPACT
 
     def compose(self) -> ComposeResult:
         yield Static("PROVOWARE Datenbank · Nur Lesen", id="title")
         yield ListView(
-            *(ListItem(Label(item.label)) for item in self._data_port.categories()),
+            *(ListItem(Label(item.label)) for item in self._categories),
             id="category-list",
         )
         yield ListView(id="entry-list")
@@ -43,16 +44,15 @@ class ProvowareDbTui(App[None]):
         if event.list_view.id != "category-list":
             return
 
-        categories = self._data_port.categories()
         index = event.list_view.index
-        if index is None or index >= len(categories):
+        if index is None or index >= len(self._categories):
             return
 
         entry_list = self.query_one("#entry-list", ListView)
         entry_list.clear()
         entry_list.extend(
             ListItem(Label(item.label))
-            for item in self._data_port.entries(categories[index].id)
+            for item in self._data_port.entries(self._categories[index].id)
         )
         if entry_list.children:
             entry_list.index = 0
