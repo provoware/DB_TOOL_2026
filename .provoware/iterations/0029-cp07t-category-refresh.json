@@ -1,0 +1,62 @@
+{
+  "iteration": 29,
+  "agent": "cp07t-category-refresh-agent-29",
+  "size": "S",
+  "goal": "Add only a read-only category refresh that reloads categories, clears dependent views, and restores deterministic category focus",
+  "write_files": [
+    ".provoware/iterations/0029-cp07t-category-refresh.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_category_refresh.py"
+  ],
+  "direct_dependencies": [
+    "Iteration 28 zero-category startup handling",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted refresh test",
+    "refresh re-reads categories from the data port",
+    "refresh clears entry and field views",
+    "non-empty refresh selects first category and focuses category list",
+    "empty refresh leaves no category index and focuses category list",
+    "existing runtime shell regressions",
+    "guard against direct storage/SQLite/execute access"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "web/browser regression because CP-07H is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "new screenshot because Iteration 29 is not a fifth-iteration screenshot milestone"
+  ],
+  "pip_requirements": ["requirements-cp07t.txt"],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_shell.py",
+      "tests/tui/test_category_refresh.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_shell.py",
+      "tests/tui/test_category_refresh.py"
+    ]
+  },
+  "risks": [
+    "refresh intentionally resets selection to the first category instead of preserving identity",
+    "refresh is user-triggered only; no polling or background reload is introduced"
+  ],
+  "non_changes": [
+    "no persistence or CRUD changes",
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite repository changes",
+    "no CP-07H browser changes",
+    "no theme work"
+  ],
+  "expected_side_effects": [
+    "r reloads categories read-only",
+    "dependent entry and field lists are cleared before the refreshed category state is exposed",
+    "focus deterministically returns to the category list"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
