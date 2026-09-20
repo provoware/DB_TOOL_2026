@@ -37,6 +37,26 @@ class FakePort:
         return ()
 
 
+class ReorderingPort(FakePort):
+    def __init__(self) -> None:
+        self.category_reads = 0
+        self.entry_category_id: str | None = None
+
+    def categories(self) -> Sequence[NavItem]:
+        self.category_reads += 1
+        if self.category_reads == 1:
+            return super().categories()
+        return (
+            NavItem("cat-c", "Kategorie C"),
+            NavItem("cat-b", "Kategorie B"),
+            NavItem("cat-a", "Kategorie A"),
+        )
+
+    def entries(self, category_id: str) -> Sequence[NavItem]:
+        self.entry_category_id = category_id
+        return super().entries(category_id)
+
+
 async def _exercise_compact_navigation() -> None:
     app = ProvowareDbTui(FakePort())
     async with app.run_test(size=(80, 24)) as pilot:
@@ -70,6 +90,18 @@ async def _exercise_category_to_entry_read() -> None:
         assert entry_list.has_focus
 
 
+async def _exercise_rendered_category_identity() -> None:
+    port = ReorderingPort()
+    app = ProvowareDbTui(port)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+
+        assert port.category_reads == 1
+        assert port.entry_category_id == "cat-a"
+
+
 async def _exercise_large_viewport() -> None:
     app = ProvowareDbTui(FakePort())
     async with app.run_test(size=(160, 40)) as pilot:
@@ -84,6 +116,10 @@ def test_compact_viewport_navigation_and_focus() -> None:
 
 def test_category_selection_loads_entries_and_moves_focus() -> None:
     asyncio.run(_exercise_category_to_entry_read())
+
+
+def test_category_selection_uses_rendered_category_identity() -> None:
+    asyncio.run(_exercise_rendered_category_identity())
 
 
 def test_large_viewport_layout_and_focus() -> None:
@@ -107,5 +143,6 @@ def test_runtime_has_no_storage_or_sql_imports() -> None:
 if __name__ == "__main__":
     test_compact_viewport_navigation_and_focus()
     test_category_selection_loads_entries_and_moves_focus()
+    test_category_selection_uses_rendered_category_identity()
     test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
