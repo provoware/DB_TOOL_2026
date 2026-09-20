@@ -177,7 +177,9 @@ async def _exercise_refresh_reloads_categories_and_clears_dependents() -> None:
         assert category_list.index == 0
         assert category_list.query_one(Label).render().plain == "Kategorie C"
         assert len(entry_list.children) == 0
+        assert entry_list.index is None
         assert len(field_list.children) == 0
+        assert field_list.index is None
         assert category_list.has_focus
         assert app.read_status == "Kategorien neu geladen."
 
@@ -194,6 +196,8 @@ async def _exercise_refresh_to_empty_categories() -> None:
         assert port.category_reads == 2
         assert len(category_list.children) == 0
         assert category_list.index is None
+        assert app.query_one("#entry-list", ListView).index is None
+        assert app.query_one("#field-list", ListView).index is None
         assert category_list.has_focus
         assert app.read_status == "Keine Kategorien vorhanden."
 
