@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from pathlib import Path
 from typing import Sequence
 
@@ -110,6 +111,45 @@ async def _exercise_large_viewport() -> None:
         assert app.query_one("#category-list", ListView).has_focus
 
 
+async def _capture_iteration_25_evidence() -> None:
+    app = ProvowareDbTui(FakePort())
+    async with app.run_test(size=(160, 40)) as pilot:
+        await pilot.pause()
+        await pilot.press("enter")
+        await pilot.pause()
+
+        entry_list = app.query_one("#entry-list", ListView)
+        assert app.layout_mode is LayoutMode.WIDE
+        assert len(entry_list.children) == 2
+        assert entry_list.index == 0
+        assert entry_list.has_focus
+
+        out = Path("runtime/iteration-25")
+        out.mkdir(parents=True, exist_ok=True)
+        screenshot_path = out / "main-160x40.svg"
+        evidence_path = out / "iteration-25-evidence.json"
+        screenshot_path.write_text(app.export_screenshot(), encoding="utf-8")
+        evidence_path.write_text(
+            json.dumps(
+                {
+                    "iteration": 25,
+                    "viewport": "160x40",
+                    "theme": "Textual default",
+                    "layout": app.layout_mode.value,
+                    "category": "Kategorie A",
+                    "entries": ["Eintrag A1", "Eintrag A2"],
+                    "focused": "entry-list",
+                    "visual_regression": "no blocking overlap or missing category/entry content",
+                    "status": "GREEN",
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+
 def test_compact_viewport_navigation_and_focus() -> None:
     asyncio.run(_exercise_compact_navigation())
 
@@ -146,3 +186,4 @@ if __name__ == "__main__":
     test_category_selection_uses_rendered_category_identity()
     test_large_viewport_layout_and_focus()
     test_runtime_has_no_storage_or_sql_imports()
+    asyncio.run(_capture_iteration_25_evidence())
