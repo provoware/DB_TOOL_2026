@@ -1,0 +1,74 @@
+{
+  "iteration": 42,
+  "agent": "cp07t-category-create-reopen-agent-42",
+  "size": "S",
+  "goal": "Implement only the I41-authorized category-create interaction through the frozen CategoryWriteAdapter and existing refresh path",
+  "write_files": [
+    ".provoware/iterations/0042-cp07t-category-create-reopen.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_category_create.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_41_CP07T_REOPEN_DECISION.md",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_runtime_shell.py",
+    "requirements-cp07t.txt"
+  ],
+  "direct_dependencies": [
+    "I41 frozen minimal CP-07T reopen decision",
+    "I39 frozen CategoryWriteAdapter",
+    "Textual 8.2.8",
+    "existing action_refresh_categories path"
+  ],
+  "tests_required": [
+    "compile runtime and targeted category-create regression",
+    "read-only construction keeps create capability unavailable",
+    "confirmed valid name invokes writer exactly once",
+    "success reuses existing category refresh and restores category focus",
+    "conflict performs no success refresh and keeps input/focus stable",
+    "cancel performs no write and restores category focus",
+    "existing runtime-shell navigation/layout/focus regression",
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser regression because web code is untouched",
+    "repository/domain/storage regression because frozen core is untouched",
+    "visual evidence because the create input is transient and does not redesign persistent layout"
+  ],
+  "pip_requirements": ["requirements-cp07t.txt"],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_category_create.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_category_create.py",
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "the transient input catches adapter exceptions only at the presentation boundary; broader error taxonomy remains outside scope",
+    "only category creation is writable; entry/field/value writes remain closed"
+  ],
+  "non_changes": [
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService or CategoryWriteAdapter changes",
+    "no CP-08 health/events changes",
+    "no entry/field/value writes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency, web or CI changes",
+    "no unrelated CP-07T navigation/layout refactor"
+  ],
+  "expected_side_effects": [
+    "c opens one transient category-name input only when a writer is injected",
+    "Enter confirms one write and success uses the existing refresh path",
+    "Escape cancels without a write"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
