@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "iteration": 57,
+  "agent": "cp07t-field-create-reopen-decision-agent-57",
+  "size": "S",
+  "goal": "Formally decide whether CP-07T may be narrowly reopened for the minimal entry-field create flow defined by I55 after the I56 maintainability review",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Begrenzte Freigabe für Feldanlage",
+    "summary": "Die spätere Feldanlage darf als eng begrenzte TUI-Funktion umgesetzt werden, aber nur für sieben einfache Feldtypen und mit festem Eintrag, genau einem Schreibaufruf sowie kontrolliertem Neuladen und Fokus.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0057-cp07t-field-create-reopen-decision.json",
+    "docs/development/ITERATION_57_CP07T_FIELD_CREATE_REOPEN_DECISION.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0055-entry-field-integration-decision.json",
+    ".provoware/iterations/0056-maintainability-reuse-scope.json",
+    "docs/development/ITERATION_55_ENTRY_FIELD_INTEGRATION_DECISION.md",
+    "docs/development/ITERATION_56_MAINTAINABILITY_REUSE_SCOPE.md",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_runtime_entry_create.py",
+    "tests/tui/test_runtime_shell.py"
+  ],
+  "direct_dependencies": [
+    "I54 frozen EntryFieldWriteAdapter",
+    "I55 frozen integration contract",
+    "I56 frozen maintainability rules"
+  ],
+  "tests_required": [
+    "Manifest V2 validation",
+    "strict write_files scope validation",
+    "scope gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "TUI runtime tests because runtime is not modified in I57",
+    "product tests because no product code changes",
+    "database/domain/repository regressions because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "I58 must preserve existing category and entry create behavior while adding one more transient create mode",
+    "keyboard-only type selection and focus transitions must remain deterministic and understandable for lay users",
+    "MONEY, SINGLE_CHOICE and MULTI_CHOICE remain excluded because their complete creation semantics exceed the frozen I54 adapter contract"
+  ],
+  "non_changes": [
+    "no runtime.py changes in I57",
+    "no write_adapter.py changes",
+    "no view model changes",
+    "no CatalogService/domain/repository/storage changes",
+    "no value writes",
+    "no choice-option writes",
+    "no category-field creation",
+    "no text registry implementation",
+    "no I58 implementation"
+  ],
+  "expected_side_effects": [
+    "I58 is authorized to reopen CP-07T only for the bounded entry-field create flow specified here",
+    "all other CP-07T write surfaces remain frozen"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
