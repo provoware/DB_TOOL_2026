@@ -128,17 +128,26 @@ def main() -> int:
             failures += 1
             lines.append(scope_out)
 
-        scope_block_ok, scope_block_out = run([
-            sys.executable,
-            "scripts/check_iteration_scope.py",
-            str(plan),
-            "--changed-file",
+        for unplanned in (
             "src/unplanned.py",
-        ], expected=2)
-        lines.append(f"{'GRÜN' if scope_block_ok else 'ROT'}: Scope-Guard blockiert ungeplante Datei")
-        if not scope_block_ok:
-            failures += 1
-            lines.append(scope_block_out)
+            ".provoware/unplanned.json",
+            "docs/unplanned.md",
+            ".github/unplanned.yml",
+            "README.md",
+        ):
+            blocked, blocked_out = run([
+                sys.executable,
+                "scripts/check_iteration_scope.py",
+                str(plan),
+                "--changed-file",
+                unplanned,
+            ], expected=2)
+            lines.append(
+                f"{'GRÜN' if blocked else 'ROT'}: Scope-Guard blockiert ungeplant {unplanned}"
+            )
+            if not blocked:
+                failures += 1
+                lines.append(blocked_out)
 
     lines.extend([
         "",
