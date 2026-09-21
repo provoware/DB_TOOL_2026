@@ -172,15 +172,27 @@ Der Audit darf nur als vollständig grün gelten, wenn folgende fokussierte Regr
 6. bestehender Runtime-Shell-Vertrag;
 7. Manifest-/Scope-Gate.
 
-## Audit-Ergebnis vor Zwischen-Gate
+## Audit-Ergebnis und Zwischen-Gate
 
 Aus der statischen Vertragsprüfung ergibt sich **kein belegter offener Restvertrag** innerhalb des I47–I61-Slices.
 
-Der formale Freeze darf dennoch erst nach vollständig grünem Schritt-1-Zwischen-Gate erfolgen.
+Der Schritt-1-Zwischen-Gate ist vollständig **GRÜN**:
 
-## Schritt 2
+- Manifest-/Scope-Validierung grün;
+- EntryFieldWriteAdapter-Regression grün;
+- TUI-Field-Create-Regression grün;
+- Accessibility-/Keyboard-Evidence grün;
+- gemeinsamer FieldType-Label-Vertrag grün;
+- Entry-Create-Nachbarregression grün;
+- Runtime-Shell-Regression grün.
 
-Bei grünem Zwischen-Gate wird dieser Slice formal auf **FROZEN** gesetzt.
+Damit existiert innerhalb des freigegebenen Entry-Field-Create-Slices kein belegter BLOCKER/HIGH und kein noch offener Vertragsrest.
+
+## Schritt 2 – formaler Freeze
+
+Der CP-09 **Entry-Field-Create-Slice ist FROZEN**.
+
+Der Freeze umfasst ausschließlich den in diesem Dokument beschriebenen Adapter-/Runtime-Vertrag und seine sieben freigegebenen Create-Typen.
 
 Jede spätere Änderung an:
 
@@ -194,3 +206,18 @@ Jede spätere Änderung an:
 benötigt danach einen expliziten **REOPEN** mit Begründung, Impact-Analyse und direkt betroffenen Regressionen.
 
 Wenn der Zwischen-Gate einen reproduzierbaren Vertragsfehler zeigt, wird stattdessen ausschließlich genau dieser eine Restvertrag geschlossen.
+
+
+## Freeze-Status
+
+**FROZEN_CP09_ENTRY_FIELD_CREATE**
+
+Änderungen an diesem Slice benötigen künftig einen expliziten REOPEN mit:
+
+1. fachlicher Begründung;
+2. Impact-Analyse;
+3. exakt benanntem betroffenen Vertrag;
+4. direkt betroffenen Regressionen;
+5. unverändertem Schutz für CP-03, CP-06 und Storage/SQLite, sofern diese nicht separat reopened werden.
+
+Der nächste CP-09-Scope darf aus diesem Freeze nicht automatisch abgeleitet werden. Er muss read-only neu aufgelöst werden.
