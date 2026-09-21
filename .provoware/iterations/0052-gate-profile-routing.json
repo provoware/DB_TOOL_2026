@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "iteration": 52,
+  "agent": "gate-profile-routing-agent-52",
+  "size": "M",
+  "goal": "Route PR CI through Manifest V2 gate_profile so only relevant runners execute while deep/frozen-core changes remain fail-closed",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Gezielte CI-Prüfungen",
+    "summary": "Vor einem PR wird zuerst nur der kleine Laufzettel geprüft. Danach starten ausschließlich die für diese Änderungsart nötigen Prüfungen; besonders geschützte Kernbereiche erzwingen weiterhin automatisch die tiefste Prüfung.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0052-gate-profile-routing.json",
+    ".github/workflows/iteration-gates.yml",
+    ".github/workflows/targeted-iteration.yml",
+    ".github/workflows/agent-governance.yml",
+    ".github/workflows/repository-foundation.yml"
+  ],
+  "read_files": [
+    ".provoware/iterations/0051-scope-guard-hardening.json",
+    ".provoware/schema/iteration-manifest-v2.schema.json",
+    "scripts/validate_iteration_manifest.py",
+    "scripts/check_iteration_scope.py"
+  ],
+  "direct_dependencies": [
+    "Manifest V2 change_kind and gate_profile",
+    "I51 strict write_files scope enforcement",
+    "existing Targeted Iteration, Agent Governance and Repository Foundation gates"
+  ],
+  "tests_required": [
+    "router validates Manifest V2 before routing",
+    "router validates actual PR diff against write_files",
+    "change_kind/profile downgrade is blocked",
+    "frozen-core paths require deep profile",
+    "scope/docs skip unrelated runners when no targeted work exists",
+    "governance runs governance and optional targeted work only",
+    "product/ui run targeted plus foundation",
+    "deep runs targeted, governance and foundation",
+    "GitHub workflow parsing and triggered I52 gates"
+  ],
+  "tests_explicitly_not_run": [
+    "full product suite because product code is untouched",
+    "TUI/browser/database regressions because runtime and frozen core are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "GitHub reusable-workflow routing becomes a critical governance boundary and must fail closed before downstream jobs",
+    "direct pushes outside the PR discipline no longer receive these three automatic branch workflows; repository development policy already requires small PRs",
+    "protected-path detection intentionally covers domain, storage and CatalogService; additional frozen paths must be added when future checkpoints freeze them"
+  ],
+  "non_changes": [
+    "no src product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no SQLite/storage changes",
+    "no TUI or CP-08 changes",
+    "no EntryFieldWriteAdapter work; that remains I53",
+    "no new dependency"
+  ],
+  "expected_side_effects": [
+    "every PR receives one lightweight route/scope check",
+    "scope/docs profiles with empty ci targets do not allocate Targeted, Governance or Foundation runners",
+    "deep profile allocates all three downstream gates",
+    "profile downgrades and protected frozen-core writes fail before downstream CI"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}

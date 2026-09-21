@@ -1,0 +1,177 @@
+name: Iteration Gate Router
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.route.outputs.profile }}
+      run_targeted: ${{ steps.route.outputs.run_targeted }}
+      run_governance: ${{ steps.route.outputs.run_governance }}
+      run_foundation: ${{ steps.route.outputs.run_foundation }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate manifest, scope and gate profile
+        id: route
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          manifest="$(find .provoware/iterations -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
+          test -n "$manifest"
+          python scripts/validate_iteration_manifest.py "$manifest"
+          python scripts/check_iteration_scope.py "$manifest" --base "$BASE_SHA"
+          python - "$manifest" "$GITHUB_OUTPUT" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          manifest_path = Path(sys.argv[1])
+          output_path = Path(sys.argv[2])
+          data = json.loads(manifest_path.read_text(encoding="utf-8"))
+          profile = data["gate_profile"]
+          change_kind = data["change_kind"]
+          write_files = tuple(data["write_files"])
+
+          allowed_profiles = {
+              "scope_only": {"scope", "deep"},
+              "docs": {"docs", "deep"},
+              "governance": {"governance", "deep"},
+              "product": {"product", "deep"},
+              "ui": {"ui", "deep"},
+              "frozen_core": {"deep"},
+          }
+          protected_prefixes = (
+              "src/provoware_db/domain/",
+              "src/provoware_db/storage/",
+          )
+          protected_exact = {
+              "src/provoware_db/application/catalog_service.py",
+          }
+
+          def resolve(kind, selected_profile, files, pip_requirements, ci):
+              if selected_profile not in allowed_profiles[kind]:
+                  raise ValueError(
+                      f"Gate profile downgrade blocked: {kind=} cannot use "
+                      f"profile={selected_profile!r}"
+                  )
+
+              protected_files = [
+                  path
+                  for path in files
+                  if path in protected_exact or path.startswith(protected_prefixes)
+              ]
+              if protected_files and selected_profile != "deep":
+                  raise ValueError(
+                      "Frozen-core path requires gate_profile=deep: "
+                      + ", ".join(sorted(protected_files))
+                  )
+
+              has_targeted_work = bool(
+                  pip_requirements
+                  or ci["compile"]
+                  or ci["python_tests"]
+              )
+              return (
+                  has_targeted_work or selected_profile in {"product", "ui", "deep"},
+                  selected_profile in {"governance", "deep"},
+                  selected_profile in {"product", "ui", "deep"},
+              )
+
+          empty_ci = {"compile": [], "python_tests": []}
+          route_cases = (
+              ("scope_only", "scope", (), False, False, False),
+              ("docs", "docs", (), False, False, False),
+              ("governance", "governance", (), False, True, False),
+              ("product", "product", (), True, False, True),
+              ("ui", "ui", (), True, False, True),
+              (
+                  "frozen_core",
+                  "deep",
+                  ("src/provoware_db/domain/models.py",),
+                  True,
+                  True,
+                  True,
+              ),
+          )
+          for kind, selected, files, exp_targeted, exp_governance, exp_foundation in route_cases:
+              actual = resolve(kind, selected, files, [], empty_ci)
+              expected = (exp_targeted, exp_governance, exp_foundation)
+              if actual != expected:
+                  raise SystemExit(
+                      f"Routing self-check failed for {kind}/{selected}: "
+                      f"{actual=} {expected=}"
+                  )
+
+          for kind, selected, files in (
+              ("product", "scope", ()),
+              (
+                  "product",
+                  "product",
+                  ("src/provoware_db/storage/sqlite/schema_guard.py",),
+              ),
+          ):
+              try:
+                  resolve(kind, selected, files, [], empty_ci)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit(
+                      f"Routing self-check expected fail-closed for {kind}/{selected}"
+                  )
+
+          ci = data["ci"]
+          try:
+              run_targeted, run_governance, run_foundation = resolve(
+                  change_kind,
+                  profile,
+                  write_files,
+                  data["pip_requirements"],
+                  ci,
+              )
+          except ValueError as exc:
+              raise SystemExit(str(exc)) from exc
+
+          with output_path.open("a", encoding="utf-8") as handle:
+              handle.write(f"profile={profile}\n")
+              handle.write(f"run_targeted={str(run_targeted).lower()}\n")
+              handle.write(f"run_governance={str(run_governance).lower()}\n")
+              handle.write(f"run_foundation={str(run_foundation).lower()}\n")
+
+          print(
+              "GATE ROUTE:",
+              f"profile={profile}",
+              f"targeted={run_targeted}",
+              f"governance={run_governance}",
+              f"foundation={run_foundation}",
+          )
+          PY
+
+  targeted:
+    needs: route
+    if: needs.route.outputs.run_targeted == 'true'
+    uses: ./.github/workflows/targeted-iteration.yml
+
+  governance:
+    needs: route
+    if: needs.route.outputs.run_governance == 'true'
+    uses: ./.github/workflows/agent-governance.yml
+
+  foundation:
+    needs: route
+    if: needs.route.outputs.run_foundation == 'true'
+    uses: ./.github/workflows/repository-foundation.yml

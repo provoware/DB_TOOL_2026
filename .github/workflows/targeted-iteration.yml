@@ -1,24 +1,7 @@
 name: Targeted Iteration
 
 on:
-  push:
-    paths:
-      - ".provoware/iterations/**"
-      - "src/provoware_db/web/**"
-      - "tests/web/**"
-      - ".github/workflows/targeted-iteration.yml"
-      - "scripts/validate_iteration_manifest.py"
-      - ".provoware/schema/iteration-manifest-v2.schema.json"
-      - ".provoware/templates/iteration-plan.json"
-  pull_request:
-    paths:
-      - ".provoware/iterations/**"
-      - "src/provoware_db/web/**"
-      - "tests/web/**"
-      - ".github/workflows/targeted-iteration.yml"
-      - "scripts/validate_iteration_manifest.py"
-      - ".provoware/schema/iteration-manifest-v2.schema.json"
-      - ".provoware/templates/iteration-plan.json"
+  workflow_call:
 
 permissions:
   contents: read
