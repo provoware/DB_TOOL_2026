@@ -1,0 +1,60 @@
+{
+  "iteration": 37,
+  "agent": "post-cp08-scope-agent-37",
+  "size": "S",
+  "goal": "Resolve the next post-CP08 checkpoint from existing contracts without opening frozen product code",
+  "write_files": [
+    ".provoware/iterations/0037-post-cp08-scope.json",
+    "docs/development/ITERATION_37_POST_CP08_SCOPE.md"
+  ],
+  "read_files": [
+    "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_36.md",
+    "README.md",
+    "AGENTS.md",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/audit.py",
+    "src/provoware_db/storage/sqlite/operation_journal.py",
+    "src/provoware_db/storage/sqlite/unit_of_work.py"
+  ],
+  "direct_dependencies": [
+    "I36 frozen CP-08 read-only status boundary",
+    "existing frozen application/domain/repository contracts",
+    "existing SQLite audit, journal and unit-of-work infrastructure"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI product regression because no product code changes",
+    "browser regression because no web product code changes",
+    "repository/domain regression because frozen core is untouched"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "the existing write-side infrastructure is frozen and must not be treated as authorization to change it",
+    "autosave, trash/restore, undo and crash recovery still need separate functional scopes"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/frozen core changes",
+    "no SQLite audit, journal, unit-of-work or repository changes",
+    "no CP-07H or CP-07T product changes",
+    "no CP-08 reopen",
+    "no CRUD/write/trash/restore/undo implementation",
+    "no autosave or crash-recovery implementation",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "the next checkpoint is constrained to a write-safety planning boundary before any write-capable UI work"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
