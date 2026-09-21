@@ -72,12 +72,14 @@
     "no field-value or choice writes",
     "no web changes",
     "no domain/repository/storage changes",
-    "no general accessibility redesign"
+    "no general accessibility redesign",
+    "step 2 product patch intentionally omitted because step-1 evidence was green at all three scale proxies"
   ],
   "expected_side_effects": [
     "CI produces runtime/iteration-61 SVG and JSON evidence artifacts",
-    "step 2 is either a targeted evidence-driven fix or an explicit no-fix-needed completion"
+    "step 1 proved the keyboard/focus/layout contract green at 100/150/200 percent proxies",
+    "step 2 completed as no-fix-needed; runtime product code remains unchanged"
   ],
   "screenshot_required": true,
-  "status": "IMPLEMENTED_AWAITING_GATE"
+  "status": "STEP2_NO_FIX_AWAITING_FINAL_GATE"
 }
