@@ -1,0 +1,81 @@
+{
+  "schema_version": 2,
+  "iteration": 65,
+  "agent": "tui-composition-root-decision-agent-65",
+  "size": "S",
+  "goal": "Schritt 1: read-only prüfen, ob ein produktiver TUI-Composition-Root/Starter jetzt der sinnvollste Integrationsblock ist | Schritt 2: nur bei positiver Entscheidung minimalen portablen Wiring-Vertrag festlegen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Warum der TUI-Starter noch nicht kommt",
+    "summary": "Die TUI hat bereits Oberfläche und Schreibadapter, aber noch keinen echten Adapter, der reale Daten aus dem CatalogService in die TUI überträgt. Deshalb wäre ein Starter jetzt zu breit und würde mehrere Architekturentscheidungen vermischen.",
+    "target_doc": "docs/development/ITERATION_65_TUI_COMPOSITION_ROOT_DECISION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0065-tui-composition-root-decision.json",
+    "docs/development/ITERATION_65_TUI_COMPOSITION_ROOT_DECISION.md"
+  ],
+  "read_files": [
+    "README.md",
+    "requirements-cp07t.txt",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/web/startup.py",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/storage/sqlite/connection.py",
+    "src/provoware_db/storage/sqlite/schema_guard.py",
+    ".provoware/iterations/0025-cp07t-category-entry-read.json",
+    ".provoware/iterations/0026-cp07t-entry-field-read.json",
+    ".provoware/iterations/0031-cp07t-consolidation.json",
+    ".provoware/iterations/0040-cp09-tui-integration-inventory.json",
+    ".provoware/iterations/0064-next-cp09-scalar-value-scope.json"
+  ],
+  "direct_dependencies": [
+    "existing ProvowareDbTui constructor contract",
+    "TuiDataPort protocol",
+    "existing Category/Entry/EntryField write adapters",
+    "Web startup composition precedent",
+    "I64 prepared scalar-value contract"
+  ],
+  "tests_required": [
+    "Schritt 1: repository tree confirms no productive TUI read adapter/startup module exists",
+    "Schritt 1: Web startup precedent and TUI constructor dependencies are documented",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: because decision is negative, no wiring contract and no status-only follow-up commit"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because I65 changes no product code",
+    "TUI/browser/database regressions because runtime and storage code are untouched",
+    "full suite because I65 is scope-only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "implementing a Composition Root before a productive TuiDataPort adapter would mix read projection, startup and write wiring into one oversized scope",
+    "health/event sources must not be invented inside a starter",
+    "I65 must not block the independently prepared thin scalar-value adapter seam"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no TUI read-adapter implementation",
+    "no Composition Root implementation",
+    "no start.sh implementation",
+    "no scalar-value adapter implementation",
+    "no CatalogService/domain/repository/storage changes",
+    "no dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "Composition Root is explicitly deferred",
+    "productive TUI read-adapter scope becomes the prerequisite integration question",
+    "step 2 completes as NO_CONTRACT_REQUIRED if step 1 gate is green"
+  ],
+  "screenshot_required": false,
+  "status": "NEGATIVE_DECISION_AWAITING_GATE"
+}
