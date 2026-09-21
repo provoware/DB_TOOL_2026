@@ -1,0 +1,57 @@
+{
+  "iteration": 45,
+  "agent": "cp09-entry-tui-integration-decision-agent-45",
+  "size": "S",
+  "goal": "Decide whether entry creation can be integrated without reopening frozen CP-07T runtime and define the smallest safe next boundary",
+  "write_files": [
+    ".provoware/iterations/0045-cp09-entry-tui-integration-decision.json",
+    "docs/development/ITERATION_45_CP09_ENTRY_TUI_INTEGRATION_DECISION.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0044-cp09-entry-write-adapter.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_runtime_shell.py",
+    "tests/tui/test_runtime_category_create.py"
+  ],
+  "direct_dependencies": [
+    "I44 frozen EntryWriteAdapter seam",
+    "I42 frozen CP-07T category-create runtime",
+    "existing category and entry navigation"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI runtime regression because runtime code is untouched",
+    "browser regression because web code is untouched",
+    "repository/domain/storage regression because frozen core is untouched"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "entry creation requires stable selected-category provenance at command time",
+    "successful entry creation must refresh only the selected category entries without disturbing category selection or frozen navigation semantics"
+  ],
+  "non_changes": [
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService or write-adapter changes",
+    "no CP-07T runtime/navigation/layout changes",
+    "no CP-08 health/event changes",
+    "no field/value writes",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "a later iteration may request a narrowly bounded CP-07T reopen for entry creation"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
