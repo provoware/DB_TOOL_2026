@@ -1,4 +1,4 @@
-version: 3
+version: 4
 
 rules:
   planning_before_changes: true
@@ -28,6 +28,11 @@ rules:
   unplanned_file_changes_are_gate_findings: true
   dependency_upgrades_require_explicit_plan: true
   global_formatting_requires_explicit_plan: true
+  two_step_iteration_required: true
+  step_two_requires_step_one_green: true
+  single_branch_pr_for_two_steps: true
+  freeze_after_both_steps_only: true
+  second_step_must_share_scope: true
 
 review_scope:
   include:
