@@ -25,6 +25,8 @@ REQUIRED_AGENT_RULE_MARKERS = (
     "Screenshot-Regel",
     "exakt die nächsten drei Schritte",
     "Laienhilfe-Subagent",
+    "Zwei-Schritt-Iteration",
+    "interner Zwischen-Gate",
 )
 
 REQUIRED_MACHINE_RULES = (
@@ -39,6 +41,11 @@ REQUIRED_MACHINE_RULES = (
     "layman_guide_delta_every_iteration: true",
     "layman_guide_agent_never_modify_product_code: true",
     "layman_guide_updates_must_be_incremental: true",
+    "two_step_iteration_required: true",
+    "step_two_requires_step_one_green: true",
+    "single_branch_pr_for_two_steps: true",
+    "freeze_after_both_steps_only: true",
+    "second_step_must_share_scope: true",
 )
 
 
