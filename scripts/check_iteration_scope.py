@@ -34,20 +34,10 @@ def main() -> int:
     planned = {str(p) for p in plan.get("write_files", [])}
     changed = set(args.changed_file) if args.changed_file else git_changed(args.base)
 
-    allowed_meta_prefixes = (
-        ".provoware/",
-        ".github/",
-        "docs/",
-    )
-    allowed_meta_files = {"AGENTS.md", "CONTRIBUTING.md", "README.md"}
-
-    unexpected = {
-        p
-        for p in changed
-        if p not in planned
-        and p not in allowed_meta_files
-        and not p.startswith(allowed_meta_prefixes)
-    }
+    # I51: Repository-Metadaten sind kein impliziter Freiraum mehr. Jede versionierte
+    # Änderung muss im Manifest stehen. Laufzeit-Evidence bleibt außerhalb des
+    # versionierten Diffs und braucht deshalb hier keine Ausnahme.
+    unexpected = changed - planned
 
     print(f"Geplant: {len(planned)} Datei(en)")
     print(f"Tatsächlich geändert: {len(changed)} Datei(en)")
