@@ -1,0 +1,64 @@
+{
+  "iteration": 39,
+  "agent": "cp09-category-write-adapter-agent-39",
+  "size": "S",
+  "goal": "Add the smallest write-capable TUI application seam for category creation without changing frozen CatalogService, storage, schema, or CP-07T navigation",
+  "write_files": [
+    ".provoware/iterations/0039-cp09-category-write-adapter.json",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_category_write_adapter.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_38_CP09_WRITE_CONTRACT_INVENTORY.md",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/runtime.py"
+  ],
+  "direct_dependencies": [
+    "I38 frozen category-create contract inventory",
+    "CatalogService.create_category public contract",
+    "existing NavItem presentation model"
+  ],
+  "tests_required": [
+    "tests/tui/test_category_write_adapter.py",
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser regression because web code is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "visual evidence because runtime layout is untouched"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/write_adapter.py",
+      "tests/tui/test_category_write_adapter.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_category_write_adapter.py"
+    ]
+  },
+  "risks": [
+    "the adapter is intentionally not yet connected to an input widget or runtime binding",
+    "user-facing error wording and refresh behavior remain for the next separately gated UI step"
+  ],
+  "non_changes": [
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService implementation changes",
+    "no CP-07T runtime/navigation/layout changes",
+    "no CP-08 health/event changes",
+    "no entry/field/value writes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "a later gated UI step can inject CategoryWriteAdapter and collect a category name without importing storage or SQL into the TUI"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
