@@ -62,6 +62,38 @@ pro Iterationsschritt.
 
 Weitere Schleifen benötigen einen neuen konkreten Befund.
 
+## 1.6 Zwei-Schritt-Iteration
+
+Ab I59 besteht jede Entwicklungsiteration aus **genau zwei vorab geplanten, logisch aufeinanderfolgenden Arbeitsschritten**.
+
+Grundform:
+1. **Schritt 1 – Primäränderung:** kleinster fachlich notwendiger Patch oder Entscheidung.
+2. **Schritt 2 – direkte Folgemaßnahme:** unmittelbar abhängige Härtung, Integration, Regression oder Wartbarkeitsverbesserung im selben fachlichen Scope.
+
+Regeln:
+- beide Schritte werden vor dem ersten Write im selben Iterationsplan festgelegt
+- ein gemeinsamer Branch und grundsätzlich ein gemeinsamer PR
+- nach Schritt 1 erfolgt ein **interner Zwischen-Gate**
+- Schritt 2 startet nur, wenn Schritt 1 für seinen Scope GRÜN ist
+- bei ROT/BLOCKER/HIGH in Schritt 1 wird Schritt 2 als **BLOCKIERT** dokumentiert und nicht erzwungen
+- Schritt 2 darf keinen neuen unabhängigen Produkt-Scope eröffnen
+- Freeze/Squash-Merge erst nach Abschluss bzw. dokumentierter Blockierung beider Schritte
+- Tests werden je Schritt nur für neu betroffene Pfade ergänzt; keine doppelte Wiederholung bereits grüner Tests ohne neuen relevanten Code
+- zwei kleine direkt abhängige Schritte sollen einen Branch-/PR-/CI-Zyklus teilen, statt künstlich zwei Iterationen zu erzeugen
+- Frozen-Core-, Schema-, Dependency- oder Architekturgrenzen dürfen nicht durch Bündelung umgangen werden
+
+Geeignete Kombinationen:
+- Implementierung → gezielte Regression/Härtung
+- Scope-Entscheidung → unmittelbar daraus folgende kleine Vertragspräzisierung
+- kleiner Refactor → direkte Consumer-Migration
+- UI-Funktion → fokussierte Accessibility-/Keyboard-Härtung
+
+Ungeeignete Kombinationen:
+- zwei fachlich unabhängige Features
+- Produktänderung plus beiläufige CI-/Governance-Änderung
+- Frozen-Core-Änderung plus Komfortarbeit
+- zwei Schritte, die unterschiedliche Reopen-/Freeze-Entscheidungen benötigen
+
 ## 2. Dateibesitz und Kollisionsschutz
 
 Pro Iteration darf jede schreibbare Datei genau einem Änderungsagenten gehören.
