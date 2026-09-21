@@ -1,0 +1,58 @@
+{
+  "iteration": 40,
+  "agent": "cp09-tui-integration-inventory-agent-40",
+  "size": "S",
+  "goal": "Inventory the smallest safe TUI integration boundary for the frozen I39 CategoryWriteAdapter without silently reopening CP-07T runtime",
+  "write_files": [
+    ".provoware/iterations/0040-cp09-tui-integration-inventory.json",
+    "docs/development/ITERATION_40_CP09_TUI_INTEGRATION_INVENTORY.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0039-cp09-category-write-adapter.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_runtime_shell.py"
+  ],
+  "direct_dependencies": [
+    "I39 frozen CategoryWriteAdapter seam",
+    "frozen CP-07T runtime and category refresh semantics"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI runtime regression because runtime code is untouched",
+    "browser regression because web code is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "visual evidence because no UI layout changes"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "Textual integration may require a narrowly scoped explicit CP-07T reopen if no external controller/composition seam can bind input and refresh",
+    "no category input is enabled by this planning iteration"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService changes",
+    "no CP-07T runtime/navigation/layout/refresh changes",
+    "no CP-08 health/event changes",
+    "no entry/field/value writes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "I41 can make an evidence-based decision between an external controller/composition seam and an explicit narrow CP-07T reopen"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
