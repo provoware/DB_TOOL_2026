@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "iteration": 58,
+  "agent": "tui-entry-field-create-agent-58",
+  "size": "M",
+  "goal": "Implement only the I57-authorized minimal CP-07T entry-field create flow with stable parent identity, seven safe FieldTypes, exactly one adapter write, read-port refresh and deterministic focus",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Feld direkt am ausgewählten Eintrag anlegen",
+    "summary": "Die TUI kann jetzt ein einfaches Feld anlegen: Eintrag auswählen, F drücken, einen von sieben sicheren Feldtypen wählen, Namen eingeben und mit Enter bestätigen. Geld- und Auswahlfelder bleiben bewusst gesperrt.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0058-tui-entry-field-create.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_field_create.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0057-cp07t-field-create-reopen-decision.json",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_runtime_entry_create.py",
+    "tests/tui/test_runtime_shell.py",
+    "requirements-cp07t.txt"
+  ],
+  "direct_dependencies": [
+    "I54 frozen EntryFieldWriteAdapter",
+    "I55 frozen integration contract",
+    "I57 positive bounded CP-07T reopen",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and field-create tests",
+    "field create unavailable without injected writer",
+    "field create requires selected entry",
+    "exactly seven safe FieldTypes exposed",
+    "MONEY and choice types not exposed",
+    "entry_id captured at create start and remains stable",
+    "exactly one field write on submit",
+    "FieldType identity preserved",
+    "success refreshes only fields(captured_entry_id)",
+    "success does not reload categories or entries",
+    "success restores captured entry identity and focuses field list",
+    "error performs no refresh and keeps parent/type/input focus",
+    "escape from type or name step performs no write and clears transient state",
+    "existing entry-create regressions",
+    "existing runtime navigation/focus regressions",
+    "runtime remains free of SQL/storage imports",
+    "Manifest V2 and strict scope validation",
+    "ui gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "full product suite because the reopen is limited to CP-07T field create",
+    "browser tests because web code is untouched",
+    "database/domain/repository regressions because frozen core is untouched",
+    "200 percent/manual accessibility evidence because that is reserved for I60"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_field_create.py",
+      "tests/tui/test_runtime_entry_create.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_field_create.py",
+      "tests/tui/test_runtime_entry_create.py",
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "the new transient type selector increases runtime focus states and therefore requires targeted keyboard regression",
+    "FieldType labels are intentionally local in I58 and may be centralized only in I59 after this flow is frozen",
+    "MONEY, SINGLE_CHOICE and MULTI_CHOICE must remain unreachable from the new create surface"
+  ],
+  "non_changes": [
+    "no write_adapter.py changes",
+    "no view_models.py changes",
+    "no CatalogService changes",
+    "no domain/repository/storage changes",
+    "no field-value writes",
+    "no choice-option writes",
+    "no category-field creation",
+    "no text registry implementation",
+    "no web changes"
+  ],
+  "expected_side_effects": [
+    "pressing f on a selected entry opens a keyboard-only seven-type selector",
+    "successful creation reloads only the selected entry field rows through TuiDataPort",
+    "read-only construction without field_writer remains supported"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
