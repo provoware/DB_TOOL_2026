@@ -17,6 +17,7 @@
   "direct_dependencies": [],
   "tests_required": [
     "Schritt 1: engster relevanter Zwischen-Gate",
+    "Vor Remote-Head: alle ci.compile-/ci.python_tests-Dateipfade existieren",
     "Schritt 2: nur nach grünem Schritt 1; Abschluss-Gate für neu betroffene Pfade"
   ],
   "tests_explicitly_not_run": [],
@@ -29,7 +30,9 @@
   "non_changes": [],
   "expected_side_effects": [
     "beide Arbeitsschritte teilen Branch und PR",
-    "Schritt 2 bleibt blockiert, falls Schritt 1 nicht grün ist"
+    "jeder abgeschlossene Schritt erzeugt genau einen atomaren Remote-Head",
+    "Schritt 2 bleibt blockiert, falls Schritt 1 nicht grün ist",
+    "NO_FIX_REQUIRED ohne versionierte Änderung erzeugt keinen Status-only Commit"
   ],
   "screenshot_required": false,
   "status": "PLANNED_AWAITING_GATE"

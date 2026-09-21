@@ -1,4 +1,4 @@
-version: 4
+version: 5
 
 rules:
   planning_before_changes: true
@@ -33,6 +33,10 @@ rules:
   single_branch_pr_for_two_steps: true
   freeze_after_both_steps_only: true
   second_step_must_share_scope: true
+  atomic_remote_head_per_step: true
+  repair_head_requires_failed_gate: true
+  no_status_only_commit_for_no_fix_step_two: true
+  manifest_ci_targets_must_exist: true
 
 review_scope:
   include:
