@@ -1,0 +1,59 @@
+{
+  "iteration": 43,
+  "agent": "cp09-next-write-scope-agent-43",
+  "size": "S",
+  "goal": "Resolve the next single CP-09 write use-case after frozen I42 without reopening frozen core or extending CRUD opportunistically",
+  "write_files": [
+    ".provoware/iterations/0043-cp09-next-write-scope.json",
+    "docs/development/ITERATION_43_CP09_NEXT_WRITE_SCOPE.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_37_POST_CP08_SCOPE.md",
+    "docs/development/ITERATION_38_CP09_WRITE_CONTRACT_INVENTORY.md",
+    ".provoware/iterations/0042-cp07t-category-create-reopen.json",
+    "src/provoware_db/application/catalog_service.py"
+  ],
+  "direct_dependencies": [
+    "I42 frozen category-create TUI path",
+    "I38 frozen CP-09 write-contract inventory",
+    "existing CatalogService.create_entry contract"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI regression because product/runtime code is untouched",
+    "browser regression because web code is untouched",
+    "repository/domain/storage regression because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "entry creation requires a selected active parent category and therefore a later integration must preserve selection and refresh semantics",
+    "the next functional iteration may require a separately justified narrow CP-07T reopen; I43 does not authorize it"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService changes",
+    "no CP-07T runtime/navigation/layout changes",
+    "no CP-08 health/event changes",
+    "no field/value writes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "after freeze, a follow-up may inventory a thin entry-write adapter against the existing create_entry contract"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
