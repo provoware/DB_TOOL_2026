@@ -2,24 +2,31 @@ from __future__ import annotations
 
 from textual import events
 from textual.app import App, ComposeResult
-from textual.widgets import Footer, Label, ListItem, ListView, Static
+from textual.widgets import Footer, Input, Label, ListItem, ListView, Static
 
 from .layout_policy import LayoutMode, classify_layout
 from .view_models import HealthLevel, NavItem, TuiDataPort
+from .write_adapter import CategoryWriteAdapter
 
 
 class ProvowareDbTui(App[None]):
-    """Minimal read-only CP-07T shell.
+    """CP-07T shell with one optional, narrowly reopened category write path."""
 
-    The shell depends only on the injected TuiDataPort. It deliberately does
-    not import storage, repositories, SQL helpers, or mutation services.
-    """
+    BINDINGS = [
+        ("q", "quit", "Beenden"),
+        ("r", "refresh_categories", "Neu laden"),
+        ("c", "create_category", "Kategorie anlegen"),
+        ("escape", "cancel_category_create", "Abbrechen"),
+    ]
 
-    BINDINGS = [("q", "quit", "Beenden"), ("r", "refresh_categories", "Neu laden")]
-
-    def __init__(self, data_port: TuiDataPort) -> None:
+    def __init__(
+        self,
+        data_port: TuiDataPort,
+        category_writer: CategoryWriteAdapter | None = None,
+    ) -> None:
         super().__init__()
         self._data_port = data_port
+        self._category_writer = category_writer
         self._categories = tuple(data_port.categories())
         self._health = tuple(data_port.health())
         event_reader = getattr(data_port, "recent_events")
@@ -30,6 +37,7 @@ class ProvowareDbTui(App[None]):
 
     def compose(self) -> ComposeResult:
         yield Static("PROVOWARE Datenbank · Nur Lesen", id="title")
+        yield Input(placeholder="Kategoriename · Enter bestätigt", id="category-create-input")
         yield ListView(
             *(ListItem(Label(item.label)) for item in self._categories),
             id="category-list",
@@ -43,6 +51,7 @@ class ProvowareDbTui(App[None]):
         yield Footer()
 
     def on_mount(self) -> None:
+        self.query_one("#category-create-input", Input).display = False
         category_list = self.query_one("#category-list", ListView)
         if category_list.children:
             category_list.index = 0
@@ -50,6 +59,49 @@ class ProvowareDbTui(App[None]):
             self._set_read_status("Keine Kategorien vorhanden.")
         category_list.focus()
         self._sync_layout(self.size.width)
+
+    async def action_create_category(self) -> None:
+        if self._category_writer is None:
+            self._set_read_status("Kategorie anlegen ist in diesem Modus nicht verfügbar.")
+            return
+        category_input = self.query_one("#category-create-input", Input)
+        category_input.value = ""
+        category_input.display = True
+        category_input.focus()
+        self._set_read_status("Kategoriename eingeben und mit Enter bestätigen. Esc bricht ab.")
+
+    def action_cancel_category_create(self) -> None:
+        category_input = self.query_one("#category-create-input", Input)
+        if not category_input.display:
+            return
+        category_input.value = ""
+        category_input.display = False
+        self._set_read_status("Kategorie anlegen abgebrochen.")
+        self.query_one("#category-list", ListView).focus()
+
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
+        if event.input.id != "category-create-input" or not event.input.display:
+            return
+        name = event.value.strip()
+        if not name:
+            self._set_read_status("Kategoriename darf nicht leer sein.")
+            event.input.focus()
+            return
+        writer = self._category_writer
+        if writer is None:
+            self.action_cancel_category_create()
+            return
+        try:
+            writer.create_category(name)
+        except Exception as exc:
+            self._set_read_status(str(exc))
+            event.input.focus()
+            return
+
+        event.input.value = ""
+        event.input.display = False
+        await self.action_refresh_categories()
+        self._set_read_status(f"Kategorie „{name}“ angelegt.")
 
     async def action_refresh_categories(self) -> None:
         category_list = self.query_one("#category-list", ListView)
