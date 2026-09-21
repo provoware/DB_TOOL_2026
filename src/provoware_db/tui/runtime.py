@@ -205,9 +205,16 @@ class ProvowareDbTui(App[None]):
         field_list.index = None
 
         if self._categories:
-            await category_list.extend(ListItem(Label(item.label)) for item in self._categories)
+            await category_list.extend(
+                ListItem(Label(item.label))
+                for item in self._categories
+            )
             category_list.index = next(
-                (index for index, item in enumerate(self._categories) if item.id == selected_category_id),
+                (
+                    index
+                    for index, item in enumerate(self._categories)
+                    if item.id == selected_category_id
+                ),
                 0,
             )
             self._set_read_status("Kategorien neu geladen.")
@@ -228,12 +235,17 @@ class ProvowareDbTui(App[None]):
         if index is None or index >= len(self._categories):
             return
 
-        self._entries = tuple(self._data_port.entries(self._categories[index].id))
+        self._entries = tuple(
+            self._data_port.entries(self._categories[index].id)
+        )
         entry_list = self.query_one("#entry-list", ListView)
         field_list = self.query_one("#field-list", ListView)
         entry_list.clear()
         field_list.clear()
-        entry_list.extend(ListItem(Label(item.label)) for item in self._entries)
+        entry_list.extend(
+            ListItem(Label(item.label))
+            for item in self._entries
+        )
 
         if not entry_list.children:
             self._set_read_status("Keine Einträge in dieser Kategorie.")
@@ -252,7 +264,10 @@ class ProvowareDbTui(App[None]):
         fields = tuple(self._data_port.fields(self._entries[index].id))
         field_list = self.query_one("#field-list", ListView)
         field_list.clear()
-        field_list.extend(ListItem(Label(f"{item.label}: {item.value}")) for item in fields)
+        field_list.extend(
+            ListItem(Label(f"{item.label}: {item.value}"))
+            for item in fields
+        )
 
         if not field_list.children:
             self._set_read_status("Keine Felder in diesem Eintrag.")
@@ -289,7 +304,10 @@ class ProvowareDbTui(App[None]):
         if not self._recent_events:
             return "Letzte Ereignisse: keine Ereignisse vorhanden"
         lines = ["Letzte Ereignisse:"]
-        lines.extend(f"{item.time_label} · {item.symbol} · {item.text}" for item in self._recent_events)
+        lines.extend(
+            f"{item.time_label} · {item.symbol} · {item.text}"
+            for item in self._recent_events
+        )
         return "\n".join(lines)
 
     def _set_read_status(self, message: str) -> None:
@@ -301,4 +319,6 @@ class ProvowareDbTui(App[None]):
 
     def _sync_layout(self, width: int) -> None:
         self.layout_mode = classify_layout(width)
-        self.query_one("#layout-status", Static).update(f"Layout: {self.layout_mode.value} · Nur-Lese")
+        self.query_one("#layout-status", Static).update(
+            f"Layout: {self.layout_mode.value} · Nur-Lese"
+        )
