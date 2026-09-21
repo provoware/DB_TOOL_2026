@@ -1,0 +1,64 @@
+{
+  "iteration": 47,
+  "agent": "cp09-entry-field-scope-agent-47",
+  "size": "S",
+  "goal": "Resolve exactly the next single CP-09 write contract after frozen I46 without enabling field values or reopening frozen core/runtime",
+  "write_files": [
+    ".provoware/iterations/0047-cp09-entry-field-scope.json",
+    "docs/development/ITERATION_47_CP09_ENTRY_FIELD_SCOPE.md"
+  ],
+  "read_files": [
+    "README.md",
+    "docs/development/ITERATION_37_POST_CP08_SCOPE.md",
+    "docs/development/ITERATION_43_CP09_NEXT_WRITE_SCOPE.md",
+    ".provoware/iterations/0046-cp07t-entry-create-reopen.json",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/tui/runtime.py"
+  ],
+  "direct_dependencies": [
+    "I46 frozen entry-create TUI path",
+    "existing CatalogService.create_entry_field contract",
+    "existing entry -> visible fields read hierarchy"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI regression because product/runtime code is untouched",
+    "browser regression because web code is untouched",
+    "repository/domain/storage regression because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "field creation requires stable selected-entry provenance and a required FieldType; neither UI selection nor type-input semantics are authorized in I47",
+    "category-scoped fields have broader effect across entries and remain separate from this smallest entry-scoped contract",
+    "field values, choice options and value writes remain closed"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService changes",
+    "no CP-07T runtime/navigation/layout changes",
+    "no CP-08 health/event changes",
+    "no category-field creation",
+    "no field-value, choice-option or value-write changes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "after freeze, a follow-up may inventory a thin entry-field write adapter against the existing create_entry_field contract only"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
