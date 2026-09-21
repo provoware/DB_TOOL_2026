@@ -55,11 +55,6 @@ jobs:
               "ui": {"ui", "deep"},
               "frozen_core": {"deep"},
           }
-          if profile not in allowed_profiles[change_kind]:
-              raise SystemExit(
-                  f"Gate profile downgrade blocked: {change_kind=} cannot use {profile=}"
-              )
-
           protected_prefixes = (
               "src/provoware_db/domain/",
               "src/provoware_db/storage/",
@@ -67,26 +62,89 @@ jobs:
           protected_exact = {
               "src/provoware_db/application/catalog_service.py",
           }
-          protected_files = [
-              path
-              for path in write_files
-              if path in protected_exact or path.startswith(protected_prefixes)
-          ]
-          if protected_files and profile != "deep":
-              raise SystemExit(
-                  "Frozen-core path requires gate_profile=deep: "
-                  + ", ".join(sorted(protected_files))
+
+          def resolve(kind, selected_profile, files, pip_requirements, ci):
+              if selected_profile not in allowed_profiles[kind]:
+                  raise ValueError(
+                      f"Gate profile downgrade blocked: {kind=} cannot use "
+                      f"profile={selected_profile!r}"
+                  )
+
+              protected_files = [
+                  path
+                  for path in files
+                  if path in protected_exact or path.startswith(protected_prefixes)
+              ]
+              if protected_files and selected_profile != "deep":
+                  raise ValueError(
+                      "Frozen-core path requires gate_profile=deep: "
+                      + ", ".join(sorted(protected_files))
+                  )
+
+              has_targeted_work = bool(
+                  pip_requirements
+                  or ci["compile"]
+                  or ci["python_tests"]
+              )
+              return (
+                  has_targeted_work or selected_profile in {"product", "ui", "deep"},
+                  selected_profile in {"governance", "deep"},
+                  selected_profile in {"product", "ui", "deep"},
               )
 
-          ci = data["ci"]
-          has_targeted_work = bool(
-              data["pip_requirements"]
-              or ci["compile"]
-              or ci["python_tests"]
+          empty_ci = {"compile": [], "python_tests": []}
+          route_cases = (
+              ("scope_only", "scope", (), False, False, False),
+              ("docs", "docs", (), False, False, False),
+              ("governance", "governance", (), False, True, False),
+              ("product", "product", (), True, False, True),
+              ("ui", "ui", (), True, False, True),
+              (
+                  "frozen_core",
+                  "deep",
+                  ("src/provoware_db/domain/models.py",),
+                  True,
+                  True,
+                  True,
+              ),
           )
-          run_targeted = has_targeted_work or profile in {"product", "ui", "deep"}
-          run_governance = profile in {"governance", "deep"}
-          run_foundation = profile in {"product", "ui", "deep"}
+          for kind, selected, files, exp_targeted, exp_governance, exp_foundation in route_cases:
+              actual = resolve(kind, selected, files, [], empty_ci)
+              expected = (exp_targeted, exp_governance, exp_foundation)
+              if actual != expected:
+                  raise SystemExit(
+                      f"Routing self-check failed for {kind}/{selected}: "
+                      f"{actual=} {expected=}"
+                  )
+
+          for kind, selected, files in (
+              ("product", "scope", ()),
+              (
+                  "product",
+                  "product",
+                  ("src/provoware_db/storage/sqlite/schema_guard.py",),
+              ),
+          ):
+              try:
+                  resolve(kind, selected, files, [], empty_ci)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit(
+                      f"Routing self-check expected fail-closed for {kind}/{selected}"
+                  )
+
+          ci = data["ci"]
+          try:
+              run_targeted, run_governance, run_foundation = resolve(
+                  change_kind,
+                  profile,
+                  write_files,
+                  data["pip_requirements"],
+                  ci,
+              )
+          except ValueError as exc:
+              raise SystemExit(str(exc)) from exc
 
           with output_path.open("a", encoding="utf-8") as handle:
               handle.write(f"profile={profile}\n")
