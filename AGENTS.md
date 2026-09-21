@@ -81,6 +81,11 @@ Regeln:
 - Tests werden je Schritt nur für neu betroffene Pfade ergänzt; keine doppelte Wiederholung bereits grüner Tests ohne neuen relevanten Code
 - zwei kleine direkt abhängige Schritte sollen einen Branch-/PR-/CI-Zyklus teilen, statt künstlich zwei Iterationen zu erzeugen
 - Frozen-Core-, Schema-, Dependency- oder Architekturgrenzen dürfen nicht durch Bündelung umgangen werden
+- pro abgeschlossenem Schritt wird **genau ein atomarer Remote-Head** veröffentlicht; mehrere Dateiänderungen eines Schritts werden vor dem Ref-Update in einem gemeinsamen Git-Tree/Commit gebündelt
+- ein zusätzlicher Repair-Head ist nur nach einem reproduzierbaren fehlgeschlagenen Gate zulässig
+- wenn Schritt 2 nach grünem Schritt 1 ausschließlich `NO_FIX_REQUIRED` ergibt und keine versionierte Produkt-, Vertrags-, Freeze- oder Evidence-Änderung nötig ist, entsteht **kein** Status-only Commit und kein zweiter CI-Lauf
+- ein formaler Freeze oder eine versionierte Vertrags-/Evidence-Änderung ist kein NO_FIX-Fall und benötigt weiterhin einen atomaren Step-2-Head mit Abschlussgate
+- alle in `ci.compile` und `ci.python_tests` genannten Repository-Dateien werden vor dem ersten Remote-Head auf Existenz geprüft
 
 Geeignete Kombinationen:
 - Implementierung → gezielte Regression/Härtung

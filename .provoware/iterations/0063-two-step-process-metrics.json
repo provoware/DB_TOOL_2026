@@ -79,9 +79,10 @@
   ],
   "expected_side_effects": [
     "normal two-step iterations produce at most one planned remote head per step, plus explicit repair heads only after failed gates",
-    "pure no-fix step 2 produces no repository mutation and no duplicate CI run",
-    "invalid manifest CI file targets fail before targeted execution"
+    "pure NO_FIX_REQUIRED step 2 without versioned contract/freeze/evidence changes produces no repository mutation and no duplicate CI run",
+    "invalid manifest CI file targets fail fast in Manifest V2 validation before targeted execution",
+    "I63 step 2 itself is delivered as one atomic multi-file remote head"
   ],
   "screenshot_required": false,
-  "status": "STEP1_METRICS_AWAITING_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

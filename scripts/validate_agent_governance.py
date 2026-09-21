@@ -27,6 +27,8 @@ REQUIRED_AGENT_RULE_MARKERS = (
     "Laienhilfe-Subagent",
     "Zwei-Schritt-Iteration",
     "interner Zwischen-Gate",
+    "atomarer Remote-Head",
+    "NO_FIX_REQUIRED",
 )
 
 REQUIRED_MACHINE_RULES = (
@@ -46,6 +48,10 @@ REQUIRED_MACHINE_RULES = (
     "single_branch_pr_for_two_steps: true",
     "freeze_after_both_steps_only: true",
     "second_step_must_share_scope: true",
+    "atomic_remote_head_per_step: true",
+    "repair_head_requires_failed_gate: true",
+    "no_status_only_commit_for_no_fix_step_two: true",
+    "manifest_ci_targets_must_exist: true",
 )
 
 
@@ -84,6 +90,7 @@ def main() -> int:
         "scripts/check_agent_collisions.py",
         "scripts/check_iteration_scope.py",
         "scripts/validate_agent_governance.py",
+        "scripts/validate_iteration_manifest.py",
     ])
     lines.append(f"{'GRÜN' if compile_ok else 'ROT'}: Python-Compile Governance-Skripte")
     if not compile_ok:
@@ -134,6 +141,22 @@ def main() -> int:
         if not scope_ok:
             failures += 1
             lines.append(scope_out)
+
+        missing_ci = json.loads(
+            (ROOT / ".provoware/iterations/0063-two-step-process-metrics.json").read_text(encoding="utf-8")
+        )
+        missing_ci["ci"]["compile"] = ["tests/does-not-exist-i63.py"]
+        missing_manifest = temp / "missing-ci.json"
+        missing_manifest.write_text(json.dumps(missing_ci), encoding="utf-8")
+        missing_ok, missing_out = run([
+            sys.executable,
+            "scripts/validate_iteration_manifest.py",
+            str(missing_manifest),
+        ], expected=2)
+        lines.append(f"{'GRÜN' if missing_ok else 'ROT'}: Manifest blockiert nicht vorhandenes CI-Ziel")
+        if not missing_ok:
+            failures += 1
+            lines.append(missing_out)
 
         for unplanned in (
             "src/unplanned.py",

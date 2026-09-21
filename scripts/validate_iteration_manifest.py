@@ -6,6 +6,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[1]
+
 REQUIRED = (
     "schema_version",
     "iteration",
@@ -131,6 +133,10 @@ def validate(data: dict[str, Any]) -> None:
     require_string_array(ci["python_tests"], "ci.python_tests")
     require_safe_relative_paths(ci["compile"], "ci.compile")
     require_safe_relative_paths(ci["python_tests"], "ci.python_tests")
+    for label in ("compile", "python_tests"):
+        for raw in ci[label]:
+            if not (ROOT / raw).is_file():
+                fail(f"ci.{label}: repository file does not exist: {raw!r}")
 
     if not isinstance(data["screenshot_required"], bool):
         fail("screenshot_required must be boolean")
