@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "iteration": 62,
+  "agent": "cp09-entry-field-create-freeze-agent-62",
+  "size": "S",
+  "goal": "Schritt 1: CP-09 Entry-Field-Create-Slice vollständig gegen I47-I61 auditieren und fokussiert regressionsprüfen | Schritt 2: nur bei komplett grünem Zwischen-Gate formal einfrieren, andernfalls genau einen belegten Restvertrag schließen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Feldanlage wird als stabiler Teilstand eingefroren",
+    "summary": "Die bisherige Feldanlage wird noch einmal vollständig gegen ihre Sicherheitsregeln geprüft. Wenn alle gezielten Tests grün bleiben, wird genau dieser Funktionsblock eingefroren; neue Feldarten oder Feldwerte gehören ausdrücklich nicht dazu.",
+    "target_doc": "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_62.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0062-cp09-entry-field-create-freeze.json",
+    "docs/development/CHECKPOINT_CONSOLIDATION_ITERATION_62.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0047-cp09-entry-field-scope.json",
+    ".provoware/iterations/0048-entry-field-adapter-inventory.json",
+    ".provoware/iterations/0053-entry-field-return-boundary.json",
+    ".provoware/iterations/0054-entry-field-write-adapter.json",
+    ".provoware/iterations/0055-entry-field-integration-decision.json",
+    ".provoware/iterations/0056-maintainability-reuse-scope.json",
+    ".provoware/iterations/0057-cp07t-field-create-reopen-decision.json",
+    ".provoware/iterations/0058-tui-entry-field-create.json",
+    ".provoware/iterations/0060-shared-field-type-labels.json",
+    ".provoware/iterations/0061-field-create-accessibility-evidence.json",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/field_type_labels.py"
+  ],
+  "direct_dependencies": [
+    "I47-I61 frozen/green Entry-Field-Create development chain",
+    "I59 two-step iteration discipline",
+    "CP-03 and CP-06 frozen boundaries"
+  ],
+  "tests_required": [
+    "Schritt 1: compile focused adapter/runtime/label/accessibility tests",
+    "Schritt 1: EntryFieldWriteAdapter contract regression",
+    "Schritt 1: TUI field-create regression",
+    "Schritt 1: field-create accessibility evidence regression",
+    "Schritt 1: shared FieldType label regression",
+    "Schritt 1: existing entry-create neighbor regression",
+    "Schritt 1: existing runtime-shell regression",
+    "Zwischen-Gate: all focused regressions green and no undeclared file changes",
+    "Schritt 2: if step 1 is green, update only I62 audit/manifest to frozen status and rerun targeted validation",
+    "Manifest V2 validation",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full product suite because the audit targets only the established Entry-Field-Create slice",
+    "browser tests because CP-07H is outside this freeze",
+    "database/domain/repository suite because frozen core is unchanged",
+    "manual human perception acceptance because I61 explicitly separates it from automated evidence"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/write_adapter.py",
+      "src/provoware_db/tui/runtime.py",
+      "src/provoware_db/field_type_labels.py",
+      "tests/tui/test_entry_field_write_adapter.py",
+      "tests/tui/test_runtime_field_create.py",
+      "tests/tui/test_runtime_field_create_accessibility.py",
+      "tests/test_field_type_labels.py",
+      "tests/tui/test_runtime_entry_create.py",
+      "tests/tui/test_runtime_shell.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_entry_field_write_adapter.py",
+      "tests/tui/test_runtime_field_create.py",
+      "tests/tui/test_runtime_field_create_accessibility.py",
+      "tests/test_field_type_labels.py",
+      "tests/tui/test_runtime_entry_create.py",
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "freezing too broad a CP-09 boundary would incorrectly close value, choice, money or category-field work; I62 freezes only the Entry-Field-Create slice",
+    "a future launcher/composition root is outside I47-I61 and must remain a separate scope",
+    "a failed focused regression must block freeze and permit only one directly evidenced contract fix"
+  ],
+  "non_changes": [
+    "no product code changes in step 1",
+    "no schema/domain/repository/storage changes",
+    "no category-field creation",
+    "no value or choice writes",
+    "no MONEY create support",
+    "no launcher/composition-root implementation",
+    "no CI/governance changes",
+    "no new dependency"
+  ],
+  "expected_side_effects": [
+    "step 1 produces a complete documented audit of I47-I61",
+    "step 2 either freezes exactly the Entry-Field-Create slice or closes one proven blocker before freeze"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_AUDIT_AWAITING_GATE"
+}
