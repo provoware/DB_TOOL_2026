@@ -16,6 +16,9 @@ on:
       - "src/provoware_db/web/**"
       - "tests/web/**"
       - ".github/workflows/targeted-iteration.yml"
+      - "scripts/validate_iteration_manifest.py"
+      - ".provoware/schema/iteration-manifest-v2.schema.json"
+      - ".provoware/templates/iteration-plan.json"
 
 permissions:
   contents: read
