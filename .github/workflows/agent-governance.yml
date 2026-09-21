@@ -1,26 +1,7 @@
 name: Agent Governance
 
 on:
-  push:
-    paths:
-      - "AGENTS.md"
-      - ".provoware/**"
-      - "scripts/check_agent_collisions.py"
-      - "scripts/check_iteration_scope.py"
-      - "scripts/validate_agent_governance.py"
-      - "docs/AGENT_ORCHESTRATION.md"
-      - "docs/development/**"
-      - ".github/workflows/agent-governance.yml"
-  pull_request:
-    paths:
-      - "AGENTS.md"
-      - ".provoware/**"
-      - "scripts/check_agent_collisions.py"
-      - "scripts/check_iteration_scope.py"
-      - "scripts/validate_agent_governance.py"
-      - "docs/AGENT_ORCHESTRATION.md"
-      - "docs/development/**"
-      - ".github/workflows/agent-governance.yml"
+  workflow_call:
 
 permissions:
   contents: read
