@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from provoware_db.domain.models import Category
+from provoware_db.domain.models import Category, Entry
 
 from .view_models import NavItem
 
 
 class CategoryCreateService(Protocol):
     def create_category(self, name: str, *, description: str | None = None, sort_order: int = 0) -> Category: ...
+
+
+class EntryCreateService(Protocol):
+    def create_entry(self, category_id: str, title: str, *, sort_order: int = 0) -> Entry: ...
 
 
 class CategoryWriteAdapter:
@@ -20,3 +24,14 @@ class CategoryWriteAdapter:
     def create_category(self, name: str) -> NavItem:
         category = self._service.create_category(name)
         return NavItem(category.id, category.name)
+
+
+class EntryWriteAdapter:
+    """Thin TUI write boundary for the frozen CatalogService entry contract."""
+
+    def __init__(self, service: EntryCreateService) -> None:
+        self._service = service
+
+    def create_entry(self, category_id: str, title: str) -> NavItem:
+        entry = self._service.create_entry(category_id, title)
+        return NavItem(entry.id, entry.title)
