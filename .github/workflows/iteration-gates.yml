@@ -1,0 +1,119 @@
+name: Iteration Gate Router
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.route.outputs.profile }}
+      run_targeted: ${{ steps.route.outputs.run_targeted }}
+      run_governance: ${{ steps.route.outputs.run_governance }}
+      run_foundation: ${{ steps.route.outputs.run_foundation }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate manifest, scope and gate profile
+        id: route
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          manifest="$(find .provoware/iterations -maxdepth 1 -type f -name '*.json' | sort | tail -n 1)"
+          test -n "$manifest"
+          python scripts/validate_iteration_manifest.py "$manifest"
+          python scripts/check_iteration_scope.py "$manifest" --base "$BASE_SHA"
+          python - "$manifest" "$GITHUB_OUTPUT" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          manifest_path = Path(sys.argv[1])
+          output_path = Path(sys.argv[2])
+          data = json.loads(manifest_path.read_text(encoding="utf-8"))
+          profile = data["gate_profile"]
+          change_kind = data["change_kind"]
+          write_files = tuple(data["write_files"])
+
+          allowed_profiles = {
+              "scope_only": {"scope", "deep"},
+              "docs": {"docs", "deep"},
+              "governance": {"governance", "deep"},
+              "product": {"product", "deep"},
+              "ui": {"ui", "deep"},
+              "frozen_core": {"deep"},
+          }
+          if profile not in allowed_profiles[change_kind]:
+              raise SystemExit(
+                  f"Gate profile downgrade blocked: {change_kind=} cannot use {profile=}"
+              )
+
+          protected_prefixes = (
+              "src/provoware_db/domain/",
+              "src/provoware_db/storage/",
+          )
+          protected_exact = {
+              "src/provoware_db/application/catalog_service.py",
+          }
+          protected_files = [
+              path
+              for path in write_files
+              if path in protected_exact or path.startswith(protected_prefixes)
+          ]
+          if protected_files and profile != "deep":
+              raise SystemExit(
+                  "Frozen-core path requires gate_profile=deep: "
+                  + ", ".join(sorted(protected_files))
+              )
+
+          ci = data["ci"]
+          has_targeted_work = bool(
+              data["pip_requirements"]
+              or ci["compile"]
+              or ci["python_tests"]
+          )
+          run_targeted = has_targeted_work or profile in {"product", "ui", "deep"}
+          run_governance = profile in {"governance", "deep"}
+          run_foundation = profile in {"product", "ui", "deep"}
+
+          with output_path.open("a", encoding="utf-8") as handle:
+              handle.write(f"profile={profile}\n")
+              handle.write(f"run_targeted={str(run_targeted).lower()}\n")
+              handle.write(f"run_governance={str(run_governance).lower()}\n")
+              handle.write(f"run_foundation={str(run_foundation).lower()}\n")
+
+          print(
+              "GATE ROUTE:",
+              f"profile={profile}",
+              f"targeted={run_targeted}",
+              f"governance={run_governance}",
+              f"foundation={run_foundation}",
+          )
+          PY
+
+  targeted:
+    needs: route
+    if: needs.route.outputs.run_targeted == 'true'
+    uses: ./.github/workflows/targeted-iteration.yml
+
+  governance:
+    needs: route
+    if: needs.route.outputs.run_governance == 'true'
+    uses: ./.github/workflows/agent-governance.yml
+
+  foundation:
+    needs: route
+    if: needs.route.outputs.run_foundation == 'true'
+    uses: ./.github/workflows/repository-foundation.yml
