@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from provoware_db.domain.models import Category, Entry
+from provoware_db.domain.models import Category, Entry, FieldDefinition, FieldType
 
 from .view_models import NavItem
 
@@ -13,6 +13,10 @@ class CategoryCreateService(Protocol):
 
 class EntryCreateService(Protocol):
     def create_entry(self, category_id: str, title: str, *, sort_order: int = 0) -> Entry: ...
+
+
+class EntryFieldCreateService(Protocol):
+    def create_entry_field(self, entry_id: str, name: str, field_type: FieldType) -> FieldDefinition: ...
 
 
 class CategoryWriteAdapter:
@@ -35,3 +39,13 @@ class EntryWriteAdapter:
     def create_entry(self, category_id: str, title: str) -> NavItem:
         entry = self._service.create_entry(category_id, title)
         return NavItem(entry.id, entry.title)
+
+
+class EntryFieldWriteAdapter:
+    """Thin TUI write boundary for the frozen CatalogService entry-field contract."""
+
+    def __init__(self, service: EntryFieldCreateService) -> None:
+        self._service = service
+
+    def create_entry_field(self, entry_id: str, name: str, field_type: FieldType) -> FieldDefinition:
+        return self._service.create_entry_field(entry_id, name, field_type)
