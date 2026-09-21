@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 rules:
   planning_before_changes: true
@@ -20,7 +20,10 @@ rules:
   screenshot_short_summary_required: true
   final_progress_percent_required: true
   final_visual_status_required: true
-  exactly_two_next_steps_required: true
+  exactly_three_next_steps_required: true
+  layman_guide_delta_every_iteration: true
+  layman_guide_agent_never_modify_product_code: true
+  layman_guide_updates_must_be_incremental: true
   queue_items_must_end_in_done_or_blocked: true
   unplanned_file_changes_are_gate_findings: true
   dependency_upgrades_require_explicit_plan: true
