@@ -1,0 +1,59 @@
+{
+  "iteration": 38,
+  "agent": "cp09-write-contract-inventory-agent-38",
+  "size": "S",
+  "goal": "Inventory existing write contracts and select exactly one smallest CP-09 use-case without modifying frozen code",
+  "write_files": [
+    ".provoware/iterations/0038-cp09-write-contract-inventory.json",
+    "docs/development/ITERATION_38_CP09_WRITE_CONTRACT_INVENTORY.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_37_POST_CP08_SCOPE.md",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/audit.py",
+    "src/provoware_db/storage/sqlite/operation_journal.py",
+    "src/provoware_db/storage/sqlite/unit_of_work.py",
+    "src/provoware_db/storage/sqlite/coordinator.py"
+  ],
+  "direct_dependencies": [
+    "I37 frozen CP-09 planning boundary",
+    "existing CatalogService public write contracts",
+    "existing coordinated writer and audit infrastructure"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI product regression because no product code changes",
+    "browser regression because no web product code changes",
+    "repository/domain regression because frozen core is untouched"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "the later UI binding is not yet selected",
+    "any need to alter CatalogService or SQLite contracts requires an explicit REOPEN"
+  ],
+  "non_changes": [
+    "no CP-03 changes",
+    "no schema or migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService implementation changes",
+    "no CP-07H, CP-07T or CP-08 changes",
+    "no write-capable UI implementation",
+    "no trash/restore, undo, autosave or crash-recovery implementation",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "a later functional iteration may bind only category creation to the existing CatalogService.create_category contract"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
