@@ -43,3 +43,10 @@ agents:
     scope: ui_only
     cadence_iterations: 5
     output: screenshot_and_summary
+
+  guide:
+    id: layman-guide-agent
+    can_write_code: false
+    can_write_docs: true
+    scope: current_iteration_user_impact_only
+    output: layman_guide_delta
