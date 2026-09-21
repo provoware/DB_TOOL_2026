@@ -6,19 +6,20 @@ from textual.widgets import Footer, Input, Label, ListItem, ListView, Static
 
 from .layout_policy import LayoutMode, classify_layout
 from provoware_db.domain.models import FieldType
+from provoware_db.field_type_labels import field_type_label
 
 from .view_models import HealthLevel, NavItem, TuiDataPort
 from .write_adapter import CategoryWriteAdapter, EntryFieldWriteAdapter, EntryWriteAdapter
 
 
 _FIELD_CREATE_TYPES = (
-    (FieldType.TEXT, "Text"),
-    (FieldType.LONG_TEXT, "Langer Text"),
-    (FieldType.INTEGER, "Ganzzahl"),
-    (FieldType.DECIMAL, "Dezimalzahl"),
-    (FieldType.DATE, "Datum"),
-    (FieldType.DATETIME, "Datum und Uhrzeit"),
-    (FieldType.BOOLEAN, "Ja / Nein"),
+    FieldType.TEXT,
+    FieldType.LONG_TEXT,
+    FieldType.INTEGER,
+    FieldType.DECIMAL,
+    FieldType.DATE,
+    FieldType.DATETIME,
+    FieldType.BOOLEAN,
 )
 
 
@@ -62,7 +63,7 @@ class ProvowareDbTui(App[None]):
         yield Input(placeholder="Kategoriename · Enter bestätigt", id="category-create-input")
         yield Input(placeholder="Eintragsname · Enter bestätigt", id="entry-create-input")
         yield ListView(
-            *(ListItem(Label(label)) for _, label in _FIELD_CREATE_TYPES),
+            *(ListItem(Label(field_type_label(field_type))) for field_type in _FIELD_CREATE_TYPES),
             id="field-type-list",
         )
         yield Input(placeholder="Feldname · Enter bestätigt", id="field-create-input")
@@ -356,7 +357,7 @@ class ProvowareDbTui(App[None]):
             index = event.list_view.index
             if index is None or index >= len(_FIELD_CREATE_TYPES):
                 return
-            self._field_create_type = _FIELD_CREATE_TYPES[index][0]
+            self._field_create_type = _FIELD_CREATE_TYPES[index]
             event.list_view.display = False
             field_input = self.query_one("#field-create-input", Input)
             field_input.value = ""

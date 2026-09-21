@@ -5,19 +5,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Protocol, Sequence
 
-
-_FIELD_TYPE_LABELS = {
-    "text": "Text",
-    "long_text": "Langer Text",
-    "integer": "Ganzzahl",
-    "decimal": "Dezimalzahl",
-    "money": "Geldbetrag",
-    "date": "Datum",
-    "datetime": "Datum und Uhrzeit",
-    "boolean": "Ja / Nein",
-    "single_choice": "Einfachauswahl",
-    "multi_choice": "Mehrfachauswahl",
-}
+from provoware_db.field_type_labels import field_type_label
 
 
 class CatalogReadPort(Protocol):
@@ -137,7 +125,7 @@ class WebCatalogReadAdapter:
                 WebFieldItem(
                     id=str(item.id),
                     label=str(item.name),
-                    field_type=_FIELD_TYPE_LABELS.get(raw_type, raw_type),
+                    field_type=field_type_label(raw_type),
                     required=bool(item.is_required),
                     value=_format_value(value, item, raw_type),
                 )

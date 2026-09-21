@@ -152,8 +152,11 @@ class ReadOnlyFieldValueTests(unittest.TestCase):
         items = {item.label: item for item in self.adapter.fields("ent-1")}
 
         self.assertEqual(items["Hersteller"].value, "Bosch")
+        self.assertEqual(items["Hersteller"].field_type, "Text")
         self.assertEqual(items["Zustand"].value, "Gut")
+        self.assertEqual(items["Zustand"].field_type, "Einfachauswahl")
         self.assertEqual(items["Merkmale"].value, "Akku, Bürstenlos")
+        self.assertEqual(items["Merkmale"].field_type, "Mehrfachauswahl")
         self.assertEqual(items["Notiz"].value, "Nicht gesetzt")
 
     def test_renderer_shows_values_without_exposing_write_controls(self) -> None:
