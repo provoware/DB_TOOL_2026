@@ -1,0 +1,65 @@
+{
+  "iteration": 48,
+  "agent": "entry-field-adapter-inventory-agent-48",
+  "size": "S",
+  "goal": "Inventory a thin EntryFieldWriteAdapter boundary and lossless FieldType transport without product, TUI, value-write, or frozen-core changes",
+  "write_files": [
+    ".provoware/iterations/0048-entry-field-adapter-inventory.json",
+    "docs/development/ITERATION_48_ENTRY_FIELD_ADAPTER_INVENTORY.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0047-cp09-entry-field-scope.json",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/domain/models.py"
+  ],
+  "direct_dependencies": [
+    "I47 frozen entry-field scope",
+    "existing CatalogService.create_entry_field contract",
+    "existing FieldType StrEnum",
+    "existing thin CategoryWriteAdapter and EntryWriteAdapter pattern"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI regression because runtime/product code is untouched",
+    "browser regression because web code is untouched",
+    "repository/domain/storage regression because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "FieldType transport is straightforward, but the adapter return model must not misuse FieldRow because FieldRow already includes presentation/value semantics",
+    "a later adapter implementation must preserve DomainError propagation and must not silently coerce unknown strings into FieldType",
+    "category-field creation, field values, choice options and TUI integration remain separate scopes"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService changes",
+    "no write_adapter.py changes",
+    "no view_models.py changes",
+    "no CP-07T runtime/navigation/layout changes",
+    "no CP-08 health/event changes",
+    "no category-field creation",
+    "no field-value, choice-option or value-write changes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "after freeze, a follow-up may implement only a thin EntryFieldWriteAdapter protocol/delegation seam if it can do so without changing frozen contracts"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
