@@ -1,0 +1,56 @@
+{
+  "iteration": 41,
+  "agent": "cp07t-reopen-decision-agent-41",
+  "size": "S",
+  "goal": "Decide whether CP-09 category creation can bind outside frozen CP-07T runtime, and if not define the narrowest explicit reopen without changing product code",
+  "write_files": [
+    ".provoware/iterations/0041-cp07t-reopen-decision.json",
+    "docs/development/ITERATION_41_CP07T_REOPEN_DECISION.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0040-cp09-tui-integration-inventory.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/tui/__init__.py"
+  ],
+  "direct_dependencies": [
+    "I40 frozen integration inventory",
+    "I39 frozen CategoryWriteAdapter seam",
+    "frozen CP-07T runtime ownership of Textual input and category refresh"
+  ],
+  "tests_required": [
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "TUI runtime regression because runtime code is untouched",
+    "browser regression because web code is untouched",
+    "repository/domain regression because frozen core is untouched",
+    "visual evidence because no UI is changed"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "the next functional iteration requires a narrowly scoped CP-07T reopen",
+    "input/error/refresh behavior must be tested together without widening into navigation or layout redesign"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService or CategoryWriteAdapter changes",
+    "no CP-07T runtime change in this decision iteration",
+    "no CP-08 changes",
+    "no entry/field/value writes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "a later separately gated iteration may reopen only the minimum CP-07T input/binding/refresh surface defined by this decision"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
