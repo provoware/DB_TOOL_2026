@@ -1,0 +1,75 @@
+{
+  "schema_version": 2,
+  "iteration": 50,
+  "agent": "manifest-v2-agent-50",
+  "size": "M",
+  "goal": "Make the real iteration manifest contract explicit, machine-validatable and dependency-free from iteration 50 onward",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Manifest V2",
+    "summary": "Das Iterationsmanifest beschreibt ab I50 verbindlich Änderungstyp, Gate-Profil, Tests und das kleine Laienhilfe-Delta; fehlerhafte oder unvollständige V2-Manifeste werden vor den Zieltests blockiert.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0050-manifest-v2.json",
+    ".provoware/schema/iteration-manifest-v2.schema.json",
+    ".provoware/templates/iteration-plan.json",
+    "scripts/validate_iteration_manifest.py",
+    ".github/workflows/targeted-iteration.yml"
+  ],
+  "read_files": [
+    ".provoware/iterations/0049-guide-agent-governance.json",
+    ".provoware/agents/rules.yaml",
+    "scripts/validate_agent_governance.py"
+  ],
+  "direct_dependencies": [
+    "Targeted Iteration latest-manifest execution",
+    "I49 layman-guide governance",
+    "existing risk-based CI policy"
+  ],
+  "tests_required": [
+    "compile manifest validator",
+    "validate I50 manifest V2",
+    "targeted iteration gate",
+    "agent governance",
+    "repository foundation"
+  ],
+  "tests_explicitly_not_run": [
+    "full product suite because no product code changes",
+    "TUI regression because runtime is untouched",
+    "browser regression because web product code is untouched",
+    "database/domain/repository tests because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/validate_iteration_manifest.py"
+    ],
+    "python_tests": []
+  },
+  "risks": [
+    "historical V1 manifests must remain readable and are deliberately grandfathered; V2 enforcement applies to the latest manifest from I50 onward",
+    "gate_profile is declarative in I50 and does not yet alter workflow routing; that remains I52",
+    "scope enforcement for meta paths remains unchanged until I51"
+  ],
+  "non_changes": [
+    "no src product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no SQLite/storage changes",
+    "no CP-07T or CP-08 changes",
+    "no workflow traffic-routing optimization in I50",
+    "no scope-guard hardening in I50",
+    "no new Python dependency"
+  ],
+  "expected_side_effects": [
+    "future latest manifests must carry the V2 control fields before targeted tests execute",
+    "manifest validation fails fast before dependency installation or targeted test execution",
+    "template and machine-readable schema match the fields already used by current development practice"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
