@@ -68,12 +68,15 @@
     "no choice-option or choice-value writes",
     "no MONEY create support",
     "no lifecycle/undo work",
-    "no Composition Root implementation"
+    "no Composition Root implementation",
+    "no EntryScalarValueWriteAdapter implementation in I64",
+    "no input parsing or normalization contract added to the adapter"
   ],
   "expected_side_effects": [
     "step 1 selects Entry Scalar Field Value Write as the next CP-09 functional scope",
-    "step 2 may only formalize the smallest adapter seam needed for a later implementation"
+    "step 2 prepares the exact future EntryScalarValueWriteService/EntryScalarValueWriteAdapter seam without implementation",
+    "future UI parsing, field selection, MONEY and Choice semantics remain separate scopes"
   ],
   "screenshot_required": false,
-  "status": "STEP1_SCOPE_AWAITING_GATE"
+  "status": "CONTRACT_PREPARED_AWAITING_FINAL_GATE"
 }
