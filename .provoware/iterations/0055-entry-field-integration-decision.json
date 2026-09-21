@@ -1,0 +1,75 @@
+{
+  "schema_version": 2,
+  "iteration": 55,
+  "agent": "entry-field-integration-decision-agent-55",
+  "size": "S",
+  "goal": "Decide the safe future TUI integration contract for the frozen EntryFieldWriteAdapter without reopening runtime or enabling value/choice writes",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Sichere spätere Feldanlage",
+    "summary": "Für eine spätere Feldanlage muss der aktuell ausgewählte Eintrag beim Start festgehalten werden. Feldtyp, Fokus und Neuladen werden ebenfalls klar getrennt geregelt; Geld- und Auswahlfelder bleiben zunächst gesperrt, weil ihnen weitere Pflichtangaben oder Auswahlwerte fehlen.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0055-entry-field-integration-decision.json",
+    "docs/development/ITERATION_55_ENTRY_FIELD_INTEGRATION_DECISION.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0054-entry-field-write-adapter.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/tui/view_models.py",
+    "tests/tui/test_runtime_entry_create.py",
+    "tests/tui/test_runtime_shell.py",
+    "src/provoware_db/domain/models.py"
+  ],
+  "direct_dependencies": [
+    "I54 frozen EntryFieldWriteAdapter seam",
+    "existing stable parent capture pattern for entry creation",
+    "existing entry-to-field read path",
+    "FieldType metadata requirements"
+  ],
+  "tests_required": [
+    "Manifest V2 validation",
+    "strict write_files scope validation",
+    "scope gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "TUI runtime tests because runtime is not modified",
+    "product tests because no product code changes",
+    "browser tests because web code is untouched",
+    "database/domain/repository regressions because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "MONEY cannot be safely exposed through the current three-argument adapter because FieldDefinition requires currency_code",
+    "SINGLE_CHOICE and MULTI_CHOICE definitions would be incomplete for lay users while option writes remain closed",
+    "a future runtime integration must capture entry identity and chosen type at command start and never derive them again at submit time",
+    "presentation refresh must use TuiDataPort.fields(entry_id) rather than the returned FieldDefinition directly"
+  ],
+  "non_changes": [
+    "no runtime.py changes",
+    "no write_adapter.py changes",
+    "no view_models.py changes",
+    "no CatalogService changes",
+    "no domain/repository/storage changes",
+    "no TUI reopen",
+    "no value writes",
+    "no choice-option writes",
+    "no category-field creation",
+    "no registry/reuse implementation"
+  ],
+  "expected_side_effects": [
+    "a later TUI reopen may be proposed only with captured entry_id, explicit safe FieldType selection, deterministic focus behavior and field-list refresh through the read port",
+    "MONEY and choice types remain excluded from the first possible TUI field-create surface"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
