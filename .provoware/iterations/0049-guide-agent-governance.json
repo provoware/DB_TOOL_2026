@@ -1,0 +1,69 @@
+{
+  "iteration": 49,
+  "agent": "guide-agent-governance-agent-49",
+  "size": "M",
+  "goal": "Integrate an incremental layman-guide subagent and align final reporting to exactly three next steps without touching product code",
+  "write_files": [
+    ".provoware/iterations/0049-guide-agent-governance.json",
+    "AGENTS.md",
+    ".provoware/agents/agents.yaml",
+    ".provoware/agents/rules.yaml",
+    "scripts/validate_agent_governance.py"
+  ],
+  "read_files": [
+    ".provoware/templates/iteration-plan.json",
+    ".github/workflows/agent-governance.yml",
+    ".github/workflows/targeted-iteration.yml",
+    ".github/workflows/repository-foundation.yml",
+    "docs/AGENT_ORCHESTRATION.md"
+  ],
+  "direct_dependencies": [
+    "existing agent governance validator",
+    "existing one-writer-per-file discipline",
+    "existing code-sparing and traffic-sparing rules"
+  ],
+  "tests_required": [
+    "compile updated governance validator",
+    "run deterministic agent governance validator",
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full product test suite because no product code changed",
+    "TUI tests because runtime is untouched",
+    "browser tests because web code is untouched",
+    "database/domain/repository tests because frozen core is untouched",
+    "visual evidence because no UI changed"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/validate_agent_governance.py"
+    ],
+    "python_tests": [
+      "scripts/validate_agent_governance.py"
+    ]
+  },
+  "risks": [
+    "guide documentation could create noise if it becomes a mandatory extra product-document edit every iteration; I49 therefore requires an incremental delta rather than broad rewrites",
+    "docs/AGENT_ORCHESTRATION.md and the iteration template remain intentionally deferred to separate small follow-up iterations"
+  ],
+  "non_changes": [
+    "no src product code changes",
+    "no tests/product behavior changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no SQLite/storage changes",
+    "no CP-07T or CP-08 changes",
+    "no workflow trigger changes",
+    "no manifest-template redesign in this iteration"
+  ],
+  "expected_side_effects": [
+    "every future iteration has a dedicated layman-guide role that produces one small understandable delta",
+    "final development summaries require exactly three next steps",
+    "governance gate validates the new rules"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}

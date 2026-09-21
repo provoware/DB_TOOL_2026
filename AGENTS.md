@@ -72,7 +72,7 @@ Vor Ausführung:
 - bei Konflikt: ROT
 - keine konkurrierenden Schreibzugriffe
 
-Reviewer, Planer, Orchestrator, Gate- und Screenshot-Agenten sind read-only gegenüber Produktivcode.
+Reviewer, Planer, Orchestrator, Gate-, Screenshot- und Laienhilfe-Agenten sind read-only gegenüber Produktivcode.
 
 ## 3. Change-Manifest Pflicht
 
@@ -87,6 +87,18 @@ Jeder Änderungsagent erzeugt nach seinem Patch ein Manifest mit:
 - bewusst nicht geprüfte Bereiche
 
 Dieses Manifest ist die primäre Eingabe für Prüfagenten.
+
+### 3.1 Laienhilfe-Subagent
+
+Jede Iteration erzeugt zusätzlich genau ein kurzes **Laienhilfe-Delta**:
+- nur den tatsächlich geänderten oder neu geklärten Aspekt erklären
+- keine neue Produktfunktion erfinden
+- Fachbegriffe kurz in Alltagssprache übersetzen
+- vorhandene Erklärung bevorzugt gezielt verbessern statt neue Paralleltexte anzulegen
+- standardmäßig nur Change-Manifest, betroffene Datei und den direkt relevanten Anleitungskontext lesen
+- niemals Produktivcode verändern
+
+Der Laienhilfe-Agent arbeitet inkrementell und trafficsparsam. Bei rein internen Iterationen optimiert er genau eine passende Erklärung oder dokumentiert verständlich, warum sich für die Bedienung nichts ändert. Eine größere Handbuch-Konsolidierung ist ein separater, begründeter Schritt.
 
 ## 4. Prüfagenten
 
@@ -250,7 +262,7 @@ Pflichtfelder:
 - Freeze-Status
 - relevante Tooldetails
 - wichtigste Optimierungsempfehlung
-- exakt die nächsten zwei Schritte
+- exakt die nächsten drei Schritte
 
 Statusdarstellung:
 - 🟢 GRÜN = vollständig bestanden
