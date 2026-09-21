@@ -1,15 +1,30 @@
 {
+  "schema_version": 2,
   "iteration": 0,
   "agent": "change-agent-id",
   "size": "S",
   "goal": "Kurzes Iterationsziel",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Kurzer Laienhilfe-Aspekt",
+    "summary": "Kurz erklären, was sich für Laien ändert oder warum sich nichts ändert.",
+    "target_doc": null
+  },
   "write_files": [],
   "read_files": [],
   "direct_dependencies": [],
   "tests_required": [],
   "tests_explicitly_not_run": [],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
   "risks": [],
   "non_changes": [],
   "expected_side_effects": [],
-  "screenshot_required": false
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
 }
