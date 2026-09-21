@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "iteration": 61,
+  "agent": "field-create-accessibility-evidence-agent-61",
+  "size": "M",
+  "goal": "Schritt 1: automatisierbare Keyboard-/Accessibility-Evidence für den Feld-Create-Flow bei 100/150/200 Prozent Layoutbelastung erzeugen | Schritt 2: nur konkret nachgewiesene Fokus-/Lesbarkeitsprobleme beheben und erneut gezielt prüfen; bei grünem Evidence-Lauf kein Produktfix",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Feldanlage mit großer Darstellung",
+    "summary": "Die Feldanlage wird automatisch mit normaler, großer und sehr großer Layoutbelastung sowie vollständig per Tastatur geprüft. Nur tatsächlich nachgewiesene Probleme dürfen anschließend geändert werden.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0061-field-create-accessibility-evidence.json",
+    "tests/tui/test_runtime_field_create_accessibility.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0060-shared-field-type-labels.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/accessibility.py",
+    "src/provoware_db/tui/layout_policy.py",
+    "tests/tui/test_runtime_field_create.py",
+    "tests/tui/test_accessibility_policy.py",
+    "tests/tui/test_layout_policy.py"
+  ],
+  "direct_dependencies": [
+    "I58 frozen TUI field-create flow",
+    "I60 shared FieldType labels",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "Schritt 1: keyboard-only field-create flow at 160x40, 107x27 and 80x20",
+    "Schritt 1: field-type selector keeps focus and at least three visible rows at every scale proxy",
+    "Schritt 1: exactly seven field types remain present",
+    "Schritt 1: successful create performs exactly one write and ends on field-list focus",
+    "Schritt 1: emit SVG evidence for all three scale proxies plus JSON evidence summary",
+    "Zwischen-Gate: no focus/layout assertion may fail before step 2",
+    "Schritt 2: if evidence is green, record no product fix required; if red, patch only the concrete proven issue and rerun this test",
+    "existing focused field-create regression",
+    "Manifest V2 and strict scope validation",
+    "ui gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "manual human perception acceptance because automated evidence cannot prove subjective readability",
+    "browser tests because CP-07T is a Textual TUI",
+    "full product suite because only field-create accessibility evidence is in scope",
+    "database/domain/repository regressions because frozen core is untouched"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "tests/tui/test_runtime_field_create_accessibility.py",
+      "tests/tui/test_runtime_field_create.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_field_create_accessibility.py",
+      "tests/tui/test_runtime_field_create.py"
+    ]
+  },
+  "risks": [
+    "terminal-grid reduction is an automated zoom/layout proxy, not a substitute for human visual perception testing",
+    "a too-small selector at 200 percent proxy may reveal a real focus/readability defect requiring a narrowly scoped step-2 fix",
+    "no layout or style change is permitted unless step-1 evidence fails"
+  ],
+  "non_changes": [
+    "no runtime product change in step 1",
+    "no FieldType policy change",
+    "no field-value or choice writes",
+    "no web changes",
+    "no domain/repository/storage changes",
+    "no general accessibility redesign"
+  ],
+  "expected_side_effects": [
+    "CI produces runtime/iteration-61 SVG and JSON evidence artifacts",
+    "step 2 is either a targeted evidence-driven fix or an explicit no-fix-needed completion"
+  ],
+  "screenshot_required": true,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
