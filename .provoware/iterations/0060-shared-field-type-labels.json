@@ -19,7 +19,7 @@
     "src/provoware_db/web/read_adapter.py",
     "tests/test_field_type_labels.py",
     "tests/tui/test_runtime_field_create.py",
-    "tests/web/test_read_adapter_values.py"
+    "tests/web/test_readonly_field_values.py"
   ],
   "read_files": [
     ".provoware/iterations/0059-two-step-iteration-governance.json",
@@ -27,7 +27,7 @@
     "src/provoware_db/web/read_adapter.py",
     "tests/tui/test_runtime_field_create.py",
     "tests/web/test_read_adapter.py",
-    "tests/web/test_read_adapter_values.py"
+    "tests/web/test_readonly_field_values.py"
   ],
   "direct_dependencies": [
     "I56 frozen maintainability rule: centralize only real shared semantic labels",
@@ -61,12 +61,12 @@
       "src/provoware_db/tui/runtime.py",
       "src/provoware_db/web/read_adapter.py",
       "tests/tui/test_runtime_field_create.py",
-      "tests/web/test_read_adapter_values.py"
+      "tests/web/test_readonly_field_values.py"
     ],
     "python_tests": [
       "tests/test_field_type_labels.py",
       "tests/tui/test_runtime_field_create.py",
-      "tests/web/test_read_adapter_values.py"
+      "tests/web/test_readonly_field_values.py"
     ]
   },
   "risks": [
