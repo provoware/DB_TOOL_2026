@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "iteration": 53,
+  "agent": "entry-field-return-boundary-agent-53",
+  "size": "S",
+  "goal": "Decide the minimal return contract for a future EntryFieldWriteAdapter without implementing the adapter, TUI integration, or value writes",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Rückgabegrenze für neue Felder",
+    "summary": "Der spätere Feld-Adapter soll zunächst genau das bereits vorhandene FieldDefinition zurückgeben. Dadurch entsteht kein zusätzliches Ergebnisobjekt und noch keine neue Anzeige- oder Wertlogik.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0053-entry-field-return-boundary.json",
+    "docs/development/ITERATION_53_ENTRY_FIELD_RETURN_BOUNDARY.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0048-entry-field-adapter-inventory.json",
+    "docs/development/ITERATION_48_ENTRY_FIELD_ADAPTER_INVENTORY.md",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py"
+  ],
+  "direct_dependencies": [
+    "I48 frozen adapter inventory",
+    "existing CatalogService.create_entry_field return type FieldDefinition",
+    "existing FieldRow presentation/value semantics",
+    "I52 manifest gate-profile routing"
+  ],
+  "tests_required": [
+    "Manifest V2 validation",
+    "strict write_files scope validation",
+    "router scope profile validation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "TUI tests because runtime and adapters are untouched",
+    "browser tests because web code is untouched",
+    "database/domain/repository regressions because frozen core is untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "returning FieldDefinition keeps the adapter seam coupled to the existing domain type, but avoids inventing a duplicate create-result model before a real consumer exists",
+    "a later TUI integration must still decide its own presentation mapping and must not treat this decision as permission to expose FieldDefinition directly in the runtime",
+    "MONEY and choice-specific UI/value semantics remain outside this return-contract decision"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no write_adapter.py changes",
+    "no view_models.py changes",
+    "no CatalogService changes",
+    "no domain/repository/storage changes",
+    "no CP-07T runtime changes",
+    "no field-value or choice-option changes",
+    "no TUI integration",
+    "no registry/reuse implementation"
+  ],
+  "expected_side_effects": [
+    "I54 may implement a thin EntryFieldWriteAdapter that delegates create_entry_field and returns the resulting FieldDefinition unchanged",
+    "I55 remains responsible for any later presentation mapping or TUI integration decision"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_AWAITING_GATE"
+}
