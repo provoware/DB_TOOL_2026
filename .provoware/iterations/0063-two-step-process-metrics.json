@@ -1,0 +1,87 @@
+{
+  "schema_version": 2,
+  "iteration": 63,
+  "agent": "two-step-process-metrics-agent-63",
+  "size": "M",
+  "goal": "Schritt 1: Zwei-Schritt-Prozess I59-I62 metrisch analysieren | Schritt 2: ausschließlich belegte Ineffizienzen durch atomare Step-Batches, CI-Pfad-Preflight und No-Fix-ohne-Statuscommit beheben",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Weniger unnötige Entwicklungsdurchläufe",
+    "summary": "Jeder der zwei Arbeitsschritte soll künftig als ein vollständiges Paket veröffentlicht werden. Nicht vorhandene Testdateien werden vorher erkannt, und wenn Schritt 2 nach grünem Check wirklich keine Änderung benötigt, entsteht kein künstlicher Zusatz-Commit.",
+    "target_doc": "docs/development/ITERATION_63_TWO_STEP_PROCESS_METRICS.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0063-two-step-process-metrics.json",
+    "docs/development/ITERATION_63_TWO_STEP_PROCESS_METRICS.md",
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml",
+    ".provoware/templates/iteration-plan.json",
+    "scripts/validate_agent_governance.py",
+    "scripts/validate_iteration_manifest.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0059-two-step-iteration-governance.json",
+    ".provoware/iterations/0060-shared-field-type-labels.json",
+    ".provoware/iterations/0061-field-create-accessibility-evidence.json",
+    ".provoware/iterations/0062-cp09-entry-field-create-freeze.json",
+    ".provoware/schema/iteration-manifest-v2.schema.json",
+    ".github/workflows/iteration-gates.yml",
+    ".github/workflows/targeted-iteration.yml"
+  ],
+  "direct_dependencies": [
+    "I59 two-step iteration governance",
+    "I50 Manifest V2",
+    "I51 strict scope guard",
+    "I52 gate-profile routing"
+  ],
+  "tests_required": [
+    "Schritt 1: metric audit records PR count, commit count, CI run count, file spread and patch volume for I59-I62",
+    "Zwischen-Gate: metrics/audit scope validates without product changes",
+    "Schritt 2: governance requires one atomic remote head per completed step",
+    "Schritt 2: no status-only step-2 commit when result is NO_FIX_REQUIRED and no versioned contract/freeze/evidence change is needed",
+    "Schritt 2: Manifest V2 validator rejects missing repository files in ci.compile and ci.python_tests",
+    "compile governance and manifest validators",
+    "run governance validator",
+    "run manifest validator on I63",
+    "strict write_files scope validation",
+    "governance gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because product code is untouched",
+    "TUI/browser/database regressions because runtime and frozen core are untouched",
+    "full suite because I63 is process governance only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/validate_agent_governance.py",
+      "scripts/validate_iteration_manifest.py"
+    ],
+    "python_tests": [
+      "scripts/validate_agent_governance.py"
+    ]
+  },
+  "risks": [
+    "atomic batching must not hide a failed intermediate gate; exactly one head per step still preserves the step-1 gate",
+    "NO_FIX_REQUIRED may skip a second commit only when no versioned product, contract, freeze or evidence change is required",
+    "file-existence validation must apply only to repository file targets and must not invent dependency checks"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no workflow router redesign",
+    "no Manifest V3",
+    "no dependency changes",
+    "no frozen-core changes",
+    "no reduction of tests after a real step-2 product change"
+  ],
+  "expected_side_effects": [
+    "normal two-step iterations produce at most one planned remote head per step, plus explicit repair heads only after failed gates",
+    "pure no-fix step 2 produces no repository mutation and no duplicate CI run",
+    "invalid manifest CI file targets fail before targeted execution"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_METRICS_AWAITING_GATE"
+}
