@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 64,
+  "agent": "cp09-next-scalar-value-scope-agent-64",
+  "size": "S",
+  "goal": "Schritt 1: nächsten CP-09-Scope nach eingefrorener Entry-Feldanlage read-only bestimmen | Schritt 2: nur den daraus zwingend folgenden minimalen Scalar-Value-Adaptervertrag formal vorbereiten; keine Produktimplementierung",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Nächster Datenbank-Schritt: Feldwerte",
+    "summary": "Nach dem sicheren Anlegen eines Feldes wird als nächster kleiner Fachschritt vorbereitet, einen Wert in ein vorhandenes einfaches Feld zu schreiben. Auswahlfelder, Geldfelder und weitere Bearbeitungsfunktionen bleiben getrennt.",
+    "target_doc": "docs/development/ITERATION_64_NEXT_CP09_SCALAR_VALUE_SCOPE.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0064-next-cp09-scalar-value-scope.json",
+    "docs/development/ITERATION_64_NEXT_CP09_SCALAR_VALUE_SCOPE.md",
+    "docs/development/ITERATION_64_SCALAR_VALUE_ADAPTER_CONTRACT.md"
+  ],
+  "read_files": [
+    "README.md",
+    "docs/PROJECT_STANDARDS.md",
+    ".provoware/iterations/0037-post-cp08-scope.json",
+    ".provoware/iterations/0047-cp09-entry-field-scope.json",
+    ".provoware/iterations/0062-cp09-entry-field-create-freeze.json",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/web/read_adapter.py",
+    "tests/web/test_readonly_field_values.py"
+  ],
+  "direct_dependencies": [
+    "FROZEN_CP09_ENTRY_FIELD_CREATE",
+    "existing CatalogService.set_scalar_value contract",
+    "existing ScalarValue.from_input validation",
+    "existing read-side field value projections"
+  ],
+  "tests_required": [
+    "Schritt 1: next-scope decision is derived from existing contracts and explicit non-goals",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: formal adapter contract preserves set_scalar_value semantics without implementation",
+    "Schritt 2: contract explicitly excludes Choice, MONEY UI, category fields, lifecycle and runtime integration"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because I64 changes no product code",
+    "TUI/browser/database regressions because runtime and frozen core are untouched",
+    "full suite because I64 is scope/contract documentation only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "a generic scalar adapter must not become implicit authorization for Choice or MONEY UI flows",
+    "input parsing for integer/decimal/date/datetime/boolean belongs to a later integration decision and must not be invented in I64",
+    "a future composition root remains a separate I65 integration question"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CatalogService changes",
+    "no domain/repository/storage changes",
+    "no field-value implementation",
+    "no TUI runtime integration",
+    "no category-field creation",
+    "no choice-option or choice-value writes",
+    "no MONEY create support",
+    "no lifecycle/undo work",
+    "no Composition Root implementation"
+  ],
+  "expected_side_effects": [
+    "step 1 selects Entry Scalar Field Value Write as the next CP-09 functional scope",
+    "step 2 may only formalize the smallest adapter seam needed for a later implementation"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_SCOPE_AWAITING_GATE"
+}
