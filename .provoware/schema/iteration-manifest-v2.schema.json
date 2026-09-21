@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/provoware/DB_TOOL_2026/.provoware/schema/iteration-manifest-v2.schema.json",
+  "title": "PROVOWARE Iteration Manifest V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "iteration",
+    "agent",
+    "size",
+    "goal",
+    "change_kind",
+    "gate_profile",
+    "guide_delta",
+    "write_files",
+    "read_files",
+    "direct_dependencies",
+    "tests_required",
+    "tests_explicitly_not_run",
+    "pip_requirements",
+    "ci",
+    "risks",
+    "non_changes",
+    "expected_side_effects",
+    "screenshot_required",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "iteration": {"type": "integer", "minimum": 1},
+    "agent": {"type": "string", "minLength": 1},
+    "size": {"enum": ["S", "M", "L", "XL"]},
+    "goal": {"type": "string", "minLength": 1},
+    "change_kind": {
+      "enum": ["scope_only", "docs", "governance", "product", "ui", "frozen_core"]
+    },
+    "gate_profile": {
+      "enum": ["scope", "docs", "governance", "product", "ui", "deep"]
+    },
+    "guide_delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "topic", "summary"],
+      "properties": {
+        "mode": {"enum": ["explain_change", "optimize_existing", "no_user_change"]},
+        "topic": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "target_doc": {"type": ["string", "null"]}
+      }
+    },
+    "write_files": {"$ref": "#/$defs/stringArray"},
+    "read_files": {"$ref": "#/$defs/stringArray"},
+    "direct_dependencies": {"$ref": "#/$defs/stringArray"},
+    "tests_required": {"$ref": "#/$defs/stringArray"},
+    "tests_explicitly_not_run": {"$ref": "#/$defs/stringArray"},
+    "pip_requirements": {"$ref": "#/$defs/stringArray"},
+    "ci": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compile", "python_tests"],
+      "properties": {
+        "compile": {"$ref": "#/$defs/stringArray"},
+        "python_tests": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "risks": {"$ref": "#/$defs/stringArray"},
+    "non_changes": {"$ref": "#/$defs/stringArray"},
+    "expected_side_effects": {"$ref": "#/$defs/stringArray"},
+    "screenshot_required": {"type": "boolean"},
+    "status": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]+$",
+      "minLength": 3
+    }
+  },
+  "$defs": {
+    "stringArray": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  }
+}
