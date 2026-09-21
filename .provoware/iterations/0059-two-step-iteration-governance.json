@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 59,
+  "agent": "two-step-iteration-governance-agent-59",
+  "size": "M",
+  "goal": "Schritt 1: Zwei-Schritt-Iterationsdisziplin verbindlich festlegen | Schritt 2: Governance-Gate und Standardplan daran ausrichten",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Zwei Arbeitsschritte pro Entwicklungsiteration",
+    "summary": "Künftig werden zwei direkt zusammengehörige Arbeiten in einem gemeinsamen Branch und PR erledigt. Nach Schritt 1 gibt es einen Zwischencheck; Schritt 2 läuft nur bei Grün. Dadurch sinken unnötige Branch-, PR- und CI-Zyklen, ohne Sicherheitsgrenzen aufzuweichen.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0059-two-step-iteration-governance.json",
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml",
+    ".provoware/templates/iteration-plan.json",
+    "scripts/validate_agent_governance.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0058-tui-entry-field-create.json",
+    ".provoware/schema/iteration-manifest-v2.schema.json",
+    "scripts/validate_iteration_manifest.py"
+  ],
+  "direct_dependencies": [
+    "I49 agent governance baseline",
+    "I50 Manifest V2",
+    "I51 strict scope guard",
+    "I52 gate-profile CI routing"
+  ],
+  "tests_required": [
+    "Schritt 1: human-readable two-step rules and machine-rule markers present",
+    "Schritt 2: governance validator enforces all new markers and machine rules",
+    "compile validate_agent_governance.py",
+    "run validate_agent_governance.py",
+    "Manifest V2 validation",
+    "strict write_files scope validation",
+    "governance gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because product code is untouched",
+    "TUI/browser/database regressions because runtime and frozen core are untouched",
+    "full suite because this is governance-only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/validate_agent_governance.py"
+    ],
+    "python_tests": [
+      "scripts/validate_agent_governance.py"
+    ]
+  },
+  "risks": [
+    "forcing two unrelated tasks into one iteration would reduce clarity; the new rule therefore requires shared scope",
+    "step two must never bypass a failed intermediate gate or a separate freeze/reopen boundary",
+    "the current Manifest V2 schema remains unchanged to avoid schema churn; enforcement is through AGENTS, machine rules, template defaults and governance validation"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no manifest schema version change",
+    "no CI router change",
+    "no dependency changes",
+    "no frozen-core changes",
+    "no I58 runtime changes",
+    "previously planned FieldType text-catalog work is deferred to the next product iteration"
+  ],
+  "expected_side_effects": [
+    "future iterations plan exactly two sequential work steps",
+    "two directly dependent small tasks share one branch, PR and final merge",
+    "step two is blocked rather than forced when step one is not green",
+    "final freeze occurs only after both steps are completed or step two is explicitly blocked"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
