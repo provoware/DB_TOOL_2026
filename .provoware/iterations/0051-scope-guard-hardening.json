@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "iteration": 51,
+  "agent": "scope-guard-agent-51",
+  "size": "S",
+  "goal": "Require every versioned repository change, including metadata and documentation paths, to be explicitly declared in write_files",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Strenger Scope-Guard",
+    "summary": "Auch Projektmetadaten, Dokumentation und GitHub-Konfiguration gelten nicht mehr automatisch als erlaubte Nebenänderungen; jede versionierte Änderung muss im Iterationsplan stehen.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0051-scope-guard-hardening.json",
+    "scripts/check_iteration_scope.py",
+    "scripts/validate_agent_governance.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0050-manifest-v2.json",
+    ".github/workflows/agent-governance.yml",
+    ".github/workflows/targeted-iteration.yml"
+  ],
+  "direct_dependencies": [
+    "Manifest V2 write_files contract",
+    "existing deterministic governance gate"
+  ],
+  "tests_required": [
+    "compile governance scripts",
+    "scope guard accepts explicitly planned file",
+    "scope guard rejects unplanned product file",
+    "scope guard rejects unplanned .provoware path",
+    "scope guard rejects unplanned docs path",
+    "scope guard rejects unplanned .github path",
+    "scope guard rejects unplanned README.md",
+    "agent governance",
+    "targeted iteration manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full product suite because product code is untouched",
+    "browser/TUI/database regressions because their runtime scopes are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/check_iteration_scope.py",
+      "scripts/validate_agent_governance.py"
+    ],
+    "python_tests": [
+      "scripts/validate_agent_governance.py"
+    ]
+  },
+  "risks": [
+    "future iterations must remember to declare documentation and repository metadata edits explicitly",
+    "generated runtime evidence is intentionally not exempted because it is not part of the versioned git diff"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no SQLite/storage changes",
+    "no CI gate-profile routing changes; that remains I52",
+    "no new dependency"
+  ],
+  "expected_side_effects": [
+    "undeclared .provoware, docs, .github and root metadata changes now fail the scope gate",
+    "explicitly declared metadata changes remain valid"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
