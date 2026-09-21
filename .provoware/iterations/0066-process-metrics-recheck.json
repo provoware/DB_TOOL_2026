@@ -1,0 +1,66 @@
+{
+  "schema_version": 2,
+  "iteration": 66,
+  "agent": "process-metrics-recheck-agent-66",
+  "size": "S",
+  "goal": "Schritt 1: I63-Prozessmetriken nach I64/I65 erneut messen | Schritt 2: nur bei messbarer Sollabweichung gezielt nachschärfen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Prozessmessung nach I64 und I65",
+    "summary": "Die neue Zwei-Schritt-Regel arbeitet wie vorgesehen: nur notwendige Schritte erzeugen einen Commit und einen Prüflauf. Es ist keine weitere Prozessregel nötig.",
+    "target_doc": "docs/development/ITERATION_66_PROCESS_METRICS_RECHECK.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0066-process-metrics-recheck.json",
+    "docs/development/ITERATION_66_PROCESS_METRICS_RECHECK.md"
+  ],
+  "read_files": [
+    ".provoware/iterations/0063-two-step-process-metrics.json",
+    "docs/development/ITERATION_63_TWO_STEP_PROCESS_METRICS.md",
+    ".provoware/iterations/0064-next-cp09-scalar-value-scope.json",
+    ".provoware/iterations/0065-tui-composition-root-decision.json"
+  ],
+  "direct_dependencies": [
+    "I63 atomic step and no-status-commit rules",
+    "I64 PR #72 evidence",
+    "I65 PR #73 evidence"
+  ],
+  "tests_required": [
+    "Schritt 1: measure remote heads, CI runs, repair runs and final file spread for I64-I65",
+    "Schritt 1: compare measurements with I63 target behavior",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: if no measurable deviation exists, finish as NO_TUNING_REQUIRED without status-only commit"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because I66 changes no product code",
+    "TUI/browser/database regressions because runtime and frozen core are untouched",
+    "full suite because I66 is a process-metrics audit only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "a tiny two-iteration sample cannot prove long-term process performance",
+    "future real repair heads remain valid and must not be suppressed merely to improve metrics"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no governance changes",
+    "no validator or workflow changes",
+    "no CP-03/schema/migration changes",
+    "no frozen-core changes",
+    "no scalar-value implementation",
+    "no TUI read-adapter or Composition Root implementation"
+  ],
+  "expected_side_effects": [
+    "I64-I65 process efficiency is recorded against the I63 baseline",
+    "step 2 completes as NO_TUNING_REQUIRED when the scope gate is green"
+  ],
+  "screenshot_required": false,
+  "status": "NO_TUNING_REQUIRED_AWAITING_GATE"
+}
