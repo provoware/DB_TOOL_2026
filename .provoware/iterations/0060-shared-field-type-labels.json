@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "iteration": 60,
+  "agent": "shared-field-type-labels-agent-60",
+  "size": "M",
+  "goal": "Schritt 1: kleinsten gemeinsamen FieldType-Textkatalog mit fokussiertem Vertragstest extrahieren | Schritt 2: Web und TUI auf denselben Katalog migrieren und nur die direkt betroffenen Regressionen prüfen",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Einheitliche Feldtyp-Bezeichnungen",
+    "summary": "Web und TUI sollen dieselben verständlichen Namen für Feldtypen aus einer einzigen Quelle verwenden. Die Sicherheitsliste der in der TUI erlaubten Feldtypen bleibt davon getrennt.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0060-shared-field-type-labels.json",
+    "src/provoware_db/field_type_labels.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/web/read_adapter.py",
+    "tests/test_field_type_labels.py",
+    "tests/tui/test_runtime_field_create.py",
+    "tests/web/test_read_adapter_values.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0059-two-step-iteration-governance.json",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/web/read_adapter.py",
+    "tests/tui/test_runtime_field_create.py",
+    "tests/web/test_read_adapter.py",
+    "tests/web/test_read_adapter_values.py"
+  ],
+  "direct_dependencies": [
+    "I56 frozen maintainability rule: centralize only real shared semantic labels",
+    "I58 frozen TUI field-create safe-type policy",
+    "I59 two-step iteration discipline"
+  ],
+  "tests_required": [
+    "Schritt 1: compile and run shared FieldType label contract test",
+    "Zwischen-Gate: shared catalog covers all ten current labels, supports enum/string input and safe fallback",
+    "Schritt 2: TUI seven-type selector labels remain unchanged but sourced from shared catalog",
+    "Schritt 2: Web field projection labels remain unchanged but sourced from shared catalog",
+    "focused TUI field-create regression",
+    "focused Web field-value/read-adapter regression",
+    "Manifest V2 validation",
+    "strict write_files scope validation",
+    "ui gate routing"
+  ],
+  "tests_explicitly_not_run": [
+    "full product suite because only shared presentation labels and their direct consumers change",
+    "database/domain/repository regressions because frozen core is untouched",
+    "manual 100/150/200 percent accessibility evidence because that remains I61",
+    "general text-registry work because I60 is limited to FieldType labels"
+  ],
+  "pip_requirements": [
+    "requirements-cp07t.txt"
+  ],
+  "ci": {
+    "compile": [
+      "src/provoware_db/field_type_labels.py",
+      "tests/test_field_type_labels.py",
+      "src/provoware_db/tui/runtime.py",
+      "src/provoware_db/web/read_adapter.py",
+      "tests/tui/test_runtime_field_create.py",
+      "tests/web/test_read_adapter_values.py"
+    ],
+    "python_tests": [
+      "tests/test_field_type_labels.py",
+      "tests/tui/test_runtime_field_create.py",
+      "tests/web/test_read_adapter_values.py"
+    ]
+  },
+  "risks": [
+    "shared labels must not accidentally centralize TUI policy; the seven allowed create types remain local to the TUI",
+    "web fallback for unknown future field types must remain lossless",
+    "I60 must not grow into a general text registry or unrelated localization framework"
+  ],
+  "non_changes": [
+    "no domain model changes",
+    "no CatalogService changes",
+    "no repository/storage changes",
+    "no field-value or choice-option writes",
+    "no change to which FieldTypes are creatable in TUI",
+    "no general text registry",
+    "no accessibility layout changes"
+  ],
+  "expected_side_effects": [
+    "Web and TUI display the same FieldType labels from one source after step 2",
+    "future label wording changes require one product-code edit instead of parallel Web/TUI edits",
+    "TUI create safety remains governed by its explicit seven-value FieldType tuple"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
