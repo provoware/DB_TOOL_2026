@@ -94,12 +94,15 @@
     "no MONEY create support",
     "no launcher/composition-root implementation",
     "no CI/governance changes",
-    "no new dependency"
+    "no new dependency",
+    "no product patch in step 2 because the complete focused audit was green",
+    "CP-09 areas outside Entry-Field-Create remain unresolved rather than implicitly frozen"
   ],
   "expected_side_effects": [
-    "step 1 produces a complete documented audit of I47-I61",
-    "step 2 either freezes exactly the Entry-Field-Create slice or closes one proven blocker before freeze"
+    "step 1 completed a full documented and regression-backed audit of I47-I61",
+    "step 2 formally freezes exactly the CP-09 Entry-Field-Create slice",
+    "future changes to adapter semantics, parent capture, allowed create types, write count, refresh or focus/error/cancel behavior require explicit REOPEN"
   ],
   "screenshot_required": false,
-  "status": "STEP1_AUDIT_AWAITING_GATE"
+  "status": "FROZEN_CP09_ENTRY_FIELD_CREATE"
 }
