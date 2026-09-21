@@ -3,7 +3,7 @@
   "iteration": 1,
   "agent": "change-agent-id",
   "size": "S",
-  "goal": "Kurzes Iterationsziel",
+  "goal": "Schritt 1: kleinste Primäränderung | Schritt 2: direkt abhängige Härtung/Integration im selben Scope",
   "change_kind": "scope_only",
   "gate_profile": "scope",
   "guide_delta": {
@@ -15,7 +15,10 @@
   "write_files": [],
   "read_files": [],
   "direct_dependencies": [],
-  "tests_required": [],
+  "tests_required": [
+    "Schritt 1: engster relevanter Zwischen-Gate",
+    "Schritt 2: nur nach grünem Schritt 1; Abschluss-Gate für neu betroffene Pfade"
+  ],
   "tests_explicitly_not_run": [],
   "pip_requirements": [],
   "ci": {
@@ -24,7 +27,10 @@
   },
   "risks": [],
   "non_changes": [],
-  "expected_side_effects": [],
+  "expected_side_effects": [
+    "beide Arbeitsschritte teilen Branch und PR",
+    "Schritt 2 bleibt blockiert, falls Schritt 1 nicht grün ist"
+  ],
   "screenshot_required": false,
   "status": "PLANNED_AWAITING_GATE"
 }
