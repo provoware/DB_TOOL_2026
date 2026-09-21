@@ -1,0 +1,80 @@
+{
+  "iteration": 46,
+  "agent": "cp07t-entry-create-reopen-agent-46",
+  "size": "S",
+  "goal": "Implement only the I45-authorized entry-create interaction through the frozen EntryWriteAdapter and stable selected-category provenance",
+  "write_files": [
+    ".provoware/iterations/0046-cp07t-entry-create-reopen.json",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_entry_create.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_45_CP09_ENTRY_TUI_INTEGRATION_DECISION.md",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_runtime_category_create.py",
+    "tests/tui/test_runtime_shell.py",
+    "requirements-cp07t.txt"
+  ],
+  "direct_dependencies": [
+    "I45 frozen minimal CP-07T entry-create reopen decision",
+    "I44 frozen EntryWriteAdapter",
+    "I42 frozen category-create interaction",
+    "Textual 8.2.8"
+  ],
+  "tests_required": [
+    "compile runtime and targeted entry-create regression",
+    "read-only construction keeps entry-create capability unavailable",
+    "entry create requires a selected category",
+    "command captures selected parent ID before input",
+    "confirmed valid title invokes writer exactly once with captured parent",
+    "success refreshes entries only for captured category and restores category focus",
+    "domain failure performs no success refresh and keeps input/focus stable",
+    "cancel performs no write and restores category focus",
+    "existing category-create regression",
+    "existing runtime-shell navigation/layout/focus regression",
+    "repository foundation",
+    "agent governance",
+    "iteration scope/manifest validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full test suite",
+    "browser regression because web code is untouched",
+    "repository/domain/storage regression because frozen core is untouched",
+    "visual evidence because the entry input is transient and does not redesign persistent layout"
+  ],
+  "pip_requirements": ["requirements-cp07t.txt"],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/runtime.py",
+      "tests/tui/test_runtime_entry_create.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_runtime_entry_create.py",
+      "tests/tui/test_runtime_category_create.py",
+      "tests/tui/test_runtime_shell.py"
+    ]
+  },
+  "risks": [
+    "presentation-boundary exceptions remain intentionally unclassified beyond their existing message",
+    "only category and entry creation are writable; field/value writes remain closed"
+  ],
+  "non_changes": [
+    "no CP-03/schema/migration changes",
+    "no CP-06/domain/repository changes",
+    "no storage/sqlite changes",
+    "no CatalogService, CategoryWriteAdapter or EntryWriteAdapter changes",
+    "no CP-08 health/events changes",
+    "no field/value writes",
+    "no trash/restore, undo, autosave or crash-recovery",
+    "no theme, dependency, web or CI changes",
+    "no unrelated CP-07T navigation/layout refactor"
+  ],
+  "expected_side_effects": [
+    "e opens one transient entry-name input only when a writer and valid category selection exist",
+    "Enter confirms one write against the category captured when the command started",
+    "success reloads entries for that same category and returns focus to the category list",
+    "Escape cancels without a write"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_AWAITING_GATE"
+}
