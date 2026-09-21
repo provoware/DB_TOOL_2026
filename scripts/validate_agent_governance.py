@@ -23,7 +23,8 @@ REQUIRED_AGENT_RULE_MARKERS = (
     "Keine unnötigen Tests",
     "Dateibesitz und Kollisionsschutz",
     "Screenshot-Regel",
-    "exakt die nächsten zwei Schritte",
+    "exakt die nächsten drei Schritte",
+    "Laienhilfe-Subagent",
 )
 
 REQUIRED_MACHINE_RULES = (
@@ -34,6 +35,10 @@ REQUIRED_MACHINE_RULES = (
     "no_full_test_without_reason: true",
     "no_repeat_test_without_new_change_or_finding: true",
     "screenshot_every_n_iterations: 5",
+    "exactly_three_next_steps_required: true",
+    "layman_guide_delta_every_iteration: true",
+    "layman_guide_agent_never_modify_product_code: true",
+    "layman_guide_updates_must_be_incremental: true",
 )
 
 
@@ -71,6 +76,7 @@ def main() -> int:
         "py_compile",
         "scripts/check_agent_collisions.py",
         "scripts/check_iteration_scope.py",
+        "scripts/validate_agent_governance.py",
     ])
     lines.append(f"{'GRÜN' if compile_ok else 'ROT'}: Python-Compile Governance-Skripte")
     if not compile_ok:
