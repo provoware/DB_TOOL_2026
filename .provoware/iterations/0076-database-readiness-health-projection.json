@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "iteration": 76,
+  "agent": "database-readiness-health-projection-agent-76",
+  "size": "S",
+  "goal": "Die in I75 bewusst offene minimale binäre Health-Projektion für den bereits autorisierten I74 Database-Readiness-Vertrag explizit entscheiden, ohne Provider oder eingefrorene Bereiche zu ändern",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Binäre Health-Projektion für Database Readiness",
+    "summary": "I76 autorisiert ausschließlich Database Ready -> HealthLevel.OK und Database Not Ready -> HealthLevel.ERROR. WARNING bleibt unbenutzt; Provider, Runtime und CP-03/CP-08 bleiben geschlossen.",
+    "target_doc": "docs/development/ITERATION_76_DATABASE_READINESS_HEALTH_PROJECTION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0076-database-readiness-health-projection.json",
+    "docs/development/ITERATION_76_DATABASE_READINESS_HEALTH_PROJECTION.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_75_HEALTH_READINESS_PROJECTION_DECISION.md",
+    "docs/development/ITERATION_74_DATABASE_READINESS_DECISION.md",
+    "src/provoware_db/tui/view_models.py"
+  ],
+  "direct_dependencies": ["I74 binary Database Readiness contract", "I75 explicit projection decision boundary", "existing HealthLevel enum"],
+  "tests_required": [
+    "confirm I74 readiness remains exactly readable/compatible versus not readable/not compatible",
+    "confirm existing HealthLevel exposes OK and ERROR without changing view models",
+    "confirm WARNING is not assigned by this binary projection",
+    "Manifest V2 and strict write_files scope validation green"
+  ],
+  "tests_explicitly_not_run": ["product tests because no product code changes", "database regressions because storage is untouched", "TUI runtime tests because runtime is untouched", "full suite because I76 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["the projection is intentionally coarse and does not represent degraded states", "a later provider must not broaden readiness or invent WARNING semantics"],
+  "non_changes": ["no product code", "no provider implementation", "no HealthItem/HealthLevel changes", "no CP-03 or CP-08 reopen", "no schema/storage/SQL/repository changes", "no events, writer lifecycle, Composition Root or starter"],
+  "expected_side_effects": ["the minimal readiness-to-health mapping becomes explicit", "a later isolated provider iteration can implement the mapping without inventing product semantics"],
+  "screenshot_required": false,
+  "status": "DATABASE_READINESS_HEALTH_PROJECTION_AUTHORIZED_AWAITING_GATE"
+}
