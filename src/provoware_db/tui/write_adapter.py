@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Any, Protocol
 
-from provoware_db.domain.models import Category, Entry, FieldDefinition, FieldType
+from provoware_db.domain.models import Category, Entry, FieldDefinition, FieldType, ScalarValue
 
 from .view_models import NavItem
 
@@ -17,6 +17,10 @@ class EntryCreateService(Protocol):
 
 class EntryFieldCreateService(Protocol):
     def create_entry_field(self, entry_id: str, name: str, field_type: FieldType) -> FieldDefinition: ...
+
+
+class EntryScalarValueWriteService(Protocol):
+    def set_scalar_value(self, entry_id: str, field_id: str, value: Any) -> ScalarValue: ...
 
 
 class CategoryWriteAdapter:
@@ -49,3 +53,13 @@ class EntryFieldWriteAdapter:
 
     def create_entry_field(self, entry_id: str, name: str, field_type: FieldType) -> FieldDefinition:
         return self._service.create_entry_field(entry_id, name, field_type)
+
+
+class EntryScalarValueWriteAdapter:
+    """Thin TUI write boundary for the existing scalar-value service contract."""
+
+    def __init__(self, service: EntryScalarValueWriteService) -> None:
+        self._service = service
+
+    def set_scalar_value(self, entry_id: str, field_id: str, value: Any) -> ScalarValue:
+        return self._service.set_scalar_value(entry_id, field_id, value)

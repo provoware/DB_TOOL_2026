@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "iteration": 67,
+  "agent": "entry-scalar-value-write-adapter-agent-67",
+  "size": "S",
+  "goal": "Schritt 1: I64 Scalar-Value-Vertrag gegen I65 Composition-Root-Entscheidung neu einordnen | Schritt 2: bei freiem Pfad ausschließlich den dünnen EntryScalarValueWriteAdapter plus fokussierte Contract-Tests implementieren",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Dünner Adapter für einfache Feldwerte",
+    "summary": "Der Adapter reicht Entry-ID, Feld-ID und bereits domain-kompatiblen Wert unverändert an den bestehenden CatalogService weiter. Er startet die TUI noch nicht und enthält keine Eingabe- oder Datenbanklogik.",
+    "target_doc": "docs/development/ITERATION_67_ENTRY_SCALAR_VALUE_WRITE_ADAPTER.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0067-entry-scalar-value-write-adapter.json",
+    "docs/development/ITERATION_67_ENTRY_SCALAR_VALUE_WRITE_ADAPTER.md",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_entry_scalar_value_write_adapter.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0064-next-cp09-scalar-value-scope.json",
+    "docs/development/ITERATION_64_SCALAR_VALUE_ADAPTER_CONTRACT.md",
+    ".provoware/iterations/0065-tui-composition-root-decision.json",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "tests/tui/test_entry_field_write_adapter.py"
+  ],
+  "direct_dependencies": [
+    "I64 prepared EntryScalarValueWriteAdapter contract",
+    "I65 decision that Composition Root is deferred but does not block isolated write seams",
+    "existing CatalogService.set_scalar_value contract",
+    "existing ScalarValue domain return type"
+  ],
+  "tests_required": [
+    "compile write_adapter.py and focused scalar adapter test",
+    "adapter delegates exactly once with unchanged entry_id, field_id and value identity",
+    "adapter returns the exact ScalarValue object from the service",
+    "existing ValidationError passes through unchanged",
+    "existing entry-field adapter regression remains green",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because only one isolated adapter seam changes",
+    "TUI runtime tests because runtime integration is explicitly excluded",
+    "browser tests because Web is untouched",
+    "database/repository tests because frozen core and storage are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/write_adapter.py",
+      "tests/tui/test_entry_scalar_value_write_adapter.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_entry_scalar_value_write_adapter.py",
+      "tests/tui/test_entry_field_write_adapter.py"
+    ]
+  },
+  "risks": [
+    "adapter must not become implicit TUI runtime authorization",
+    "adapter must not parse UI text or duplicate ScalarValue.from_input validation",
+    "Choice, MONEY UI and category-field writes remain outside scope"
+  ],
+  "non_changes": [
+    "no CP-03/schema/migration changes",
+    "no CatalogService/domain/repository/storage changes",
+    "no TUI runtime or Composition Root changes",
+    "no TuiDataPort implementation",
+    "no input widgets or parsing",
+    "no Choice writes",
+    "no MONEY UI",
+    "no category-field writes",
+    "no lifecycle/undo work",
+    "no dependency or CI workflow changes"
+  ],
+  "expected_side_effects": [
+    "TUI write-adapter module gains the isolated scalar-value delegation seam prepared in I64",
+    "future runtime integration remains separately blocked until explicitly reopened"
+  ],
+  "screenshot_required": false,
+  "status": "STEP_1_DECISION_AND_STEP_2_IMPLEMENTATION_AWAITING_GATE"
+}
