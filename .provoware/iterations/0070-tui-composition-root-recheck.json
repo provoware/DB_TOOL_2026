@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "iteration": 70,
+  "agent": "tui-composition-root-recheck-agent-70",
+  "size": "S",
+  "goal": "Schritt 1: Composition-Root-Lage nach I67/I69 erneut prüfen | Schritt 2: nur bei vollständig geklärten produktiven Quellen einen minimalen Wiring-Vertrag festlegen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "TUI Composition Root nach Read-Adapter",
+    "summary": "Der frühere Read-Adapter-Blocker ist beseitigt. Ein produktiver Starter bleibt aber zu früh, solange Health/Event-Quellen und der schreibfähige Connection-Lifecycle nicht als bestehende, eindeutige Quellen belegt sind.",
+    "target_doc": "docs/development/ITERATION_70_TUI_COMPOSITION_ROOT_RECHECK.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0070-tui-composition-root-recheck.json",
+    "docs/development/ITERATION_70_TUI_COMPOSITION_ROOT_RECHECK.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_65_TUI_COMPOSITION_ROOT_DECISION.md",
+    ".provoware/iterations/0069-tui-catalog-read-adapter.json",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/startup.py"
+  ],
+  "direct_dependencies": [
+    "I69 productive TuiCatalogReadAdapter",
+    "I67 thin scalar-value write seam",
+    "existing TUI constructor and writer seams",
+    "I65 Composition Root decision"
+  ],
+  "tests_required": [
+    "Schritt 1: confirm I65 read-adapter blocker is resolved",
+    "Schritt 1: inventory remaining Health/Event source and writable lifecycle decisions",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: if remaining productive sources are not uniquely established, finish as NO_WIRING_CONTRACT_REQUIRED without status-only commit"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because I70 changes no product code",
+    "TUI/browser/database regressions because runtime and storage are untouched",
+    "full suite because I70 is scope-only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "inventing Health/Event semantics inside startup would couple projection and lifecycle",
+    "reusing the Web read-only runtime cannot satisfy existing TUI write seams",
+    "opening CP-03 or storage merely to complete startup would violate freeze discipline"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no Composition Root or starter implementation",
+    "no Health/Event implementation",
+    "no CatalogService/domain/repository/storage changes",
+    "no CP-03/schema/migration changes",
+    "no frozen-core changes",
+    "no dependency or CI changes"
+  ],
+  "expected_side_effects": [
+    "I65 is re-evaluated against the now-existing productive read adapter",
+    "the remaining blocker is narrowed to productive Health/Event and writable lifecycle ownership"
+  ],
+  "screenshot_required": false,
+  "status": "NEGATIVE_RECHECK_AWAITING_GATE"
+}
