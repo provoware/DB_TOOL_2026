@@ -5,7 +5,7 @@
   "size": "S",
   "goal": "Schritt 1: I64 Scalar-Value-Vertrag gegen I65 Composition-Root-Entscheidung neu einordnen | Schritt 2: bei freiem Pfad ausschließlich den dünnen EntryScalarValueWriteAdapter plus fokussierte Contract-Tests implementieren",
   "change_kind": "product",
-  "gate_profile": "targeted",
+  "gate_profile": "product",
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Dünner Adapter für einfache Feldwerte",
