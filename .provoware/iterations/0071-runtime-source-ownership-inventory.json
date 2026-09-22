@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "iteration": 71,
+  "agent": "runtime-source-ownership-inventory-agent-71",
+  "size": "S",
+  "goal": "Schritt 1: produktive Health/Event-Quellen und schreibfähige Connection-Ownership read-only inventarisieren | Schritt 2: nur bei eindeutig bestehender Ownership einen Wiring-Vertrag vorbereiten",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "TUI Runtime-Quellen und Ownership",
+    "summary": "Die fachlichen Catalog-Reads sind produktiv vorhanden. Für Health/Event und den schreibfähigen Connection-Lifecycle existiert im geprüften Runtime-Pfad noch keine eindeutig produktive Ownership; deshalb wird kein Wiring-Vertrag erfunden.",
+    "target_doc": "docs/development/ITERATION_71_RUNTIME_SOURCE_OWNERSHIP_INVENTORY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0071-runtime-source-ownership-inventory.json",
+    "docs/development/ITERATION_71_RUNTIME_SOURCE_OWNERSHIP_INVENTORY.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_70_TUI_COMPOSITION_ROOT_RECHECK.md",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/tui/write_adapter.py",
+    "src/provoware_db/web/startup.py"
+  ],
+  "direct_dependencies": ["I70 negative Composition Root recheck", "I69 TuiCatalogReadAdapter", "existing TUI write seams"],
+  "tests_required": [
+    "Schritt 1: inventory productive HealthReadPort/EventReadPort implementations and writable connection ownership",
+    "Schritt 1: confirm TUI runtime consumes injected sources but does not own their lifecycle",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: when ownership is not uniquely established, finish as NO_WIRING_CONTRACT_REQUIRED without product or status-only write"
+  ],
+  "tests_explicitly_not_run": ["product tests because I71 changes no product code", "database regressions because storage is untouched", "full suite because I71 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["repository-wide text search can miss dynamically constructed providers", "inventing provider semantics in startup would create hidden ownership", "opening frozen storage to satisfy startup would violate checkpoint discipline"],
+  "non_changes": ["no product code changes", "no Health/Event implementation", "no Composition Root or starter", "no CatalogService/repository/storage changes", "no CP-03/schema/migration changes", "no frozen-core changes", "no dependency or CI changes"],
+  "expected_side_effects": ["remaining Composition Root blocker is documented at the provider/lifecycle boundary", "next implementation scope can be selected without reopening frozen persistence"],
+  "screenshot_required": false,
+  "status": "NO_WIRING_CONTRACT_REQUIRED_AWAITING_GATE"
+}
