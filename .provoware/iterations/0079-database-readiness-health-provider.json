@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "iteration": 79,
+  "agent": "database-readiness-health-provider-agent-79",
+  "size": "S",
+  "goal": "Den minimalen produktiven read-only Database-Readiness-Health-Provider ausschließlich aus I74, I76 und I78 implementieren",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Database Readiness Health Provider",
+    "summary": "I79 implementiert einen dünnen HealthReadPort-Provider auf geliehener Connection: I74-Readiness wird exakt nach I76 auf OK/ERROR projiziert; I78-Close-Ownership bleibt beim äußeren Composition-Owner.",
+    "target_doc": "docs/development/ITERATION_79_DATABASE_READINESS_HEALTH_PROVIDER.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0079-database-readiness-health-provider.json",
+    "docs/development/ITERATION_79_DATABASE_READINESS_HEALTH_PROVIDER.md",
+    "src/provoware_db/tui/health_provider.py",
+    "tests/tui/test_database_readiness_health_provider.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_72_HEALTH_PROVIDER_BOUNDARY.md",
+    "docs/development/ITERATION_74_DATABASE_READINESS_DECISION.md",
+    "docs/development/ITERATION_76_DATABASE_READINESS_HEALTH_PROJECTION.md",
+    "docs/development/ITERATION_78_TUI_CONNECTION_OWNERSHIP_DECISION.md",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/storage/sqlite/schema_guard.py"
+  ],
+  "direct_dependencies": [
+    "I74 minimal database readiness contract",
+    "I76 binary OK/ERROR projection",
+    "I78 borrowed read-only connection ownership",
+    "existing HealthReadPort and HealthItem contracts"
+  ],
+  "tests_required": [
+    "compile health_provider.py and focused provider test",
+    "SELECT 1 plus schema identity maps to OK",
+    "SQLite read failure maps to ERROR",
+    "schema identity failure maps to ERROR",
+    "provider never emits WARNING",
+    "provider does not own or close the borrowed connection",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the change is one isolated provider",
+    "TUI runtime tests because runtime wiring is unchanged",
+    "browser tests because Web is untouched",
+    "repository/CP-03 regression because schema and storage are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/health_provider.py",
+      "tests/tui/test_database_readiness_health_provider.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_database_readiness_health_provider.py"
+    ]
+  },
+  "risks": [
+    "provider is not yet wired into a productive TUI composition root",
+    "later wiring must preserve one borrowed read-only connection and separate writer ownership"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-08 reopen",
+    "no schema/migration/storage/repository changes",
+    "no TUI runtime or TuiCatalogReadAdapter changes",
+    "no events or writer lifecycle changes",
+    "no composition-root or starter wiring",
+    "no WARNING semantics"
+  ],
+  "expected_side_effects": [
+    "a concrete HealthReadPort-compatible database readiness source now exists",
+    "the provider remains independently injectable and lifecycle-neutral"
+  ],
+  "screenshot_required": false,
+  "status": "DATABASE_READINESS_HEALTH_PROVIDER_IMPLEMENTED_AWAITING_GATE"
+}
