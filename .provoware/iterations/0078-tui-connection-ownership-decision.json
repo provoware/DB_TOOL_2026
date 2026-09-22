@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "iteration": 78,
+  "agent": "tui-connection-ownership-decision-agent-78",
+  "size": "S",
+  "goal": "Den minimalen read-only TUI-Connection-Ownership-Vertrag festlegen, ohne Provider, Starter, Writer-Lifecycle oder eingefrorene Bereiche zu verändern",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "TUI Read-only Connection Ownership",
+    "summary": "I78 autorisiert einen äußeren TUI-Composition-Owner für genau eine gemeinsam geliehene read-only Connection; TuiDataPort, späterer Health-Provider und ProvowareDbTui erhalten keine Close-Ownership.",
+    "target_doc": "docs/development/ITERATION_78_TUI_CONNECTION_OWNERSHIP_DECISION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0078-tui-connection-ownership-decision.json",
+    "docs/development/ITERATION_78_TUI_CONNECTION_OWNERSHIP_DECISION.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_77_HEALTH_PROVIDER_WIRING_DECISION.md",
+    "src/provoware_db/storage/sqlite/connection.py",
+    "src/provoware_db/web/startup.py",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/runtime.py"
+  ],
+  "direct_dependencies": [
+    "I77 NO_PROVIDER_WIRING_AUTHORIZED decision",
+    "existing open_connection(read_only=True) factory",
+    "existing injected TuiDataPort boundary"
+  ],
+  "tests_required": [
+    "confirm ProvowareDbTui remains a consumer of injected TuiDataPort",
+    "confirm open_connection(read_only=True) remains the existing technical factory seam",
+    "confirm web lifecycle remains isolated and unchanged",
+    "confirm I78 write scope contains documentation and manifest only",
+    "Manifest V2 and strict write_files scope validation green"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "database regressions because storage is untouched",
+    "TUI runtime tests because runtime is untouched",
+    "full suite because I78 is scope-only",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "the authorized ownership contract still needs a later concrete composition implementation",
+    "writer connections must not be silently folded into this read-only ownership"
+  ],
+  "non_changes": [
+    "no product code",
+    "no HealthReadPort provider",
+    "no connection lifecycle implementation",
+    "no CP-03 or CP-08 reopen",
+    "no schema/storage/SQL/repository changes",
+    "no events, writer lifecycle or starter wiring"
+  ],
+  "expected_side_effects": [
+    "a later read-only provider may share the single composition-owned connection with the TUI data path",
+    "ProvowareDbTui remains free of connection and close ownership"
+  ],
+  "screenshot_required": false,
+  "status": "TUI_READONLY_CONNECTION_OWNERSHIP_AUTHORIZED_AWAITING_GATE"
+}
