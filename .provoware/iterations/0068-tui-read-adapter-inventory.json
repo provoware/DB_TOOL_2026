@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "iteration": 68,
+  "agent": "tui-read-adapter-inventory-agent-68",
+  "size": "S",
+  "goal": "Schritt 1: produktiven TuiDataPort read-only inventarisieren | Schritt 2: nur den kleinsten Read-Adapter-Vertrag für Kategorie, Entry, Feld/Wert und Health/Event festlegen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Produktiver TUI Read Adapter",
+    "summary": "Der fehlende TUI Read Adapter kann auf bestehenden Application-Read-Verträgen aufbauen; Health und Events bleiben als getrennt injizierte Read-Quellen, damit weder SQL noch neue CP-08-Semantik in die TUI gelangt.",
+    "target_doc": "docs/development/ITERATION_68_TUI_READ_ADAPTER_INVENTORY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0068-tui-read-adapter-inventory.json",
+    "docs/development/ITERATION_68_TUI_READ_ADAPTER_INVENTORY.md"
+  ],
+  "read_files": [
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/application/catalog_service.py",
+    "docs/development/ITERATION_65_TUI_COMPOSITION_ROOT_DECISION.md"
+  ],
+  "direct_dependencies": [
+    "I65 productive TuiDataPort blocker",
+    "TuiDataPort Protocol",
+    "CatalogService read-side methods",
+    "existing WebCatalogReadAdapter projection precedent"
+  ],
+  "tests_required": [
+    "Schritt 1: verify no concrete productive TuiDataPort implementation exists",
+    "Schritt 1: map categories, entries and fields-with-values to existing CatalogService reads",
+    "Schritt 1: keep health and recent events outside CatalogService as explicit read-source dependencies",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: record minimal adapter contract only; no product implementation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because I68 changes no product code",
+    "TUI runtime regressions because runtime is untouched",
+    "database/schema tests because CP-03 and SQLite are untouched",
+    "full suite because I68 is a read-only architecture inventory",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "health and event source ownership must remain explicit until the later composition-root step",
+    "reusing web value formatting directly would couple TUI to the web package and is therefore rejected"
+  ],
+  "non_changes": [
+    "no TUI runtime changes",
+    "no CatalogService changes",
+    "no Web adapter changes",
+    "no Write Adapter changes",
+    "no CP-03/schema/migration changes",
+    "no frozen CP-08 changes",
+    "no Composition Root or starter",
+    "no dependencies or CI changes"
+  ],
+  "expected_side_effects": [
+    "the minimal productive TuiDataPort contract is bounded for a later implementation iteration",
+    "Composition Root remains deferred until the concrete read adapter exists"
+  ],
+  "screenshot_required": false,
+  "status": "READ_ADAPTER_CONTRACT_READY_AWAITING_GATE"
+}
