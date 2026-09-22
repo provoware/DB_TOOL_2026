@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "iteration": 74,
+  "agent": "database-readiness-decision-agent-74",
+  "size": "S",
+  "goal": "Den kleinsten read-only Database-Readiness-Vertrag aus vorhandenen nicht mutierenden Signalen festlegen, ohne CP-03/CP-08 oder Storage zu reopen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Read-only Database-Readiness-Vertrag",
+    "summary": "I74 trennt allgemeine Lesebereitschaft strikt von pre_write_gate und autorisiert als minimale Readiness nur Datenbank-Erreichbarkeit plus bestehende Schema-Identitaet; keine neue HealthLevel-Abbildung und kein Provider.",
+    "target_doc": "docs/development/ITERATION_74_DATABASE_READINESS_DECISION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0074-database-readiness-decision.json",
+    "docs/development/ITERATION_74_DATABASE_READINESS_DECISION.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_73_HEALTH_SEMANTICS_DECISION.md",
+    "src/provoware_db/validation/gates.py",
+    "src/provoware_db/storage/sqlite/schema_guard.py"
+  ],
+  "direct_dependencies": ["I73 Health semantics decision", "existing assert_schema_identity", "frozen CP-03 and CP-08"],
+  "tests_required": [
+    "confirm assert_schema_identity is non-mutating and checks version, application identity, tables and schema fingerprint",
+    "confirm pre_write_gate adds write-only conditions and is therefore excluded",
+    "confirm no new HealthLevel mapping or provider is introduced",
+    "Manifest V2 and strict write_files scope validation green"
+  ],
+  "tests_explicitly_not_run": ["product tests because no product code changes", "pre_write_gate because write readiness is out of scope", "database regressions because storage is untouched", "full suite because I74 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["schema identity proves compatibility but not full data integrity", "mapping readiness failures to HealthLevel remains intentionally unauthorized"],
+  "non_changes": ["no product code", "no provider", "no HealthItem/HealthLevel changes", "no schema_guard.py or validation/gates.py changes", "no storage/SQL/repository changes", "no CP-03 or CP-08 reopen", "no events, writer lifecycle, Composition Root or starter"],
+  "expected_side_effects": ["minimal read-only readiness boundary becomes explicit", "next iteration can decide one thin provider without importing write-readiness semantics"],
+  "screenshot_required": false,
+  "status": "DATABASE_READINESS_DECISION_AWAITING_GATE"
+}
