@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "iteration": 77,
+  "agent": "health-provider-wiring-decision-agent-77",
+  "size": "S",
+  "goal": "Read-only prüfen, ob I74+I76 über eine bereits vorhandene Connection-/Factory-Seam als dünner HealthReadPort-Provider verdrahtet werden dürfen; ohne eindeutige TUI-Ownership dokumentiert stoppen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Health Provider Wiring und Connection Ownership",
+    "summary": "I77 bestätigt eine technische read-only Connection-Factory und einen Web-spezifischen Lifecycle, aber keine autorisierte produktive TUI-Connection-/Provider-Ownership. Ergebnis: NO_PROVIDER_WIRING_AUTHORIZED.",
+    "target_doc": "docs/development/ITERATION_77_HEALTH_PROVIDER_WIRING_DECISION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0077-health-provider-wiring-decision.json",
+    "docs/development/ITERATION_77_HEALTH_PROVIDER_WIRING_DECISION.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_71_RUNTIME_SOURCE_OWNERSHIP_INVENTORY.md",
+    "docs/development/ITERATION_74_DATABASE_READINESS_DECISION.md",
+    "docs/development/ITERATION_76_DATABASE_READINESS_HEALTH_PROJECTION.md",
+    "src/provoware_db/storage/sqlite/connection.py",
+    "src/provoware_db/web/startup.py",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/runtime.py"
+  ],
+  "direct_dependencies": ["I71 runtime source ownership inventory", "I74 database readiness contract", "I76 binary readiness Health projection", "existing read-only connection factory"],
+  "tests_required": [
+    "confirm open_connection(read_only=True) exists without changing storage",
+    "confirm web startup owns its connection lifecycle only for the web runtime",
+    "confirm current TUI remains a consumer of injected TuiDataPort and has no connection ownership",
+    "confirm no productive TUI Health provider ownership has appeared since I71",
+    "Manifest V2 and strict write_files scope validation green"
+  ],
+  "tests_explicitly_not_run": ["product tests because no product code changes", "database regressions because storage is untouched", "TUI runtime tests because runtime is untouched", "full suite because I77 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["implementing a provider now could create a second connection or ambiguous close ownership", "the existing web lifecycle must not be silently promoted to TUI ownership"],
+  "non_changes": ["no product code", "no HealthReadPort provider", "no connection lifecycle implementation", "no CP-03 or CP-08 reopen", "no schema/storage/SQL/repository changes", "no events, writer lifecycle, Composition Root or starter"],
+  "expected_side_effects": ["provider implementation remains blocked until TUI connection ownership is explicitly authorized", "the existing web lifecycle remains isolated"],
+  "screenshot_required": false,
+  "status": "NO_PROVIDER_WIRING_AUTHORIZED_AWAITING_GATE"
+}
