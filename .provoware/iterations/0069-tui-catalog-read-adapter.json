@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "iteration": 69,
+  "agent": "tui-catalog-read-adapter-agent-69",
+  "size": "S",
+  "goal": "Schritt 1: I68-Vertrag gegen TUI-ViewModels und Application-Reads prüfen | Schritt 2: ausschließlich den dünnen TuiCatalogReadAdapter plus fokussierte Contract-Tests implementieren",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Produktiver TUI Read Adapter",
+    "summary": "Der Adapter projiziert vorhandene CatalogService-Reads in TUI-ViewModels und reicht Health/Event aus getrennt injizierten Read-Quellen durch. Er öffnet weder SQL noch Runtime oder Composition Root.",
+    "target_doc": "docs/development/ITERATION_69_TUI_CATALOG_READ_ADAPTER.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0069-tui-catalog-read-adapter.json",
+    "docs/development/ITERATION_69_TUI_CATALOG_READ_ADAPTER.md",
+    "src/provoware_db/tui/read_adapter.py",
+    "tests/tui/test_tui_catalog_read_adapter.py"
+  ],
+  "read_files": [
+    ".provoware/iterations/0068-tui-read-adapter-inventory.json",
+    "docs/development/ITERATION_68_TUI_READ_ADAPTER_INVENTORY.md",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/web/read_adapter.py"
+  ],
+  "direct_dependencies": [
+    "I68 READ_ADAPTER_CONTRACT_READY",
+    "TuiDataPort view-model contract",
+    "CatalogService list_categories/list_entries/list_fields_with_values",
+    "shared field_type_label helper"
+  ],
+  "tests_required": [
+    "compile read_adapter.py and focused adapter test",
+    "project category and entry reads to NavItem",
+    "project field/value reads to FieldRow without SQL",
+    "delegate HealthItem and EventItem sources without redefining semantics",
+    "preserve recent_events limit",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the change is one isolated read adapter",
+    "TUI runtime tests because runtime wiring is explicitly excluded",
+    "browser tests because Web is untouched",
+    "database/repository tests because CP-03 and storage are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/read_adapter.py",
+      "tests/tui/test_tui_catalog_read_adapter.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_tui_catalog_read_adapter.py",
+      "tests/test_field_type_labels.py"
+    ]
+  },
+  "risks": [
+    "value formatting is intentionally TUI-local until measurable cross-UI duplication justifies a neutral shared projection",
+    "health/event source lifecycle remains deferred to Composition Root"
+  ],
+  "non_changes": [
+    "no CP-03/schema/migration changes",
+    "no CP-08 changes",
+    "no CatalogService/domain/repository/storage changes",
+    "no TUI runtime or Composition Root changes",
+    "no writer changes",
+    "no Web adapter changes",
+    "no dependencies or CI workflow changes"
+  ],
+  "expected_side_effects": [
+    "a concrete productive TuiDataPort-compatible read adapter exists",
+    "Composition Root remains separately gated"
+  ],
+  "screenshot_required": false,
+  "status": "STEP_1_GREEN_STEP_2_IMPLEMENTED_AWAITING_GATE"
+}
