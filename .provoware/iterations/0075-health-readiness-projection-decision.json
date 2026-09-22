@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "iteration": 75,
+  "agent": "health-readiness-projection-decision-agent-75",
+  "size": "S",
+  "goal": "Pruefen, ob der autorisierte Database-Readiness-Vertrag bereits eindeutig auf HealthItem/HealthLevel projiziert werden darf, ohne CP-03/CP-08 oder Produktcode zu reopen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Health-Projektion des Database-Readiness-Vertrags",
+    "summary": "I75 stellt fest, dass HealthLevel die Darstellungswerte OK/WARNING/ERROR definiert, aber keine autorisierte Erzeugungsregel fuer I74-Readiness. Daher keine implizite OK/ERROR-Abbildung und kein Provider.",
+    "target_doc": "docs/development/ITERATION_75_HEALTH_READINESS_PROJECTION_DECISION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0075-health-readiness-projection-decision.json",
+    "docs/development/ITERATION_75_HEALTH_READINESS_PROJECTION_DECISION.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_74_DATABASE_READINESS_DECISION.md",
+    "docs/development/ITERATION_73_HEALTH_SEMANTICS_DECISION.md",
+    "docs/development/ITERATION_32_CP08_STATUS_SCOPE.md",
+    "src/provoware_db/tui/view_models.py"
+  ],
+  "direct_dependencies": ["I74 Database-Readiness decision", "existing HealthItem/HealthLevel contract", "frozen CP-08 status scope"],
+  "tests_required": [
+    "confirm HealthLevel defines values but no technical readiness mapping",
+    "confirm CP-08 authorizes display of existing HealthItem data but no new source semantics",
+    "confirm I74 explicitly leaves HealthLevel mapping unauthorized",
+    "Manifest V2 and strict write_files scope validation green"
+  ],
+  "tests_explicitly_not_run": ["product tests because no product code changes", "database regressions because storage is untouched", "TUI tests because view models/runtime are untouched", "full suite because I75 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["productive Health source remains unbound until an explicit projection rule is authorized", "implicit mapping would create unauthorized product semantics"],
+  "non_changes": ["no product code", "no provider", "no HealthItem/HealthLevel changes", "no schema_guard.py or validation/gates.py changes", "no storage/SQL/repository changes", "no CP-03 or CP-08 reopen", "no events, writer lifecycle, Composition Root or starter"],
+  "expected_side_effects": ["Health projection ambiguity becomes explicit", "next iteration can decide one minimal mapping without bundling provider or lifecycle work"],
+  "screenshot_required": false,
+  "status": "HEALTH_READINESS_PROJECTION_DECISION_AWAITING_GATE"
+}
