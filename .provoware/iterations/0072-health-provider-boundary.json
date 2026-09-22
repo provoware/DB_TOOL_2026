@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "iteration": 72,
+  "agent": "health-provider-boundary-agent-72",
+  "size": "S",
+  "goal": "Schritt 1: die kleinste produktive Health-Provider-Grenze aus bestehenden CP-08- und TUI-Verträgen bestimmen | Schritt 2: nur bei eindeutig ableitbarer Ownership einen dünnen Provider-Vertrag vorbereiten",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "TUI Health-Provider-Grenze",
+    "summary": "CP-08 definiert Health bewusst nur als read-only TuiDataPort-Vertrag und untersagt neue Datenquellen. Der aktuelle TUI-Adapter erwartet HealthReadPort per Injektion. Eine produktive Quelle oder Ownership ist nicht vorhanden; deshalb darf I72 keinen Provider erfinden.",
+    "target_doc": "docs/development/ITERATION_72_HEALTH_PROVIDER_BOUNDARY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0072-health-provider-boundary.json",
+    "docs/development/ITERATION_72_HEALTH_PROVIDER_BOUNDARY.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_32_CP08_STATUS_SCOPE.md",
+    "docs/development/ITERATION_71_RUNTIME_SOURCE_OWNERSHIP_INVENTORY.md",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/application/catalog_service.py"
+  ],
+  "direct_dependencies": ["I71 runtime source ownership inventory", "frozen CP-08 read-only health semantics", "TuiCatalogReadAdapter HealthReadPort seam"],
+  "tests_required": [
+    "Schritt 1: confirm CP-08 authorizes consumption of HealthItem data but no new data source",
+    "Schritt 1: confirm current product code has HealthReadPort seam but no concrete productive Health provider ownership",
+    "Zwischen-Gate: Manifest V2 and strict write_files scope validation green",
+    "Schritt 2: without an existing authoritative source, finish as NO_HEALTH_PROVIDER_CONTRACT_REQUIRED without product or status-only write"
+  ],
+  "tests_explicitly_not_run": ["product tests because I72 changes no product code", "CP-08 runtime regressions because runtime is untouched", "database regressions because storage is untouched", "full suite because I72 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["creating a health provider now would invent semantics not authorized by frozen CP-08", "using CatalogService as health owner would mix catalog application concerns with runtime status", "opening storage merely to source health would violate checkpoint discipline"],
+  "non_changes": ["no product code changes", "no HealthReadPort or HealthItem changes", "no health provider implementation", "no events or writer lifecycle work", "no Composition Root or starter", "no CatalogService/repository/storage changes", "no CP-03/schema/migration changes", "no CP-08 semantic reopen", "no dependency or CI changes"],
+  "expected_side_effects": ["the health blocker is narrowed to absence of an authoritative productive source", "future work must authorize health semantics before implementation rather than infer them in startup"],
+  "screenshot_required": false,
+  "status": "NO_HEALTH_PROVIDER_CONTRACT_REQUIRED_AWAITING_GATE"
+}
