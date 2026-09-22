@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "iteration": 73,
+  "agent": "health-semantics-decision-agent-73",
+  "size": "S",
+  "goal": "Read-only bestimmen, welche bereits vorhandenen Signale eine minimale Health-Semantik tragen könnten, ohne CP-03/CP-08 oder Storage zu reopen",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Health-Semantik aus vorhandenen Signalen",
+    "summary": "README autorisiert GRUEN/GELB/ROT-Selbstvalidierung, CP-08 aber nur die Darstellung vorhandener HealthItem-Daten. Bestehende Validierungsprimitiven liefern Kandidatensignale, definieren jedoch keinen produktiven Health-Vertrag. I73 inventarisiert sie, ohne eine Statusabbildung zu erfinden.",
+    "target_doc": "docs/development/ITERATION_73_HEALTH_SEMANTICS_DECISION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0073-health-semantics-decision.json",
+    "docs/development/ITERATION_73_HEALTH_SEMANTICS_DECISION.md"
+  ],
+  "read_files": [
+    "README.md",
+    "docs/development/ITERATION_32_CP08_STATUS_SCOPE.md",
+    "docs/development/ITERATION_72_HEALTH_PROVIDER_BOUNDARY.md",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/validation/gates.py"
+  ],
+  "direct_dependencies": ["I72 Health provider boundary", "frozen CP-08 Health display contract", "existing validation gate primitives"],
+  "tests_required": [
+    "confirm README authorizes GRUEN/GELB/ROT self-validation but no concrete mapping",
+    "confirm CP-08 authorizes consumption only and no new data source",
+    "inventory existing read-only observable validation facts without executing write gates",
+    "Manifest V2 and strict write_files scope validation green"
+  ],
+  "tests_explicitly_not_run": ["product tests because no product code changes", "pre_write_gate because I73 must not execute a write-oriented gate as Health source", "database regressions because storage is untouched", "full suite because I73 is scope-only", "visual evidence because no UI changes exist"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["mapping validation failures directly to HealthLevel would invent product semantics", "calling pre_write_gate as a Health provider would couple read-only status to write readiness", "treating writable storage as general health would misclassify legitimate read-only operation"],
+  "non_changes": ["no product code", "no HealthItem/HealthLevel changes", "no provider", "no validation/gates.py changes", "no storage/SQL/repository changes", "no CP-03 or CP-08 reopen", "no events, writer lifecycle, Composition Root or starter"],
+  "expected_side_effects": ["candidate signals and forbidden semantic shortcuts are explicit", "next scope can authorize one minimal read-only readiness contract instead of coupling Health to pre_write_gate"],
+  "screenshot_required": false,
+  "status": "HEALTH_SIGNAL_INVENTORY_AWAITING_GATE"
+}
