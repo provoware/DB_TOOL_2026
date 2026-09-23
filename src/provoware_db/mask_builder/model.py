@@ -148,9 +148,9 @@ def validate_template(template: MaskTemplate) -> tuple[MaskIssue, ...]:
             issues.append(MaskIssue("MASK-114", f"Nur Geldfelder dürfen einen Währungscode besitzen: '{field.key}'."))
 
         if field.field_type in (FieldType.SINGLE_CHOICE, FieldType.MULTI_CHOICE):
-            normalized = [item.strip() for item in field.options if item.strip()]
-            if not normalized:
-                issues.append(MaskIssue("MASK-115", f"Auswahlfeld '{field.key}' benötigt mindestens eine Option."))
+            normalized = [item.strip() for item in field.options]
+            if not normalized or any(not item for item in normalized):
+                issues.append(MaskIssue("MASK-115", f"Auswahlfeld '{field.key}' benötigt ausschließlich nicht-leere Optionen."))
             if len({item.casefold() for item in normalized}) != len(normalized):
                 issues.append(MaskIssue("MASK-116", f"Auswahlfeld '{field.key}' enthält doppelte Optionen."))
         elif field.options:
@@ -194,13 +194,7 @@ def validate_template(template: MaskTemplate) -> tuple[MaskIssue, ...]:
     for index, left in enumerate(template.elements):
         for right in template.elements[index + 1 :]:
             if left.box.overlaps(right.box):
-                issues.append(
-                    MaskIssue(
-                        "MASK-130",
-                        f"Elemente '{left.id}' und '{right.id}' überlappen sich.",
-                        left.id,
-                    )
-                )
+                issues.append(MaskIssue("MASK-130", f"Elemente '{left.id}' und '{right.id}' überlappen sich.", left.id))
 
     return tuple(issues)
 
@@ -286,19 +280,24 @@ def template_from_dict(data: dict[str, Any]) -> MaskTemplate:
     try:
         if data.get("schema_version") != _TEMPLATE_SCHEMA_VERSION:
             raise ValueError("unbekannte schema_version")
+        raw_fields = data["fields"]
+        for item in raw_fields:
+            raw_required = item.get("is_required", False)
+            if type(raw_required) is not bool:
+                raise ValueError("is_required muss ein JSON-Boolean sein")
         fields = tuple(
             MaskFieldSpec(
                 key=str(item["key"]),
                 label=str(item["label"]),
                 field_type=FieldType(str(item["field_type"])),
-                is_required=bool(item.get("is_required", False)),
+                is_required=item.get("is_required", False),
                 help_text=item.get("help_text"),
                 placeholder=item.get("placeholder"),
                 unit_label=item.get("unit_label"),
                 currency_code=item.get("currency_code"),
                 options=tuple(str(option) for option in item.get("options", [])),
             )
-            for item in data["fields"]
+            for item in raw_fields
         )
         elements = tuple(
             MaskElement(
