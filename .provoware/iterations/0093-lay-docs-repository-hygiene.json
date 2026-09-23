@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "iteration": 93,
+  "agent": "lay-docs-repository-hygiene-agent-93",
+  "size": "M",
+  "goal": "Nutzerrelevante Einstiegstexte klar von technischen Audit- und Entwicklerdokumenten trennen und Repository-Hygiene lesbar vorbereiten, ohne Produktcode oder eingefrorene Bereiche zu verändern",
+  "change_kind": "documentation",
+  "gate_profile": "documentation",
+  "write_files": [
+    ".provoware/iterations/0093-lay-docs-repository-hygiene.json",
+    "README.md",
+    "docs/LAIEN_START.md",
+    "CONTRIBUTING.md",
+    "docs/PROJECT_STANDARDS.md",
+    ".provoware/queues/README.md"
+  ],
+  "read_files": [
+    "README.md",
+    "CONTRIBUTING.md",
+    "docs/PROJECT_STANDARDS.md",
+    ".provoware/queues/README.md",
+    "AGENTS.md",
+    "docs/AGENT_ORCHESTRATION.md",
+    "docs/development/ITERATION_LOG.md",
+    ".provoware/iterations/0092-mask-builder-browser-shell.json"
+  ],
+  "direct_dependencies": [
+    "I92 merged main 72e1c2ea11e8f812c31e48770b29ae0dda282e7d"
+  ],
+  "tests_required": [
+    "changed paths remain documentation/iteration metadata only",
+    "README links point to existing repository files",
+    "no product, database, schema, repository or frozen-core file changes",
+    "documentation structure remains readable without developer knowledge"
+  ],
+  "tests_explicitly_not_run": [
+    "product test suite because no product code changes",
+    "database regressions because no database path changes",
+    "UI tests because no runtime UI changes"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "historical developer records must not be rewritten as current user documentation",
+    "repository cleanup must not delete branches before merge/ahead status is proven"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, SQLite, repository or CatalogService changes",
+    "no runtime or UI code changes",
+    "no historical iteration document rewrite",
+    "no branch deletion in this iteration without separate proof"
+  ],
+  "expected_side_effects": [
+    "newcomers can distinguish current user information from developer evidence",
+    "repository cleanup candidates can be reviewed separately without destructive changes"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_GATE"
+}

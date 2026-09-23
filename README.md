@@ -1,30 +1,54 @@
 # PROVOWARE DB TOOL 2026
 
-Lokale, robuste Datenbankanwendung mit SQLite-Kern und austauschbaren Oberflächen.
+PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, auch für Menschen ohne Datenbankwissen verständlich und sicher bedienbar zu sein.
 
-## Projektstatus
+> **Aktueller Stand:** Entwicklungsprojekt. Die vorhandenen Oberflächen und Funktionen werden schrittweise freigegeben. Nicht jede geplante Komfortfunktion ist bereits fertig.
 
-- CP-03 Schema V1: **frozen**
-- CP-06 Domain/Repository: **frozen**
-- CP-07 UI Foundation: **in Validierung**
-- Oberflächen dürfen **niemals direkt SQL** ausführen.
-- Kernänderungen benötigen Impact-Analyse, Regressionstest und Gate.
+## Was ist bereits vorhanden?
 
-## Zielbild
+- lokaler SQLite-Kern
+- Kategorien, Einträge und frei definierbare Felder als fachliche Grundlage
+- Nur-Lese-Oberflächen für bereits freigegebene Datenpfade
+- Browser-Grundlagen und Masken-Baukasten
+- Prüfungen für Freeze-Schutz, Regressionen und UI-Grenzen
+- dokumentierte GRÜN/GELB/ROT-Gates
 
-Ein laienfreundliches Datenbanktool mit:
+### Neuester bestätigter Stand
 
-- Kategorien → Einträge → frei definierbare Felder
-- Text-, Zahlen-, Datums-, Boolean- und Choice-Felder
-- Suche, Papierkorb/Restore, Undo, Audit und Crash-Recovery
-- Autosave-/Statuskonzept
-- große/extra große Darstellung und High-Contrast-Modus
-- nachvollziehbare GRÜN/GELB/ROT-Selbstvalidierung
+**Iteration 92** ist auf `main` gemergt.
+
+Der neue Browser-Maskeneditor zeigt bereits:
+- eine Komponentenpalette,
+- eine feste 12-Spalten-Arbeitsfläche,
+- einen Vorschau-Bereich.
+
+Wichtig: Dieser Schritt ist absichtlich noch **ohne Speichern und ohne Datenbankzugriff**. Dadurch bleibt der bestehende Datenbankkern geschützt.
+
+## Für Einsteiger
+
+Die kurze Erklärung ohne Entwicklerbegriffe steht in:
+
+**`docs/LAIEN_START.md`**
+
+Dort steht:
+- was das Projekt heute kann,
+- was noch nicht freigegeben ist,
+- was GRÜN/GELB/ROT bedeutet,
+- welche Dateien normale Nutzer ignorieren können.
+
+## Schutz der Datenbank
+
+Bestimmte Bereiche sind eingefroren und dürfen nicht nebenbei verändert werden:
+
+- **CP-03:** Datenbankschema
+- **CP-06:** Domain-/Repository-Kern
+
+Eine Änderung an diesen Bereichen braucht eine eigene Begründung, passende Regressionstests und ein separates Gate.
 
 ## Technische Grundregel
 
 ```text
-UI
+Oberfläche
 ↓
 Application Service
 ↓
@@ -33,24 +57,20 @@ Domain / Repository
 SQLite
 ```
 
-Die UI ist austauschbar. Textual und ein lokales HTML-Frontend können denselben eingefrorenen Service-Kern verwenden.
+Eine Oberfläche darf nicht direkt SQL ausführen.
 
-## Entwicklungsstandard
+## Für Entwickler
 
-Jede größere Iteration endet mit:
+- Entwicklungsregeln: `AGENTS.md`
+- Mitwirken: `CONTRIBUTING.md`
+- Prüf- und Qualitätsstandard: `docs/PROJECT_STANDARDS.md`
+- historische Iterationsnachweise: `docs/development/`
 
-1. relevantem Testlauf,
-2. Selbstvalidierung,
-3. Gate-Status,
-4. professioneller TXT-Auswertung,
-5. Änderungsvolumen,
-6. nächster Optimierungsempfehlung.
+Die Dateien unter `docs/development/` sind bewusst technische Verlaufs- und Nachweisdokumente. Sie werden nicht nachträglich vereinfacht, weil sie den tatsächlichen Entwicklungsstand einer Iteration dokumentieren.
 
-Details: `docs/PROJECT_STANDARDS.md`.
+## Repository-Regel
 
-## Repository-Workflow
-
-Stabile Basis bleibt auf `main`. Änderungen erfolgen über kleine Branches und Pull Requests. Keine kosmetischen Massenänderungen neben funktionalen Patches.
+`main` ist die stabile Basis. Änderungen erfolgen über kleine, klar begrenzte Branches und Pull Requests. Keine kosmetischen Massenänderungen zusammen mit Produktänderungen.
 
 ## Lizenz
 
