@@ -139,6 +139,8 @@ def validate_template(template: MaskTemplate) -> tuple[MaskIssue, ...]:
 
         if not 1 <= len(field.label.strip()) <= 120:
             issues.append(MaskIssue("MASK-112", f"Feld '{field.key}' benötigt einen Titel mit 1 bis 120 Zeichen."))
+        if type(field.is_required) is not bool:
+            issues.append(MaskIssue("MASK-118", f"Feld '{field.key}' benötigt für is_required einen Boolean-Wert."))
 
         currency = _clean_optional(field.currency_code)
         if field.field_type is FieldType.MONEY:
@@ -281,7 +283,11 @@ def template_from_dict(data: dict[str, Any]) -> MaskTemplate:
         if data.get("schema_version") != _TEMPLATE_SCHEMA_VERSION:
             raise ValueError("unbekannte schema_version")
         raw_fields = data["fields"]
+        if not isinstance(raw_fields, list):
+            raise ValueError("fields muss eine JSON-Liste sein")
         for item in raw_fields:
+            if not isinstance(item, dict):
+                raise ValueError("jeder fields-Eintrag muss ein JSON-Objekt sein")
             raw_required = item.get("is_required", False)
             if type(raw_required) is not bool:
                 raise ValueError("is_required muss ein JSON-Boolean sein")

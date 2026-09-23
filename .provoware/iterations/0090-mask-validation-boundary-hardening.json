@@ -1,0 +1,75 @@
+{
+  "schema_version": 2,
+  "iteration": 90,
+  "agent": "mask-validation-boundary-hardening-agent-90",
+  "size": "M",
+  "goal": "Die zwei offenen P2-Validierungsbefunde aus I89 fail-closed beheben und anschließend am Store-End-to-End-Pfad absichern",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Masken-Vorlagen Validierung",
+    "summary": "I90 schließt zwei offene Fail-Closed-Lücken: nicht-objektförmige Feld-Einträge und nicht-boolesche is_required-Werte.",
+    "target_doc": "docs/development/ITERATION_90_MASK_VALIDATION_BOUNDARY_HARDENING.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0090-mask-validation-boundary-hardening.json",
+    "docs/development/ITERATION_90_MASK_VALIDATION_BOUNDARY_HARDENING.md",
+    "src/provoware_db/mask_builder/model.py",
+    "tests/mask_builder/test_model.py",
+    "tests/mask_builder/test_store.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/mask_builder/store.py",
+    "tests/mask_builder/test_model.py",
+    "tests/mask_builder/test_store.py"
+  ],
+  "direct_dependencies": [
+    "I88 mask builder foundation",
+    "I89 validation hardening",
+    "PR 94 documented P2 findings"
+  ],
+  "tests_required": [
+    "step 1 compile model and focused model regression",
+    "direct MaskFieldSpec with non-boolean is_required is rejected",
+    "non-object JSON fields item becomes MASK-190 instead of AttributeError",
+    "step 2 only after green intermediate gate: store-level STORE-422 and failed-save regressions",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because only mask-builder validation boundaries are affected",
+    "database tests because no database path changes",
+    "TUI/Web tests because runtime and UI are untouched",
+    "visual tests because no visual code changes"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/model.py",
+      "tests/mask_builder/test_model.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_model.py"
+    ]
+  },
+  "risks": [
+    "store-level translation remains to be proven in step 2",
+    "browser editor remains blocked until I90 is fully green"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no repository or CatalogService changes",
+    "no TUI/Web runtime changes",
+    "no writer lifecycle or direct SQL changes",
+    "no cosmetic refactoring"
+  ],
+  "expected_side_effects": [
+    "directly constructed invalid templates can no longer be serialized successfully",
+    "malformed field-array entries fail as MaskValidationError instead of leaking AttributeError"
+  ],
+  "screenshot_required": false,
+  "status": "MASK_VALIDATION_STEP_1_IMPLEMENTED_AWAITING_GATE"
+}

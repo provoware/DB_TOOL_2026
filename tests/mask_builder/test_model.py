@@ -100,6 +100,25 @@ def test_choice_field_rejects_empty_option() -> None:
     assert "MASK-115" in {issue.code for issue in validate_template(broken)}
 
 
+
+
+def test_direct_template_rejects_non_boolean_is_required() -> None:
+    template = _template()
+    broken_field = replace(template.fields[0], is_required="false")
+    broken = replace(template, fields=(broken_field, *template.fields[1:]))
+    assert "MASK-118" in {issue.code for issue in validate_template(broken)}
+
+
+def test_json_contract_rejects_non_object_field_item() -> None:
+    payload = template_to_dict(_template())
+    payload["fields"] = ["bad"]
+    try:
+        template_from_dict(payload)
+    except MaskValidationError as exc:
+        assert exc.issues[0].code == "MASK-190"
+    else:
+        raise AssertionError("non-object field item must fail closed")
+
 if __name__ == "__main__":
     test_valid_template_builds_deterministic_plan()
     test_overlap_and_duplicate_binding_are_rejected()
@@ -108,3 +127,5 @@ if __name__ == "__main__":
     test_json_contract_roundtrips_and_rejects_unknown_schema()
     test_json_contract_rejects_non_boolean_is_required()
     test_choice_field_rejects_empty_option()
+    test_direct_template_rejects_non_boolean_is_required()
+    test_json_contract_rejects_non_object_field_item()
