@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "iteration": 92,
+  "agent": "mask-builder-browser-shell-agent-92",
+  "size": "M",
+  "goal": "Ersten strikt isolierten Browser-Maskeneditor-Slice als statische Loopback-Shell mit Komponentenpalette, festem 12-Spalten-Canvas und Vorschau bereitstellen; keine Persistenz und keine Datenbankzugriffe",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Masken-Baukasten Browser-Shell",
+    "summary": "Der erste Browser-Editor zeigt Palette, 12-Spalten-Arbeitsfläche und Vorschau. Speichern und Datenbankzugriffe bleiben ausdrücklich außerhalb dieses Schritts.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0092-mask-builder-browser-shell.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/mask_builder/store.py",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/startup.py"
+  ],
+  "direct_dependencies": [
+    "I91 merged main f5e6b0875acde814afd662abbebc03a64326aabb",
+    "MaskElementKind and GRID_COLUMNS from mask_builder.model",
+    "existing GET-only database web runtime remains separate"
+  ],
+  "tests_required": [
+    "browser shell binds only to explicit loopback host",
+    "GET / returns HTML with component palette, exactly 12 grid column markers and preview region",
+    "palette exposes field, heading, section, note and separator kinds",
+    "unknown path returns 404",
+    "non-GET methods return 405 and cannot mutate state",
+    "module source has no storage, repository, CatalogService, MaskTemplateStore or SQL dependency",
+    "targeted browser-shell tests",
+    "strict manifest/scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because this isolated UI shell does not touch frozen core",
+    "database regressions because no database dependency is introduced",
+    "template store tests because saving is explicitly out of scope",
+    "POST preview tests because POST /api/preview is reserved for the next gated slice"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "the first slice is intentionally static and does not yet validate a draft through the model",
+    "interactive drag/drop must not bypass the canonical model in a later slice"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no change to existing provoware_db.web runtime",
+    "no POST endpoint in this slice",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "a standalone loopback-only editor shell can be rendered independently of the database web runtime",
+    "the next slice can add temporary POST /api/preview validation without widening the database boundary"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_GATE"
+}
