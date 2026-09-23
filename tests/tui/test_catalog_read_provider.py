@@ -1,11 +1,10 @@
 import sqlite3
 from pathlib import Path
 
-import pytest
-
 from provoware_db.application.catalog_service import CatalogService
 from provoware_db.domain.errors import NotFoundError
 from provoware_db.tui.catalog_provider import CatalogReadProvider
+from provoware_db.storage.sqlite.repositories import CategoryRepository, EntryRepository, FieldRepository
 
 
 SCHEMA = Path(__file__).parents[1] / "fixtures" / "cp03_main_schema_v1.sql"
@@ -30,14 +29,13 @@ def _seed(con: sqlite3.Connection) -> None:
 
 def _service_for_read_parity(con: sqlite3.Connection) -> CatalogService:
     service = object.__new__(CatalogService)
-    from provoware_db.storage.sqlite.repositories import CategoryRepository, EntryRepository, FieldRepository
     service.categories = CategoryRepository(con)
     service.entries = EntryRepository(con)
     service.fields = FieldRepository(con)
     return service
 
 
-def test_read_provider_matches_catalog_service_read_semantics():
+def test_read_provider_matches_catalog_service_read_semantics() -> None:
     con = _connection()
     _seed(con)
     provider = CatalogReadProvider(con)
@@ -49,18 +47,28 @@ def test_read_provider_matches_catalog_service_read_semantics():
     assert provider.list_fields_with_values("ent-1") == service.list_fields_with_values("ent-1")
 
 
-def test_missing_entry_preserves_dom_101():
+def test_missing_entry_preserves_dom_101() -> None:
     con = _connection()
     provider = CatalogReadProvider(con)
 
-    with pytest.raises(NotFoundError, match="DOM-101: Eintrag wurde nicht gefunden"):
+    try:
         provider.list_fields_with_values("missing")
+    except NotFoundError as exc:
+        assert str(exc) == "DOM-101: Eintrag wurde nicht gefunden."
+    else:
+        raise AssertionError("missing entry must raise DOM-101")
 
 
-def test_provider_does_not_own_or_close_borrowed_connection():
+def test_provider_does_not_own_or_close_borrowed_connection() -> None:
     con = _connection()
     provider = CatalogReadProvider(con)
 
     provider.list_categories()
-    con.execute("SELECT 1").fetchone()
+    assert con.execute("SELECT 1").fetchone()[0] == 1
     assert not hasattr(provider, "close")
+
+
+if __name__ == "__main__":
+    test_read_provider_matches_catalog_service_read_semantics()
+    test_missing_entry_preserves_dom_101()
+    test_provider_does_not_own_or_close_borrowed_connection()
