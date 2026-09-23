@@ -13,16 +13,27 @@ PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, auch für 
 - Prüfungen für Freeze-Schutz, Regressionen und UI-Grenzen
 - dokumentierte GRÜN/GELB/ROT-Gates
 
-### Neuester bestätigter Stand
+### Neuester bestätigter Produktstand
 
-**Iteration 92** ist auf `main` gemergt.
+**Iteration 92** ist der neueste bestätigte Produkt-Slice auf `main`.
 
-Der neue Browser-Maskeneditor zeigt bereits:
+Der Browser-Maskeneditor zeigt bereits:
 - eine Komponentenpalette,
 - eine feste 12-Spalten-Arbeitsfläche,
 - einen Vorschau-Bereich.
 
 Wichtig: Dieser Schritt ist absichtlich noch **ohne Speichern und ohne Datenbankzugriff**. Dadurch bleibt der bestehende Datenbankkern geschützt.
+
+### Repository-Hygiene
+
+**Iteration 98** schließt die historische Branch-Bereinigung ab.
+
+Der Remote-Zustand wurde vor dem Freeze verifiziert:
+- nur `main` ist noch als Remote-Branch vorhanden,
+- es gibt keine offenen Pull Requests,
+- historische Arbeitsbranches wurden nach I94–I97 nur nach belegter Freigabe entfernt.
+
+Dieser Hygiene-Freeze ist **keine neue Produktfunktion**. Er stellt nur sicher, dass die weitere Entwicklung wieder von einer sauberen, eindeutigen `main`-Basis startet.
 
 ## Für Einsteiger
 
@@ -71,6 +82,8 @@ Die Dateien unter `docs/development/` sind bewusst technische Verlaufs- und Nach
 ## Repository-Regel
 
 `main` ist die stabile Basis. Änderungen erfolgen über kleine, klar begrenzte Branches und Pull Requests. Keine kosmetischen Massenänderungen zusammen mit Produktänderungen.
+
+Nach I98 gilt zusätzlich: historische Arbeitsbranches werden nicht als Abkürzung für neue Entwicklung wiederverwendet. Neue Iterationen starten vom aktuellen `main`.
 
 ## Lizenz
 
