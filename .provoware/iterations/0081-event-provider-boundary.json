@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "iteration": 81,
+  "agent": "event-provider-boundary-agent-81",
+  "size": "S",
+  "goal": "Die vorhandene Event-Quelle und die kleinste noch offene Projektionsgrenze bestimmen, ohne Provider oder eingefrorene Bereiche zu verändern",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Event Provider Boundary",
+    "summary": "I81 bestätigt audit_events als read-only Quellkandidaten, stoppt die Provider-Implementierung aber an der noch nicht autorisierten EventItem.symbol-Projektion.",
+    "target_doc": "docs/development/ITERATION_81_EVENT_PROVIDER_BOUNDARY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0081-event-provider-boundary.json",
+    "docs/development/ITERATION_81_EVENT_PROVIDER_BOUNDARY.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_34_CP08_EVENTS_SCOPE.md",
+    "docs/development/ITERATION_71_RUNTIME_SOURCE_OWNERSHIP_INVENTORY.md",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/runtime.py",
+    "src/provoware_db/storage/sqlite/audit.py",
+    "tests/fixtures/cp03_main_schema_v1.sql"
+  ],
+  "direct_dependencies": [
+    "frozen CP-08 recent_events consumer contract",
+    "I71 unresolved productive EventReadPort ownership",
+    "I78 borrowed read-only connection ownership",
+    "existing audit_events schema"
+  ],
+  "tests_required": [
+    "iteration manifest validation",
+    "strict write_files scope validation",
+    "repository governance checks"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because no product code changes",
+    "TUI runtime tests because runtime is unchanged",
+    "browser tests because Web is untouched",
+    "storage/CP-03 tests because schema and storage are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "EventItem.symbol projection remains unresolved",
+    "productive EventReadPort and complete TUI composition root remain intentionally blocked"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-08 reopen",
+    "no schema/migration/storage/audit/repository changes",
+    "no TUI runtime or view-model changes",
+    "no event provider implementation",
+    "no writer lifecycle or starter wiring",
+    "no new event taxonomy"
+  ],
+  "expected_side_effects": [
+    "audit_events is documented as the existing read-only event source candidate",
+    "symbol projection is isolated as the only semantic blocker before a thin provider"
+  ],
+  "screenshot_required": false,
+  "status": "AUDIT_EVENT_SOURCE_IDENTIFIED_SYMBOL_PROJECTION_UNRESOLVED_AWAITING_GATE"
+}
