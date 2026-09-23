@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 87,
+  "agent": "readonly-catalog-provider-agent-87",
+  "size": "S",
+  "goal": "Einen minimalen CatalogReadPort-kompatiblen read-only Provider mit bestehender CatalogService-Leseparität implementieren",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Read-only Catalog Provider",
+    "summary": "I87 implementiert einen dünnen CatalogReadProvider auf geliehener SQLite-Connection ohne Writer- oder State-Lifecycle.",
+    "target_doc": "docs/development/ITERATION_87_READONLY_CATALOG_PROVIDER.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0087-readonly-catalog-provider.json",
+    "docs/development/ITERATION_87_READONLY_CATALOG_PROVIDER.md",
+    "src/provoware_db/tui/catalog_provider.py",
+    "tests/tui/test_catalog_read_provider.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_85_TUI_COMPOSITION_READ_BOUNDARY.md",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/storage/sqlite/repositories/category_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/entry_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "tests/fixtures/cp03_main_schema_v1.sql"
+  ],
+  "direct_dependencies": [
+    "I85 read-only composition boundary",
+    "I86 read-only inventory result",
+    "existing CatalogReadPort contract",
+    "existing repository read semantics"
+  ],
+  "tests_required": [
+    "compile provider and focused provider test",
+    "CatalogService read parity for categories entries and fields with values",
+    "missing category returns empty entries",
+    "missing entry preserves DOM-101",
+    "provider does not own or close borrowed connection",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the change is one isolated read provider",
+    "TUI runtime tests because runtime wiring is unchanged",
+    "browser tests because Web is untouched",
+    "schema migration tests because CP-03 and schema are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/catalog_provider.py",
+      "tests/tui/test_catalog_read_provider.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_catalog_read_provider.py"
+    ]
+  },
+  "risks": [
+    "future repository read changes must preserve parity with CatalogService",
+    "provider is not yet wired into a productive TUI composition root"
+  ],
+  "non_changes": [
+    "no CP-03 or other checkpoint reopen",
+    "no schema/migration/repository changes",
+    "no CatalogService changes",
+    "no TUI runtime/view-model changes",
+    "no health/event provider changes",
+    "no writer lifecycle or starter wiring"
+  ],
+  "expected_side_effects": [
+    "a CatalogReadPort-compatible provider now exists without constructing writers",
+    "the read-only TUI composition root can be reconsidered in a later iteration"
+  ],
+  "screenshot_required": false,
+  "status": "READONLY_CATALOG_PROVIDER_IMPLEMENTED_AWAITING_GATE"
+}
