@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Realer Chromium-Nachweis für den Masken-Baukasten",
-    "summary": "Der reale Browserlauf bestätigte Auswahl, Tastaturplatzierung und Rasterblockade. Ein sichtbarer alter Leerhinweis wurde mit einer einzelnen CSS-Regel korrigiert; Speichern und Datenbankzugriff bleiben unverändert ausgeschlossen.",
+    "summary": "Der reale Browserlauf bestätigte Auswahl, Tastaturplatzierung, Rasterblockade und 200-%-Bedienbarkeit. Ein sichtbarer alter Leerhinweis wurde mit einer einzelnen CSS-Regel korrigiert; Schritt 2 benötigte keinen weiteren Fix.",
     "target_doc": "docs/development/screenshots/iteration-0100/README.md"
   },
   "write_files": [
@@ -30,6 +30,8 @@
   "direct_dependencies": [
     "main 4354065c23cf4a9f0262fdd90e38ee7e13f14e58",
     "I99 temporary browser interaction",
+    "I100 Step 1 head 3be63d30a227f860a6c57c38d458245307406174",
+    "I100 Step 1 gate run 35927355985: success",
     "five-iteration screenshot milestone rule in AGENTS.md"
   ],
   "tests_required": [
@@ -61,8 +63,8 @@
     ]
   },
   "risks": [
-    "real-browser evidence is captured externally and represented by versioned machine evidence plus hashes",
-    "Step 2 may reveal responsive/focus defects that require one minimal repair",
+    "real-browser screenshots are represented in the repository by machine evidence and cryptographic hashes rather than committed binary previews",
+    "vertical scrolling at 200 percent is expected while horizontal overflow must remain absent",
     "no persistent template semantics are introduced"
   ],
   "non_changes": [
@@ -75,8 +77,8 @@
   ],
   "expected_side_effects": [
     "the stale empty-state label disappears after the first valid placement",
-    "I100 records auditable real-Chromium interaction evidence"
+    "I100 records auditable real-Chromium interaction and 200-percent accessibility evidence"
   ],
   "screenshot_required": true,
-  "status": "STEP1_REPAIRED_GREEN_AWAITING_GATE"
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
 }

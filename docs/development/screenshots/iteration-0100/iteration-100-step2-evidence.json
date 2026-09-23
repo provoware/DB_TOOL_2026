@@ -1,0 +1,40 @@
+{
+  "iteration": 100,
+  "step": 2,
+  "base_step1_head": "3be63d30a227f860a6c57c38d458245307406174",
+  "browser": "Chromium 144.0.7559.96",
+  "platform": "linux",
+  "zoom_equivalent": {
+    "css_viewport": {
+      "width": 720,
+      "height": 450
+    },
+    "device_scale_factor": 2,
+    "physical_screenshot": {
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "checks": {
+    "keyboard_selection_and_placement": true,
+    "preview_after_valid": "Eingabefeld · Spalten 3–6",
+    "palette_visible": true,
+    "canvas_visible": true,
+    "preview_visible": true,
+    "empty_state_hidden_after_placement": true,
+    "horizontal_overflow": false,
+    "focus": {
+      "outlineStyle": "solid",
+      "outlineWidth": "3px",
+      "outlineColor": "rgb(255, 230, 109)",
+      "outlineOffset": "2px"
+    },
+    "focus_visible_at_least_3px": true,
+    "browser_console_errors": [],
+    "page_errors": []
+  },
+  "status": "GREEN",
+  "hashes": {
+    "zoom_200_png_sha256": "91b55ba0c1cd05a6aabc224677c0be1b19fe4cd97d725b3a035c91220dc2efc6"
+  }
+}
