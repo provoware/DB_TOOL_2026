@@ -14,6 +14,7 @@ from .model import (
     template_to_dict,
     validate_template,
 )
+from .store import MaskTemplateStore, TemplateStoreConflict, TemplateStoreError
 
 __all__ = [
     "ApplicationFieldPlan",
@@ -23,8 +24,11 @@ __all__ = [
     "MaskFieldSpec",
     "MaskIssue",
     "MaskTemplate",
+    "MaskTemplateStore",
     "MaskValidationError",
     "TemplateApplicationPlan",
+    "TemplateStoreConflict",
+    "TemplateStoreError",
     "build_application_plan",
     "require_valid_template",
     "template_from_dict",

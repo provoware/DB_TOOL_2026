@@ -2,14 +2,14 @@
   "schema_version": 2,
   "iteration": 88,
   "agent": "mask-builder-foundation-agent-88",
-  "size": "M",
-  "goal": "Masken-Baukasten in zwei Schritten begründen: Schritt 1 Modell/Validierung/ApplicationPlan, Schritt 2 atomarer Vorlagenspeicher nach grünem Zwischen-Gate",
+  "size": "L",
+  "goal": "Masken-Baukasten in zwei Schritten begründen: Schritt 1 Modell/Validierung/ApplicationPlan, Schritt 2 atomarer Vorlagenspeicher mit Versions- und Korruptionsschutz",
   "change_kind": "product",
   "gate_profile": "product",
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Datenbank-Masken-Baukasten",
-    "summary": "I88 Schritt 1 schafft ein unabhängiges Vorlagenmodell mit Raster-, Bindungs- und Kollisionsvalidierung sowie deterministischem Anwendungsplan; noch ohne Datenbankwrites.",
+    "summary": "I88 liefert das unabhängige Vorlagenmodell plus atomaren JSON-Store. Vorlagen bleiben von autoritativen Datenbankwrites getrennt und können sicher validiert, gespeichert und geladen werden.",
     "target_doc": "docs/development/ITERATION_88_MASK_BUILDER_FOUNDATION.md"
   },
   "write_files": [
@@ -17,7 +17,9 @@
     "docs/development/ITERATION_88_MASK_BUILDER_FOUNDATION.md",
     "src/provoware_db/mask_builder/__init__.py",
     "src/provoware_db/mask_builder/model.py",
-    "tests/mask_builder/test_model.py"
+    "src/provoware_db/mask_builder/store.py",
+    "tests/mask_builder/test_model.py",
+    "tests/mask_builder/test_store.py"
   ],
   "read_files": [
     "AGENTS.md",
@@ -26,19 +28,23 @@
   "direct_dependencies": [
     "existing FieldType contract",
     "I59 two-step iteration governance",
+    "step 1 model gate run 49 successful",
     "user-approved standalone mask-builder module boundary"
   ],
   "tests_required": [
-    "compile mask builder model and focused model test",
-    "valid template and deterministic application plan",
-    "overlap and duplicate field binding rejection",
-    "unknown and unplaced field rejection",
-    "grid bounds fail closed",
-    "JSON contract roundtrip and unknown schema rejection",
+    "step 1 model gate remains accepted without rerun because model.py and test_model.py are unchanged",
+    "compile package init store and focused store test",
+    "atomic template JSON roundtrip and sorted listing",
+    "existing templates require explicit expected version",
+    "updates require monotonic version and reject stale writers",
+    "corrupt template JSON fails closed",
+    "invalid update leaves last valid template unchanged",
+    "file/template identity mismatch fails closed",
     "strict write_files scope validation"
   ],
   "tests_explicitly_not_run": [
-    "full suite because step 1 is an isolated new module",
+    "full suite because I88 is an isolated new module",
+    "step 1 model test is not rerun because its relevant code is unchanged after a green intermediate gate",
     "database tests because no database read or write path changes",
     "TUI/Web runtime tests because no existing runtime is changed",
     "visual tests because Drag and Drop UI starts only after the foundation is frozen"
@@ -47,17 +53,17 @@
   "ci": {
     "compile": [
       "src/provoware_db/mask_builder/__init__.py",
-      "src/provoware_db/mask_builder/model.py",
-      "tests/mask_builder/test_model.py"
+      "src/provoware_db/mask_builder/store.py",
+      "tests/mask_builder/test_store.py"
     ],
     "python_tests": [
-      "tests/mask_builder/test_model.py"
+      "tests/mask_builder/test_store.py"
     ]
   },
   "risks": [
-    "step 2 persistence remains blocked until the model gate is green",
-    "real database writes are deliberately not part of I88",
-    "future UI must not bypass the model validation contract"
+    "template JSON storage is local filesystem state and not yet exposed through a user-facing editor",
+    "real database writes remain deliberately outside I88",
+    "future UI must not bypass model or store validation contracts"
   ],
   "non_changes": [
     "no CP-03 or CP-06 reopen",
@@ -68,9 +74,10 @@
     "no new runtime dependency"
   ],
   "expected_side_effects": [
-    "mask templates become deterministic validated values independent of storage and UI",
+    "mask templates are deterministic validated values independent of storage and UI",
+    "validated templates can be atomically saved loaded listed and version-conflict checked",
     "template application can be previewed as a plan without touching authoritative data"
   ],
   "screenshot_required": false,
-  "status": "MASK_BUILDER_STEP_1_MODEL_IMPLEMENTED_AWAITING_GATE"
+  "status": "MASK_BUILDER_FOUNDATION_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
