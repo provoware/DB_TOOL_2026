@@ -39,6 +39,42 @@ def test_temporary_interaction_selects_palette_and_places_in_browser_state() -> 
     assert 'preview.appendChild(list);' in html
 
 
+def test_grid_boundaries_are_blocked_before_draft_mutation() -> None:
+    html = render_editor_shell()
+    assert 'const gridColumns = Number(canvas.dataset.gridColumns);' in html
+    assert 'function placementFitsGrid(column, width)' in html
+    assert 'column + width <= gridColumns' in html
+    assert 'if (!placementFitsGrid(column, selectedWidth)) {' in html
+    assert 'Nicht platziert:' in html
+    assert 'placementFitsGrid(1, gridColumns)' in html
+    assert 'throw new Error("Masken-Baukasten Raster-Selbstprüfung fehlgeschlagen.")' in html
+    assert 'data-width="12"' in html
+    assert 'data-width="6"' in html
+    assert 'data-width="4"' in html
+
+
+def test_preview_and_draft_identifiers_are_deterministic() -> None:
+    html = render_editor_shell()
+    assert 'id: "draft-" + String(draftElements.length + 1)' in html
+    assert 'draftElements.forEach((item, index) =>' in html
+    assert 'draftElements.forEach((item) =>' in html
+    assert 'row.dataset.draftId = item.id;' in html
+    forbidden = ("Math.random", "Date.now", "crypto.randomUUID", "performance.now")
+    assert all(token not in html for token in forbidden)
+
+
+def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
+    html = render_editor_shell()
+    assert html.count('aria-keyshortcuts="Enter Space ArrowLeft ArrowRight"') == GRID_COLUMNS
+    assert 'button.addEventListener("keydown", (event) =>' in html
+    assert 'event.key === "ArrowLeft"' in html
+    assert 'event.key === "ArrowRight"' in html
+    assert 'targetButtons[next].focus();' in html
+    assert 'button:focus-visible' in html
+    assert 'outline:3px solid #ffe66d' in html
+    assert 'id="interaction-status" role="status" aria-live="polite"' in html
+
+
 def test_temporary_interaction_has_no_persistence_or_network_write_path() -> None:
     html = render_editor_shell()
     forbidden = (
@@ -86,11 +122,14 @@ def test_browser_shell_has_no_database_or_store_dependency() -> None:
 def main() -> None:
     test_shell_contains_palette_12_column_canvas_and_preview()
     test_temporary_interaction_selects_palette_and_places_in_browser_state()
+    test_grid_boundaries_are_blocked_before_draft_mutation()
+    test_preview_and_draft_identifiers_are_deterministic()
+    test_keyboard_contract_uses_native_buttons_focus_and_live_status()
     test_temporary_interaction_has_no_persistence_or_network_write_path()
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY INTERACTION STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY INTERACTION I99: GRÜN")
 
 
 if __name__ == "__main__":

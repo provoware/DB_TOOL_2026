@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporäre Interaktion im Masken-Baukasten",
-    "summary": "Komponenten können im Browserentwurf ausgewählt und auf einer Zielspalte platziert werden. Der Entwurf bleibt flüchtig: kein Speichern, kein POST und kein Datenbankzugriff.",
+    "summary": "Komponenten können im Browserentwurf ausgewählt und auf gültigen Zielspalten platziert werden. Breite Elemente werden an unpassenden Rasterpositionen blockiert; Pfeiltasten wechseln die Zielspalte, Enter oder Leertaste platziert. Der Entwurf bleibt flüchtig und ohne Datenbankzugriff.",
     "target_doc": null
   },
   "write_files": [
@@ -28,7 +28,8 @@
     "main 880fac8e89343529de93bb3d3a87e1a6e45bff09",
     "I92 isolated GET-only browser shell",
     "MaskElementKind and GRID_COLUMNS from mask_builder.model",
-    "I98 repository hygiene freeze"
+    "I98 repository hygiene freeze",
+    "I99 Step 1 gate run 35925571379: success"
   ],
   "tests_required": [
     "Step 1: targeted browser-shell compile and tests",
@@ -38,7 +39,8 @@
     "Step 1: HTTP surface remains GET-only and loopback-only",
     "Step 2: reject placements whose component width would exceed the 12-column grid",
     "Step 2: deterministic preview order and identifiers",
-    "Step 2: keyboard placement contract using native buttons plus explicit focus navigation",
+    "Step 2: keyboard placement contract using native buttons plus explicit left/right focus navigation",
+    "Step 2: live status feedback and visible focus contract",
     "Step 2: final targeted UI and repository-foundation gates"
   ],
   "tests_explicitly_not_run": [
@@ -59,8 +61,8 @@
   },
   "risks": [
     "browser-only interaction is intentionally ephemeral and disappears on reload",
-    "Step 1 does not yet reject a target column that would be invalid for wider component defaults",
-    "no persistent template semantics are introduced in this iteration"
+    "component widths are temporary editor defaults and are not persisted template semantics",
+    "the targeted tests validate the generated interaction contract but do not introduce a new browser automation dependency"
   ],
   "non_changes": [
     "no CP-03 or CP-06 reopen",
@@ -72,9 +74,11 @@
     "no dependency addition"
   ],
   "expected_side_effects": [
-    "users can create a temporary visual draft by selecting a palette component and a target column",
+    "users can build a temporary visual draft from palette components and explicit grid targets",
+    "invalid right-edge placements are blocked before browser draft state mutates",
+    "preview order and draft identifiers are deterministic for the current page session",
     "reloading the page intentionally clears the draft"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
