@@ -1,0 +1,66 @@
+{
+  "schema_version": 2,
+  "iteration": 96,
+  "agent": "historical-branch-archive-agent-96",
+  "size": "S",
+  "goal": "Die zwei historischen Sonderbranches release/i20-package und i21/visual-parity fachlich entscheiden und nur ihre noch nützlichen Muster als nicht-produktive Archivnotiz sichern",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Historische Branches sicher archivieren",
+    "summary": "Zwei alte, nie gemergte Branches werden nicht in den Produktcode übernommen. Nur wiederverwendbare Release- und UI-Prüfmuster sowie Herkunfts-SHAs werden dokumentiert.",
+    "target_doc": "docs/development/archive/I96_HISTORICAL_BRANCH_DECISIONS.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0096-historical-branch-archive.json",
+    "docs/development/archive/I96_HISTORICAL_BRANCH_DECISIONS.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "docs/PROJECT_STANDARDS.md",
+    ".github/workflows/iteration-gates.yml",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.css",
+    "src/provoware_db/web/templates/index.html"
+  ],
+  "direct_dependencies": [
+    "main c709bc58935a9edd609013cb56a89b9140d14fc7",
+    "release/i20-package tip 6a20a9b4ba4fc9b66f99139b7df13a07bde2b45d",
+    "i21/visual-parity tip cbea4d8090d730d70929f7962ada51372abb20e2",
+    "I95 branch-hygiene decision"
+  ],
+  "tests_required": [
+    "strict manifest and scope validation",
+    "changed paths remain documentation/iteration metadata only",
+    "no product, runtime, CI workflow, database, schema or frozen-core path changes"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "database regressions because no database path changes",
+    "visual tests because no current UI is changed"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "archive wording must not present historical I20 packaging as a current release path",
+    "historical I21 design values must not become accidental current UI requirements"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no runtime or product code changes",
+    "no CI workflow activation",
+    "no cherry-pick or merge from either historical branch"
+  ],
+  "expected_side_effects": [
+    "useful historical release and UI quality patterns remain discoverable after later branch deletion",
+    "both special branches can be classified for deletion after this archive note is merged"
+  ],
+  "screenshot_required": false,
+  "status": "ARCHIVE_DECISION_IMPLEMENTED_AWAITING_GATE"
+}
