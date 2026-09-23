@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "iteration": 98,
+  "agent": "repository-hygiene-freeze-agent-98",
+  "size": "S",
+  "goal": "Schritt 1: den verifizierten Zustand nur-main/keine offenen PRs als Repository-Hygiene-Freeze dokumentieren; Schritt 2 nach grünem Zwischen-Gate: README auf den formalen I98-Freeze und den danach wieder geöffneten Produktentwicklungsstatus aktualisieren.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Aktuellen Repository- und Entwicklungsstatus verständlich halten",
+    "summary": "Für normale Nutzer ändert sich keine Funktion. Das README wurde nach grünem Schritt 1 so aktualisiert, dass Produktstand I92 und Repository-Hygiene-Freeze I98 klar getrennt erkennbar sind.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0098-repository-hygiene-freeze.json",
+    "docs/development/archive/I98_REPOSITORY_HYGIENE_FREEZE.md",
+    "README.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "docs/PROJECT_STANDARDS.md",
+    ".provoware/iterations/0096-historical-branch-archive.json",
+    "docs/development/archive/I96_HISTORICAL_BRANCH_DECISIONS.md",
+    ".github/workflows/iteration-gates.yml",
+    "README.md"
+  ],
+  "direct_dependencies": [
+    "main d7f70614cd777be7a226238acf5544b27436a06d",
+    "I94-I97 evidence-based branch cleanup decisions",
+    "verified remote state: only main",
+    "verified open pull requests: none",
+    "Step 1 gate run 35924674979: success"
+  ],
+  "tests_required": [
+    "Step 1: manifest V2 validation and docs-only scope gate",
+    "Step 1: verify freeze document records only repository state and no product change",
+    "Step 2: README-only status update after green Step 1",
+    "Step 2: final docs-only scope gate"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "database regressions because no database path changes",
+    "visual tests because no UI is changed",
+    "full suite because this is repository documentation only"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "freeze wording must not imply product maturity beyond the actually merged I92 product slice",
+    "README must distinguish repository hygiene completion from feature completion"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no runtime or product code changes",
+    "no CI workflow changes",
+    "no historical branch restoration"
+  ],
+  "expected_side_effects": [
+    "repository hygiene becomes an explicit frozen checkpoint",
+    "future product work starts from a clean main-only remote state"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
