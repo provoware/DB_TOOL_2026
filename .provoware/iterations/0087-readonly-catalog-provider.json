@@ -2,7 +2,7 @@
   "schema_version": 2,
   "iteration": 87,
   "agent": "readonly-catalog-provider-agent-87",
-  "size": "S",
+  "size": "M",
   "goal": "Einen minimalen CatalogReadPort-kompatiblen read-only Provider mit bestehender CatalogService-Leseparität implementieren",
   "change_kind": "product",
   "gate_profile": "product",
@@ -29,9 +29,8 @@
   ],
   "direct_dependencies": [
     "I85 read-only composition boundary",
-    "I86 read-only inventory result",
     "existing CatalogReadPort contract",
-    "existing repository read semantics"
+    "existing CatalogService read semantics verified directly against repository reads in I87"
   ],
   "tests_required": [
     "compile provider and focused provider test",
