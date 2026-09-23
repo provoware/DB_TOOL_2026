@@ -1,0 +1,55 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from provoware_db.mask_builder.browser_shell import application, make_editor_server, render_editor_shell
+from provoware_db.mask_builder.model import GRID_COLUMNS, MaskElementKind
+
+
+def _request(method: str = "GET", path: str = "/") -> tuple[str, dict[str, str], bytes]:
+    captured: dict[str, object] = {}
+
+    def start_response(status: str, headers: list[tuple[str, str]]) -> None:
+        captured["status"] = status
+        captured["headers"] = dict(headers)
+
+    body = b"".join(application({"REQUEST_METHOD": method, "PATH_INFO": path}, start_response))
+    return str(captured["status"]), dict(captured["headers"]), body
+
+
+def test_shell_contains_palette_12_column_canvas_and_preview() -> None:
+    html = render_editor_shell()
+    assert 'data-grid-columns="12"' in html
+    assert html.count('class="grid-column"') == GRID_COLUMNS
+    assert 'id="preview"' in html
+    for kind in MaskElementKind:
+        assert f'data-kind="{kind.value}"' in html
+    assert "ohne Speichern und ohne Datenbankzugriff" in html
+
+
+def test_root_is_get_only_and_unknown_paths_are_not_found() -> None:
+    status, headers, body = _request()
+    assert status == "200 OK"
+    assert headers["Cache-Control"] == "no-store"
+    assert b"12-Spalten-Arbeitsfl" in body
+
+    status, headers, _ = _request("POST", "/")
+    assert status == "405 Method Not Allowed"
+    assert headers["Allow"] == "GET"
+
+    status, _, _ = _request("GET", "/api/preview")
+    assert status == "404 Not Found"
+
+
+def test_server_rejects_non_loopback_binding() -> None:
+    with pytest.raises(ValueError, match="Loopback"):
+        make_editor_server("0.0.0.0", 0)
+
+
+def test_browser_shell_has_no_database_or_store_dependency() -> None:
+    source = Path(__file__).parents[2] / "src" / "provoware_db" / "mask_builder" / "browser_shell.py"
+    text = source.read_text(encoding="utf-8")
+    forbidden = ("MaskTemplateStore", "CatalogService", "sqlite", "repository", "open_connection", "execute(", "INSERT ", "UPDATE ", "DELETE ")
+    assert all(token not in text for token in forbidden)
