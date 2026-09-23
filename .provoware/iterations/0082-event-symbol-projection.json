@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "iteration": 82,
+  "agent": "event-symbol-projection-agent-82",
+  "size": "S",
+  "goal": "Die kleinste deterministische EventItem.symbol-Projektion autorisieren, ohne Audit-Semantik oder eingefrorene Bereiche zu erweitern",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Event Symbol Projection",
+    "summary": "I82 autorisiert das bereits in der CP-08-Regressionsdarstellung verwendete neutrale konstante Zeichen · als reine Präsentationsmarke ohne neue Audit-Taxonomie.",
+    "target_doc": "docs/development/ITERATION_82_EVENT_SYMBOL_PROJECTION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0082-event-symbol-projection.json",
+    "docs/development/ITERATION_82_EVENT_SYMBOL_PROJECTION.md"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_34_CP08_EVENTS_SCOPE.md",
+    "docs/development/ITERATION_81_EVENT_PROVIDER_BOUNDARY.md",
+    "src/provoware_db/tui/view_models.py",
+    "src/provoware_db/tui/runtime.py",
+    "tests/tui/test_runtime_events.py"
+  ],
+  "direct_dependencies": [
+    "frozen CP-08 EventItem consumer contract",
+    "I81 audit_events source candidate and unresolved symbol projection",
+    "existing CP-08 event regression using neutral · symbol"
+  ],
+  "tests_required": [
+    "iteration manifest validation",
+    "strict write_files scope validation",
+    "repository governance checks"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because no product code changes",
+    "TUI runtime tests because runtime is unchanged",
+    "browser tests because Web is untouched",
+    "storage/CP-03 tests because schema and storage are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "productive EventReadPort remains unimplemented",
+    "later provider must still prove deterministic SQL ordering, limit handling and time-label projection"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-08 reopen",
+    "no schema/migration/storage/audit/repository changes",
+    "no TUI runtime or view-model changes",
+    "no event provider implementation",
+    "no action/entity_type symbol mapping",
+    "no new event taxonomy",
+    "no writer lifecycle or starter wiring"
+  ],
+  "expected_side_effects": [
+    "EventItem.symbol semantic blocker is closed with a neutral presentation-only constant",
+    "a later thin read-only event provider can be evaluated without inventing event classification"
+  ],
+  "screenshot_required": false,
+  "status": "EVENT_SYMBOL_NEUTRAL_CONSTANT_DOT_AUTHORIZED_AWAITING_GATE"
+}
