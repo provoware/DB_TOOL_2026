@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "iteration": 85,
+  "agent": "tui-composition-read-boundary-agent-85",
+  "size": "XS",
+  "goal": "Die read-only TUI-Composition-Grenze vor Produkt-Wiring gegen die reale CatalogService-Kopplung korrigieren",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "TUI Composition Read Boundary",
+    "summary": "I85 stoppt den geplanten read-only Composition-Root, weil CatalogService bei Konstruktion Writer- und State-Lifecycle erzwingt.",
+    "target_doc": "docs/development/ITERATION_85_TUI_COMPOSITION_READ_BOUNDARY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0085-tui-composition-read-boundary.json",
+    "docs/development/ITERATION_85_TUI_COMPOSITION_READ_BOUNDARY.md"
+  ],
+  "read_files": [
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/tui/read_adapter.py",
+    "src/provoware_db/tui/health_provider.py",
+    "src/provoware_db/tui/event_provider.py",
+    "src/provoware_db/storage/sqlite/repositories/category_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/entry_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py"
+  ],
+  "direct_dependencies": [
+    "I78 read-only connection ownership",
+    "I79 health provider",
+    "I83 event provider",
+    "existing TuiCatalogReadAdapter CatalogReadPort contract"
+  ],
+  "tests_required": [
+    "strict write_files scope validation",
+    "manifest and governance gates"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "full suite because no runtime behavior changes",
+    "browser and visual tests because UI is untouched"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "a future read-only catalog provider must preserve CatalogService read semantics without duplicating writer coupling"
+  ],
+  "non_changes": [
+    "no CP-03 or other checkpoint reopen",
+    "no schema/migration/storage/repository changes",
+    "no CatalogService changes",
+    "no TUI runtime/view-model changes",
+    "no health/event provider changes",
+    "no writer lifecycle or starter wiring"
+  ],
+  "expected_side_effects": [
+    "the unsafe I84 composition assumption is corrected before product wiring",
+    "the next integration blocker is isolated to a CatalogReadPort-compatible read-only provider"
+  ],
+  "screenshot_required": false,
+  "status": "READONLY_TUI_COMPOSITION_BLOCKED_BY_CATALOG_SERVICE_WRITE_COUPLING_AWAITING_GATE"
+}
