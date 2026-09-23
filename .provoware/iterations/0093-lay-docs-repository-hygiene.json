@@ -4,8 +4,8 @@
   "agent": "lay-docs-repository-hygiene-agent-93",
   "size": "M",
   "goal": "Nutzerrelevante Einstiegstexte klar von technischen Audit- und Entwicklerdokumenten trennen und Repository-Hygiene lesbar vorbereiten, ohne Produktcode oder eingefrorene Bereiche zu verändern",
-  "change_kind": "documentation",
-  "gate_profile": "documentation",
+  "change_kind": "docs",
+  "gate_profile": "docs",
   "write_files": [
     ".provoware/iterations/0093-lay-docs-repository-hygiene.json",
     "README.md",
