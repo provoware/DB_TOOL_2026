@@ -4,6 +4,10 @@
 
 I87 ergänzt ausschließlich einen dünnen `CatalogReadProvider` für den bestehenden `CatalogReadPort`. Er arbeitet auf einer geliehenen SQLite-Connection und konstruiert nur `CategoryRepository`, `EntryRepository` und `FieldRepository`.
 
+## Nachvollziehbare Basis
+
+I87 stützt sich nicht auf einen separaten I86-Checkpoint. Die fachliche Basis ist direkt versioniert und überprüfbar: I85 hat die Writer-Kopplung des `CatalogService` als Blocker isoliert; I87 vergleicht anschließend die drei benötigten Read-Operationen unmittelbar mit den bereits vorhandenen `CatalogService`-Methoden und den bestehenden Repository-Reads.
+
 ## Semantik
 
 Die drei Reads bleiben identisch zur vorhandenen `CatalogService`-Lesesemantik:
@@ -20,7 +24,7 @@ Keine Änderung an CP-03 oder anderen eingefrorenen Checkpoints, Schema/Migratio
 
 ## Prüfstrategie
 
-Nur fokussierte Paritätstests für die drei Reads, `DOM-101` und fehlende Close-Ownership. Keine unnötige Vollsuite oder Browser-/Visual-Tests.
+Nur fokussierte, dependency-freie Paritätstests für die drei Reads, `DOM-101` und fehlende Close-Ownership. Der Test wird wie vom Targeted-Gate vorgesehen direkt mit Python ausgeführt und benötigt kein zusätzliches `pytest`-Paket. Keine unnötige Vollsuite oder Browser-/Visual-Tests.
 
 ## Verbleibendes Risiko
 
