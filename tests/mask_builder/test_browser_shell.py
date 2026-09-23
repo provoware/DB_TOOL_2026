@@ -75,6 +75,11 @@ def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
     assert 'id="interaction-status" role="status" aria-live="polite"' in html
 
 
+def test_empty_state_hidden_rule_wins_after_placement() -> None:
+    html = render_editor_shell()
+    assert ".canvas-empty[hidden] { display:none; }" in html
+
+
 def test_temporary_interaction_has_no_persistence_or_network_write_path() -> None:
     html = render_editor_shell()
     forbidden = (
@@ -125,6 +130,7 @@ def main() -> None:
     test_grid_boundaries_are_blocked_before_draft_mutation()
     test_preview_and_draft_identifiers_are_deterministic()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
+    test_empty_state_hidden_rule_wins_after_placement()
     test_temporary_interaction_has_no_persistence_or_network_write_path()
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()

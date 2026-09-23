@@ -1,0 +1,57 @@
+{
+  "iteration": 100,
+  "step": 1,
+  "base_main_sha": "4354065c23cf4a9f0262fdd90e38ee7e13f14e58",
+  "browser": "Chromium 144.0.7559.96",
+  "platform": "linux",
+  "render_method": "Playwright set_content using exact render_editor_shell output from I99 browser_shell.py plus the one-line I100 candidate CSS fix; Chromium executes the real HTML/CSS/JS interaction path",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "device_scale_factor": 1
+  },
+  "initial_finding": {
+    "status": "RED",
+    "finding": "After a valid placement, the text 'Noch keine Komponenten platziert.' remained visibly rendered.",
+    "cause": ".canvas-empty { display:grid } overrode the element's hidden presentation.",
+    "repair": ".canvas-empty[hidden] { display:none; }"
+  },
+  "checks": {
+    "palette_keyboard_selection": true,
+    "keyboard_target_navigation": {
+      "start_column": 1,
+      "final_column": 3,
+      "keys": [
+        "ArrowRight",
+        "ArrowRight"
+      ]
+    },
+    "keyboard_place_enter": true,
+    "placed_count_after_valid": 1,
+    "preview_after_valid": "Eingabefeld · Spalten 3–6",
+    "invalid_full_width_at_column_12_blocked": true,
+    "empty_state_hidden_after_placement": true,
+    "invalid_target_columns_for_heading": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "horizontal_overflow": false,
+    "browser_console_errors": [],
+    "page_errors": [],
+    "screenshot_exact_1440x900": true
+  },
+  "status": "GREEN",
+  "hashes": {
+    "original_png_sha256": "d22503b6a483170b6ca235cfa57922ce1c41464eb97de954f80c33dad8354a7a",
+    "generated_preview_webp_sha256": "aca2d618a61962974b0957f93b2e4cafe22eb9056b5d841bb003f807ca244963"
+  }
+}

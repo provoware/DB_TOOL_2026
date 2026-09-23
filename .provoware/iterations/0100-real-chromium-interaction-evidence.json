@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "iteration": 100,
+  "agent": "real-chromium-interaction-evidence-agent-100",
+  "size": "L",
+  "goal": "Schritt 1: echten Chromium-Interaktionslauf bei 1440x900 durchführen und einen reproduzierbaren visuellen Befund minimal beheben. Schritt 2 nach grünem Zwischen-Gate: denselben Slice bei 200-%-Zoom-Äquivalent, sichtbarem Fokus und ohne horizontalen Overflow prüfen; nur bei reproduzierbarem Befund minimal korrigieren.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Realer Chromium-Nachweis für den Masken-Baukasten",
+    "summary": "Der reale Browserlauf bestätigte Auswahl, Tastaturplatzierung, Rasterblockade und 200-%-Bedienbarkeit. Ein sichtbarer alter Leerhinweis wurde mit einer einzelnen CSS-Regel korrigiert; Schritt 2 benötigte keinen weiteren Fix.",
+    "target_doc": "docs/development/screenshots/iteration-0100/README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0100-real-chromium-interaction-evidence.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "docs/development/screenshots/iteration-0100/README.md",
+    "docs/development/screenshots/iteration-0100/iteration-100-step1-evidence.json",
+    "docs/development/screenshots/iteration-0100/iteration-100-step2-evidence.json"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    ".provoware/iterations/0099-mask-builder-temporary-interaction.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 4354065c23cf4a9f0262fdd90e38ee7e13f14e58",
+    "I99 temporary browser interaction",
+    "I100 Step 1 head 3be63d30a227f860a6c57c38d458245307406174",
+    "I100 Step 1 gate run 35927355985: success",
+    "five-iteration screenshot milestone rule in AGENTS.md"
+  ],
+  "tests_required": [
+    "Step 1: real Chromium 1440x900 interaction run",
+    "Step 1: palette keyboard selection and arrow-key target navigation",
+    "Step 1: valid Enter placement and deterministic preview",
+    "Step 1: invalid full-width right-edge placement blocked",
+    "Step 1: empty-state hidden after successful placement",
+    "Step 1: no horizontal overflow, browser console errors or page errors",
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 2: 200-percent zoom-equivalent browser run",
+    "Step 2: visible focus outline at least 3px",
+    "Step 2: no horizontal overflow and interaction remains usable",
+    "Step 2: final targeted UI and repository-foundation gates"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the change is isolated to the browser mask-builder shell",
+    "database regressions because no database dependency or route is introduced",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "real-browser screenshots are represented in the repository by machine evidence and cryptographic hashes rather than committed binary previews",
+    "vertical scrolling at 200 percent is expected while horizontal overflow must remain absent",
+    "no persistent template semantics are introduced"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "the stale empty-state label disappears after the first valid placement",
+    "I100 records auditable real-Chromium interaction and 200-percent accessibility evidence"
+  ],
+  "screenshot_required": true,
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
+}
