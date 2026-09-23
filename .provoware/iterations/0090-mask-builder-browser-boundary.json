@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "iteration": 90,
+  "agent": "mask-builder-browser-boundary-agent-90",
+  "size": "S",
+  "goal": "Eigenständige sichere Browser-Editor-Grenze festlegen, ohne den GET-only Katalog-Webpfad oder Frozen Core zu öffnen",
+  "change_kind": "decision",
+  "gate_profile": "documentation",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Masken-Baukasten Browser-Grenze",
+    "summary": "Der spätere Masken-Editor bleibt ein eigener lokaler UI-Pfad und wird nicht in den GET-only Katalog-Webserver eingebaut.",
+    "target_doc": "docs/development/ITERATION_90_MASK_BUILDER_BROWSER_BOUNDARY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0090-mask-builder-browser-boundary.json",
+    "docs/development/ITERATION_90_MASK_BUILDER_BROWSER_BOUNDARY.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "docs/development/ITERATION_88_MASK_BUILDER_FOUNDATION.md",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/web/http_app.py"
+  ],
+  "direct_dependencies": [
+    "I88 mask builder foundation",
+    "I89 validation hardening",
+    "existing GET-only WSGI catalog contract",
+    "I59 two-step iteration governance"
+  ],
+  "steps": [
+    "Schritt 1: Scope-Entscheidung fuer eigenstaendige lokale Mask-Builder-UI statt Erweiterung des GET-only Katalog-Webpfads",
+    "Schritt 2: minimalen Vertrag fuer Palette, 12-Spalten-Canvas und validierte Live-Vorschau festlegen"
+  ],
+  "tests_required": [
+    "documentation structure and scope consistency",
+    "confirm existing web/http_app.py remains GET-only and unchanged",
+    "confirm no CP-03 CP-06 schema repository writer or SQL path is in write_files"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "full suite because no runtime path changes",
+    "database tests because no database path changes",
+    "visual tests because no UI is implemented"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "browser UI is still not implemented",
+    "future editor interaction model still requires focused keyboard and accessibility design",
+    "future persistence actions must continue to route only through MaskTemplateStore"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no repository or CatalogService changes",
+    "no existing web/http_app.py changes",
+    "no writer lifecycle or direct SQL writes",
+    "no new runtime dependency"
+  ],
+  "expected_side_effects": [
+    "future browser editor work has a narrow independent security boundary",
+    "GET-only catalog web contract remains intact",
+    "next product slice can be tested without touching authoritative database writes"
+  ],
+  "screenshot_required": false,
+  "status": "MASK_BUILDER_BROWSER_BOUNDARY_DECIDED"
+}
