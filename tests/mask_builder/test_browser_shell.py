@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from provoware_db.mask_builder.browser_shell import application, make_editor_server, render_editor_shell
 from provoware_db.mask_builder.model import GRID_COLUMNS, MaskElementKind
 
@@ -44,8 +42,12 @@ def test_root_is_get_only_and_unknown_paths_are_not_found() -> None:
 
 
 def test_server_rejects_non_loopback_binding() -> None:
-    with pytest.raises(ValueError, match="Loopback"):
+    try:
         make_editor_server("0.0.0.0", 0)
+    except ValueError as exc:
+        assert "Loopback" in str(exc)
+    else:
+        raise AssertionError("non-loopback binding must fail closed")
 
 
 def test_browser_shell_has_no_database_or_store_dependency() -> None:
@@ -53,3 +55,15 @@ def test_browser_shell_has_no_database_or_store_dependency() -> None:
     text = source.read_text(encoding="utf-8")
     forbidden = ("MaskTemplateStore", "CatalogService", "sqlite", "repository", "open_connection", "execute(", "INSERT ", "UPDATE ", "DELETE ")
     assert all(token not in text for token in forbidden)
+
+
+def main() -> None:
+    test_shell_contains_palette_12_column_canvas_and_preview()
+    test_root_is_get_only_and_unknown_paths_are_not_found()
+    test_server_rejects_non_loopback_binding()
+    test_browser_shell_has_no_database_or_store_dependency()
+    print("MASK BUILDER BROWSER SHELL: GRÜN")
+
+
+if __name__ == "__main__":
+    main()
