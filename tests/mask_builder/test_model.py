@@ -36,7 +36,6 @@ def _template() -> MaskTemplate:
 def test_valid_template_builds_deterministic_plan() -> None:
     template = _template()
     assert validate_template(template) == ()
-
     plan = build_application_plan(template, "Ada")
     assert plan.template_id == "contact_card"
     assert plan.template_version == 1
@@ -56,10 +55,7 @@ def test_overlap_and_duplicate_binding_are_rejected() -> None:
 def test_unbound_and_unknown_fields_are_rejected() -> None:
     template = _template()
     unknown = MaskElement("unknown", MaskElementKind.FIELD, LayoutBox(0, 5, 6, 2), field_key="missing")
-    broken = replace(
-        template,
-        elements=tuple(item for item in template.elements if item.field_key != "rating") + (unknown,),
-    )
+    broken = replace(template, elements=tuple(item for item in template.elements if item.field_key != "rating") + (unknown,))
     codes = {issue.code for issue in validate_template(broken)}
     assert "MASK-125" in codes
     assert "MASK-129" in codes
@@ -76,7 +72,6 @@ def test_json_contract_roundtrips_and_rejects_unknown_schema() -> None:
     template = _template()
     payload = template_to_dict(template)
     assert template_from_dict(payload) == template
-
     payload["schema_version"] = 99
     try:
         template_from_dict(payload)
@@ -86,9 +81,30 @@ def test_json_contract_roundtrips_and_rejects_unknown_schema() -> None:
         raise AssertionError("unknown template schema must fail closed")
 
 
+def test_json_contract_rejects_non_boolean_is_required() -> None:
+    payload = template_to_dict(_template())
+    payload["fields"][0]["is_required"] = "false"
+    try:
+        template_from_dict(payload)
+    except MaskValidationError as exc:
+        assert exc.issues[0].code == "MASK-190"
+    else:
+        raise AssertionError("non-boolean is_required must fail closed")
+
+
+def test_choice_field_rejects_empty_option() -> None:
+    template = _template()
+    choice = MaskFieldSpec("status", "Status", FieldType.SINGLE_CHOICE, options=("Offen", "   "))
+    choice_element = MaskElement("field-status", MaskElementKind.FIELD, LayoutBox(0, 5, 6, 2), field_key="status")
+    broken = replace(template, fields=template.fields + (choice,), elements=template.elements + (choice_element,))
+    assert "MASK-115" in {issue.code for issue in validate_template(broken)}
+
+
 if __name__ == "__main__":
     test_valid_template_builds_deterministic_plan()
     test_overlap_and_duplicate_binding_are_rejected()
     test_unbound_and_unknown_fields_are_rejected()
     test_grid_bounds_are_fail_closed()
     test_json_contract_roundtrips_and_rejects_unknown_schema()
+    test_json_contract_rejects_non_boolean_is_required()
+    test_choice_field_rejects_empty_option()
