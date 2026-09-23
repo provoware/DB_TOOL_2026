@@ -1,38 +1,100 @@
 # PROVOWARE Entwicklungs- und Validierungsstandard
 
-## Benutzerperspektive
+Diese Regeln sollen Änderungen sicher, klein und nachvollziehbar halten.
 
-Anleitungen sind laiengerecht. Fachbegriffe werden kurz erklärt. Wenn sinnvoll, gibt es einen einzigen kopierbaren Kettenbefehl.
+## 1. Sprache und Bedienbarkeit
 
-## Gate-Status
+Anleitungen werden so geschrieben, dass sie auch ohne Entwicklerwissen verständlich bleiben.
 
-- **GRÜN**: alle erforderlichen Prüfungen vollständig bestanden
-- **GELB**: kein Fehler nachgewiesen, aber eine notwendige Prüfung ist blockiert oder unvollständig
-- **ROT**: Fehler, Regression oder Schutzverletzung
+Wenn ein Fachbegriff nötig ist, wird er kurz erklärt.
 
-## Selbstvalidierung
+Für lokale Terminalschritte wird, wenn sinnvoll, ein einziger kopierbarer Kettenbefehl bevorzugt.
 
-Ein Gate prüft soweit relevant:
+## 2. Gate-Status
 
-- Projektpfad und erwartete Dateien
-- Python-Version
-- isolierte virtuelle Umgebung
-- Abhängigkeiten
-- Frozen-Core-Prüfsummen
-- Syntax/Compile
-- relevante Unit-, Integrations- und Regressionstests
-- SQLite integrity_check und foreign_key_check
-- bei UI: Layoutgrößen, Tastatur, Fokus und visuelle Snapshots
-- echten Prozess-Exitcode
+- 🟢 **GRÜN:** alle für diesen Schritt notwendigen Prüfungen bestanden.
+- 🟡 **GELB:** kein bestätigter Fehler, aber eine notwendige Prüfung fehlt oder ist blockiert.
+- 🔴 **ROT:** Fehler, Regression oder Schutzverletzung gefunden.
+- 🔒 **FROZEN:** geschützter Bereich bleibt unverändert.
 
-## TXT-Auswertung
+Ein rotes Gate wird nicht umgangen. Zuerst wird nur die konkrete Ursache behoben und danach erneut geprüft.
 
-Jeder große Gate-Lauf erzeugt eine Textdatei mit Datum/Zeit, Projekt/Repo, Checkpoint, Toolversionen, ausgeführten Prüfungen, bestanden/fehlgeschlagen/übersprungen, Warnungen/Blockaden, GRÜN/GELB/ROT und nächster Empfehlung.
+## 3. Welche Prüfungen sind nötig?
 
-## Änderungsvolumen
+Die Prüfungen richten sich nach der Änderung.
 
-Jeder Abschluss nennt neue, geänderte und gelöschte Dateien, Tests, betroffene Schichten, ungefähre Codezeilen soweit sinnvoll und den Freeze-Status.
+### Nur Dokumentation
+- Dateipfade und Links prüfen
+- Struktur und Verständlichkeit prüfen
+- kein Produktivtest ohne konkreten Grund
 
-## Sicherheitsregel
+### UI, CSS oder HTML
+- direkt betroffene UI-Tests
+- Tastatur/Fokus, wenn betroffen
+- relevante Zielgrößen
+- Screenshot nur bei visueller Kernänderung oder vorgesehenem Screenshot-Meilenstein
 
-Keine produktiven Datenmanipulationen nur zum Zweck eines Tests. Testpfade und Testdaten müssen eindeutig isoliert sein.
+### Application Service
+- direkt betroffene Service-Tests
+- notwendige Repository-Mocks oder Integrationen
+
+### Domain oder Repository
+- direkte Unit-/Integrations-Regression
+- Frozen-Core-Gate, wenn ein geschützter Bereich berührt wird
+
+### Schema oder Migration
+- Migration prüfen
+- Schema-Hash beziehungsweise Manifest prüfen
+- `foreign_key_check`
+- `integrity_check`
+- vollständige Regression des betroffenen Datenbankpfads
+
+## 4. Selbstvalidierung
+
+Ein Gate prüft, soweit für die Änderung relevant:
+
+- erwartete Dateien und Projektpfad,
+- Python-Version,
+- benötigte Abhängigkeiten,
+- Frozen-Core-Schutz,
+- Syntax oder Compile,
+- direkt betroffene Tests,
+- engste sinnvolle Regression,
+- bei Datenbankänderungen Integritätsprüfungen,
+- bei UI-Änderungen Tastatur, Fokus und relevante Layoutprüfungen,
+- echten Prozess-Exitcode.
+
+Nicht betroffene Prüfungen werden nicht künstlich ausgeführt.
+
+## 5. Auswertung
+
+Ein größerer Gate-Lauf dokumentiert mindestens:
+
+- Datum und Projektstand,
+- Iteration oder Checkpoint,
+- ausgeführte Prüfungen,
+- bestanden / fehlgeschlagen / übersprungen,
+- Warnungen oder Blockaden,
+- GRÜN / GELB / ROT,
+- nächsten sinnvollen Schritt.
+
+## 6. Änderungsvolumen
+
+Am Abschluss wird kurz genannt:
+
+- neue Dateien,
+- geänderte Dateien,
+- gelöschte Dateien,
+- ausgeführte Tests,
+- betroffene Schichten,
+- Freeze-Status.
+
+## 7. Sicherheitsregel
+
+Produktive Daten werden nicht verändert, nur damit ein Test ausgeführt werden kann.
+
+Testdaten und Testpfade müssen eindeutig isoliert sein.
+
+## 8. Historische Nachweise
+
+Dateien unter `docs/development/` können historische Entscheidungen und Gate-Nachweise enthalten. Sie werden nicht nachträglich kosmetisch vereinheitlicht, wenn dadurch die Auditspur verändert würde.
