@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "iteration": 83,
+  "agent": "audit-event-read-provider-agent-83",
+  "size": "S",
+  "goal": "Den minimalen produktiven read-only Audit-Event-Provider ausschließlich aus I78, I81 und I82 implementieren",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Read-only Event Provider",
+    "summary": "I83 implementiert einen dünnen Event-Provider auf geliehener Connection mit deterministischer Reihenfolge, hartem Limit und der autorisierten neutralen EventItem-Projektion.",
+    "target_doc": "docs/development/ITERATION_83_READONLY_EVENT_PROVIDER.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0083-readonly-event-provider.json",
+    "docs/development/ITERATION_83_READONLY_EVENT_PROVIDER.md",
+    "src/provoware_db/tui/event_provider.py",
+    "tests/tui/test_audit_event_read_provider.py"
+  ],
+  "read_files": [
+    "docs/development/ITERATION_78_TUI_CONNECTION_OWNERSHIP_DECISION.md",
+    "docs/development/ITERATION_81_EVENT_PROVIDER_BOUNDARY.md",
+    "docs/development/ITERATION_82_EVENT_SYMBOL_PROJECTION.md",
+    "src/provoware_db/tui/view_models.py",
+    "tests/fixtures/cp03_main_schema_v1.sql"
+  ],
+  "direct_dependencies": [
+    "I78 borrowed read-only connection ownership",
+    "I81 audit_events source and occurred_at/summary projection",
+    "I82 neutral constant dot symbol projection",
+    "existing EventItem contract"
+  ],
+  "tests_required": [
+    "compile event_provider.py and focused provider test",
+    "newest-first deterministic projection",
+    "neutral constant dot symbol",
+    "nonpositive limit returns empty",
+    "oversized limit is capped at 100",
+    "provider does not own or close borrowed connection",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the change is one isolated provider",
+    "TUI runtime tests because runtime wiring is unchanged",
+    "browser tests because Web is untouched",
+    "repository/CP-03 regression because schema and storage are untouched",
+    "visual evidence because no UI changes exist"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/tui/event_provider.py",
+      "tests/tui/test_audit_event_read_provider.py"
+    ],
+    "python_tests": [
+      "tests/tui/test_audit_event_read_provider.py"
+    ]
+  },
+  "risks": [
+    "provider is not yet wired into a productive TUI composition root",
+    "later wiring must preserve one borrowed read-only connection and separate writer ownership"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-08 reopen",
+    "no schema/migration/storage/audit/repository changes",
+    "no TUI runtime or view-model changes",
+    "no writer lifecycle changes",
+    "no composition-root or starter wiring",
+    "no action/entity_type event taxonomy"
+  ],
+  "expected_side_effects": [
+    "a concrete EventItem-compatible read-only audit event source now exists",
+    "the provider remains independently injectable and lifecycle-neutral"
+  ],
+  "screenshot_required": false,
+  "status": "READONLY_EVENT_PROVIDER_IMPLEMENTED_AWAITING_GATE"
+}
