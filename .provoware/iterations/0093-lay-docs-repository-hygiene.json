@@ -59,5 +59,11 @@
     "repository cleanup candidates can be reviewed separately without destructive changes"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_GATE"
+  "status": "STEP1_IMPLEMENTED_AWAITING_GATE",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Laiengerechter Projekteinstieg und Dokumenttrennung",
+    "summary": "README und eine kurze Einstiegsseite erklären den bestätigten Projektstand ohne Entwicklerwissen; technische Audit-Dokumente bleiben unverändert.",
+    "target_doc": "docs/LAIEN_START.md"
+  }
 }
