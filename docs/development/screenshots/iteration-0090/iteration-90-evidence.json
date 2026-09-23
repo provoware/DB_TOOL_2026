@@ -1,0 +1,32 @@
+{
+  "iteration": 90,
+  "gate": "real Chromium 1440x900 catch-up screenshot milestone",
+  "validated_head_sha": "9e81c21fda3d5c629dec6526da12d0e1b7839ba2",
+  "browser": "Chromium 144.0.7559.96 built on Debian GNU/Linux 13 (trixie)",
+  "platform": "linux",
+  "render_method": "Playwright set_content using exact current index.html + app.css because file/localhost navigation is blocked by the execution environment policy",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "checks": {
+    "readonly_visible": true,
+    "core_panels": 3,
+    "mutating_controls_disabled": [
+      "+ Neu",
+      "Bearbeiten",
+      "Undo",
+      "Papierkorb"
+    ],
+    "help_enabled": true,
+    "horizontal_overflow": false,
+    "browser_console_errors": []
+  },
+  "visual_regression_blocking": false,
+  "product_code_changed": false,
+  "status": "GREEN",
+  "hashes": {
+    "original_png_sha256": "a17edba35a7f0087fe02c0d0917a3c910e438b2deb0390d451e2d7913515ab20",
+    "repo_preview_jpg_sha256": "ffd222fc345130a6d108f79042bf8739f5261538f52d1453dba7ba72611f02d4"
+  }
+}

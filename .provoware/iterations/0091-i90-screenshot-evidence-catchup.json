@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "iteration": 91,
+  "agent": "i90-screenshot-evidence-catchup-agent-91",
+  "size": "M",
+  "goal": "Den offenen P1-Governance-Befund des Iteration-90-Screenshot-Meilensteins gegen den aktuellen main mit echter Chromium-Evidence schließen",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Iteration-90 Screenshot-Evidence",
+    "summary": "Nur fehlende visuelle Evidence wird nachgetragen; Produktverhalten und Bedienung bleiben unverändert.",
+    "target_doc": "docs/development/screenshots/iteration-0090/README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0091-i90-screenshot-evidence-catchup.json",
+    "docs/development/screenshots/iteration-0090/README.md",
+    "docs/development/screenshots/iteration-0090/iteration-90-evidence.json",
+    "docs/development/screenshots/iteration-0090/main-1440x900-preview.jpg"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0090-mask-validation-boundary-hardening.json",
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/web/static/app.css",
+    "docs/development/screenshots/iteration-0020/README.md",
+    "docs/development/screenshots/iteration-0020/iteration-20-evidence.json"
+  ],
+  "direct_dependencies": [
+    "I90 merged main 9e81c21fda3d5c629dec6526da12d0e1b7839ba2",
+    "AGENTS.md five-iteration screenshot rule",
+    "closed obsolete PR 95 P1 screenshot finding"
+  ],
+  "tests_required": [
+    "real Chromium render at fixed 1440x900 viewport",
+    "current read-only shell visibly renders three core panels",
+    "NUR LESEN visible and four mutating controls disabled",
+    "no horizontal overflow",
+    "no browser console errors during evidence render",
+    "evidence hashes and visual-regression verdict recorded",
+    "strict write_files scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because no product code changes",
+    "database tests because no database path changes",
+    "full suite because this is evidence-only governance catch-up",
+    "editor tests because the browser mask editor is not implemented yet"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "execution environment blocks file and localhost navigation, so evidence uses real Chromium with Playwright set_content over the exact current HTML and CSS",
+    "the repository stores a compressed preview while the evidence records the original 1440x900 PNG hash"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no repository CatalogService writer or SQL changes",
+    "no existing web runtime product change",
+    "no mask-builder product change",
+    "no dependency change"
+  ],
+  "expected_side_effects": [
+    "Iteration 90 now has auditable 1440x900 Chromium screenshot evidence",
+    "the open P1 governance blocker is closed before editor implementation begins"
+  ],
+  "screenshot_required": true,
+  "status": "I90_SCREENSHOT_EVIDENCE_CAPTURED_AWAITING_GATE"
+}
