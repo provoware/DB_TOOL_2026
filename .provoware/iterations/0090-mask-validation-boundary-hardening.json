@@ -3,13 +3,13 @@
   "iteration": 90,
   "agent": "mask-validation-boundary-hardening-agent-90",
   "size": "M",
-  "goal": "Die zwei offenen P2-Validierungsbefunde aus I89 fail-closed beheben und anschließend am Store-End-to-End-Pfad absichern",
+  "goal": "Die zwei offenen P2-Validierungsbefunde aus I89 fail-closed beheben und am Store-End-to-End-Pfad absichern",
   "change_kind": "product",
   "gate_profile": "product",
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Masken-Vorlagen Validierung",
-    "summary": "I90 schließt zwei offene Fail-Closed-Lücken: nicht-objektförmige Feld-Einträge und nicht-boolesche is_required-Werte.",
+    "summary": "I90 schließt die zwei offenen Fail-Closed-Lücken vollständig: Objektform der Feldliste, echte Boolean-Pflichtwerte und Store-End-to-End-Übersetzung.",
     "target_doc": "docs/development/ITERATION_90_MASK_VALIDATION_BOUNDARY_HARDENING.md"
   },
   "write_files": [
@@ -29,17 +29,19 @@
   "direct_dependencies": [
     "I88 mask builder foundation",
     "I89 validation hardening",
-    "PR 94 documented P2 findings"
+    "PR 94 documented P2 findings",
+    "I90 step 1 gate run 53 successful"
   ],
   "tests_required": [
-    "step 1 compile model and focused model regression",
-    "direct MaskFieldSpec with non-boolean is_required is rejected",
-    "non-object JSON fields item becomes MASK-190 instead of AttributeError",
-    "step 2 only after green intermediate gate: store-level STORE-422 and failed-save regressions",
+    "step 1 model gate remains accepted without rerun because model.py and test_model.py are unchanged after green run 53",
+    "compile focused store regression",
+    "malformed fields array entry becomes STORE-422 at load boundary",
+    "direct non-boolean is_required is rejected before any template file is written",
     "strict write_files scope validation"
   ],
   "tests_explicitly_not_run": [
     "full suite because only mask-builder validation boundaries are affected",
+    "step 1 model tests are not rerun because their relevant code is unchanged after green intermediate gate",
     "database tests because no database path changes",
     "TUI/Web tests because runtime and UI are untouched",
     "visual tests because no visual code changes"
@@ -47,16 +49,15 @@
   "pip_requirements": [],
   "ci": {
     "compile": [
-      "src/provoware_db/mask_builder/model.py",
-      "tests/mask_builder/test_model.py"
+      "tests/mask_builder/test_store.py"
     ],
     "python_tests": [
-      "tests/mask_builder/test_model.py"
+      "tests/mask_builder/test_store.py"
     ]
   },
   "risks": [
-    "store-level translation remains to be proven in step 2",
-    "browser editor remains blocked until I90 is fully green"
+    "browser editor remains intentionally blocked until the final I90 gate is green",
+    "no broader JSON type-hardening beyond the two concrete review findings is introduced"
   ],
   "non_changes": [
     "no CP-03 or CP-06 reopen",
@@ -67,9 +68,9 @@
     "no cosmetic refactoring"
   ],
   "expected_side_effects": [
-    "directly constructed invalid templates can no longer be serialized successfully",
-    "malformed field-array entries fail as MaskValidationError instead of leaking AttributeError"
+    "directly constructed invalid templates cannot be persisted",
+    "malformed field-array entries are consistently translated to the documented store error boundary"
   ],
   "screenshot_required": false,
-  "status": "MASK_VALIDATION_STEP_1_IMPLEMENTED_AWAITING_GATE"
+  "status": "MASK_VALIDATION_BOUNDARY_HARDENING_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

@@ -114,9 +114,43 @@ def test_filename_identity_is_checked() -> None:
             raise AssertionError("file/template id mismatch must fail")
 
 
+
+
+def test_load_translates_non_object_field_entry_to_store_422() -> None:
+    with TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        store = MaskTemplateStore(root)
+        path = store.save(_template())
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["fields"] = ["bad"]
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        try:
+            store.load("contact_card")
+        except TemplateStoreError as exc:
+            assert str(exc).startswith("STORE-422:")
+        else:
+            raise AssertionError("non-object field item must become STORE-422")
+
+
+def test_direct_non_boolean_required_never_reaches_disk() -> None:
+    with TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        store = MaskTemplateStore(root)
+        invalid_field = replace(_template().fields[0], is_required="false")
+        invalid = replace(_template(), fields=(invalid_field,))
+        try:
+            store.save(invalid)
+        except MaskValidationError as exc:
+            assert "MASK-118" in {issue.code for issue in exc.issues}
+        else:
+            raise AssertionError("non-boolean is_required must fail before save")
+        assert not (root / "contact_card.json").exists()
+
 if __name__ == "__main__":
     test_atomic_roundtrip_and_listing()
     test_updates_require_known_monotonic_version()
     test_corrupt_file_is_fail_closed()
     test_invalid_update_never_replaces_last_valid_template()
     test_filename_identity_is_checked()
+    test_load_translates_non_object_field_entry_to_store_422()
+    test_direct_non_boolean_required_never_reaches_disk()
