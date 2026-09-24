@@ -1,0 +1,107 @@
+{
+  "schema_version": 2,
+  "iteration": 123,
+  "agent": "control-plane-v2-shadow-controller-events-agent-123",
+  "size": "M",
+  "goal": "Control Plane V2 im Shadow Mode um den deterministischen Planner->Controller->SEALED_PLAN-Handoff und danach um eine append-only Event-/Audit-Kette erweitern. Schritt 1 nimmt ausschliesslich einen gueltigen I122-DRAFT_PLAN samt vollstaendiger Request/Bundle/Planner-Provenienz an, prueft aktuellen Base-SHA, Registry-/Frozen-/Archive-Policy und Capability-Erhaltung und erzeugt erst dann einen exakt gehashten I121-kompatiblen SEALED_PLAN. Der neue tests/** Supporting-Scope wird explizit registriert, damit Produktcode und sein Regressionstest in einem einzigen Creator-Lease liegen koennen. Schritt 2 darf erst nach gruenem Zwischen-Gate erlaubte Lifecycle-Events append-only validieren. Legacy-Governance bleibt autoritativ.",
+  "change_kind": "governance",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Control Plane V2 Shadow Controller-Handoff und Audit-Events",
+    "summary": "I123 schliesst im Shadow Mode die Luecke zwischen Planner-Draft und bestehendem I121-Sealed-Plan. Nur CONTROLLER darf einen gueltigen Draft bei aktuellem Base-SHA versiegeln; die exakte versiegelte Payload wird per SHA-256 an die Controller-Entscheidung gebunden. Tests werden als ausdruecklicher Supporting-Write-Scope registriert.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0123-control-plane-v2-shadow-controller-events.json",
+    ".provoware/control/registry.json",
+    ".provoware/control/controller_contracts.json",
+    "scripts/control_plane_controller.py",
+    "tests/governance/test_control_plane_controller.py"
+  ],
+  "read_files": [
+    ".provoware/control/inspection_contracts.json",
+    ".provoware/control/contracts.json",
+    "scripts/control_plane_inspection.py",
+    "scripts/control_plane_shadow.py",
+    "scripts/validate_control_plane.py",
+    "tests/governance/test_control_plane_inspection.py",
+    "tests/governance/test_control_plane_shadow.py",
+    "tests/governance/test_control_plane_registry.py",
+    ".provoware/iterations/0121-control-plane-v2-shadow-plan-lease-validation.json",
+    ".provoware/iterations/0122-control-plane-v2-shadow-inspection-planning.json",
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml"
+  ],
+  "direct_dependencies": [
+    "main dc33925a5bb42f6a15c8e5d4512705a615dc72fb",
+    "I119 MASK_PROPERTIES_V1 remains STABLE",
+    "I121 SEALED_PLAN and global single-writer lease contracts remain authoritative inside shadow execution",
+    "I122 request/inspection/finding/planner/DRAFT_PLAN contracts merged green",
+    "Control Plane V2 remains SHADOW and non-authoritative",
+    "Legacy governance remains authoritative",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile controller and focused controller governance test",
+    "Step 1: current control registry remains valid after explicit tests/** supporting path registration",
+    "Step 1: only a valid I122 request/bundle/planner-input/DRAFT_PLAN chain can reach Controller sealing",
+    "Step 1: draft base_sha must equal the caller-supplied current base SHA before sealing",
+    "Step 1: Controller transforms proposed scope into I121 executable scope without widening it",
+    "Step 1: FROZEN, ARCHIVE and unregistered paths still fail closed through I121 validation",
+    "Step 1: stable capability preservation remains mandatory",
+    "Step 1: exact SEALED_PLAN payload is bound to Controller decision by deterministic SHA-256",
+    "Step 1: tests/** may participate in the same Creator scope as product code",
+    "Step 1: existing global single-writer lease still rejects a second active writer",
+    "Intermediate deep gate before Step 2",
+    "Step 2 only after green: append-only events validate role, state transition and deterministic sequence number",
+    "Step 2 only after green: event chain binds each record to the previous event hash and rejects mutation/reordering",
+    "Step 2 only after green: invalid lifecycle jumps and unknown triggers fail closed",
+    "Step 2 only after green: side-request and frozen-violation special events remain non-state-mutating DEFER/HARD_STOP signals",
+    "deep governance and repository foundation gates"
+  ],
+  "tests_explicitly_not_run": [
+    "product browser tests because I123 changes no product behavior",
+    "database/repository tests because no persistent or frozen core path changes",
+    "full suite because this is isolated shadow governance"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/control_plane_controller.py",
+      "tests/governance/test_control_plane_controller.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_control_plane_registry.py",
+      "tests/governance/test_control_plane_controller.py"
+    ]
+  },
+  "risks": [
+    "Controller must never accept stale base SHA",
+    "explicit tests/** write policy must not weaken product/frozen protections",
+    "Planner must remain unable to seal its own draft",
+    "Controller transformation must not widen proposed scope",
+    "sealed payload tampering must be detectable before lease authorization",
+    "Step 2 event log must remain append-only and shadow-only"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no Control Plane authority switch",
+    "no existing agent/workflow replacement",
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, database or persistence changes",
+    "no real runtime lease file yet",
+    "no Creator tool-permission enforcement yet",
+    "no README/TODO cleanup",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "a validated Planner DRAFT can be deterministically sealed only by Controller",
+    "stale plans are rejected before Creator authorization",
+    "product source and regression tests can share one bounded Creator lease",
+    "Controller decision cryptographically binds the exact sealed plan",
+    "existing I121 single-writer and Validator contracts remain reusable unchanged"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+}

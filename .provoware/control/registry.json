@@ -62,6 +62,12 @@
       "state": "ARCHIVE",
       "automatic_write": false,
       "required_gate": "docs"
+    },
+    {
+      "pattern": "tests/**",
+      "state": "ACTIVE",
+      "automatic_write": true,
+      "required_gate": "product"
     }
   ],
   "capabilities": {
