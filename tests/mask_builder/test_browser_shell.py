@@ -421,7 +421,7 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
     assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
     assert '.choice-state { color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
 
     start = html.index('function changeDataType(id, select)')
     end = html.index('function isChoiceDataType(dataType)')
@@ -603,7 +603,7 @@ def test_default_value_semantics_focus_and_narrow_layout() -> None:
     assert 'aria-label", item.label + " · Standardwert"' not in html
 
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
     update_start = html.index('function updateDefaultValue(id, control)')
@@ -632,7 +632,7 @@ def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
     assert 'data-column="8"' in html
     assert '@media (max-width:1000px)' in html
     assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
