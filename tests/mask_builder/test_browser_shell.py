@@ -239,7 +239,7 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
 
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
