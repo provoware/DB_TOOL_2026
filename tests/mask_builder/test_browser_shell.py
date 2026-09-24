@@ -191,7 +191,7 @@ def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> Non
     assert 'focusHelpEditor(id);' in html
 
     start = html.index('function saveHelpEdit(id, input)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function toggleRequired(id)')
     save_block = html[start:end]
     assert 'const nextHelpText = input.value.trim();' in save_block
     assert 'item.helpText = nextHelpText;' in save_block
