@@ -116,15 +116,23 @@ function keyMeta(key) {
 
 async function pressKey(cdp, key) {
   const meta = keyMeta(key);
-  for (const type of ["keyDown", "keyUp"]) {
-    await cdp.send("Input.dispatchKeyEvent", {
-      type,
-      key,
-      code: meta.code,
-      windowsVirtualKeyCode: meta.vk,
-      nativeVirtualKeyCode: meta.vk,
-    });
-  }
+  const text = key === "Enter" ? "\r" : undefined;
+  await cdp.send("Input.dispatchKeyEvent", {
+    type: "keyDown",
+    key,
+    code: meta.code,
+    text,
+    unmodifiedText: text,
+    windowsVirtualKeyCode: meta.vk,
+    nativeVirtualKeyCode: meta.vk,
+  });
+  await cdp.send("Input.dispatchKeyEvent", {
+    type: "keyUp",
+    key,
+    code: meta.code,
+    windowsVirtualKeyCode: meta.vk,
+    nativeVirtualKeyCode: meta.vk,
+  });
   await sleep(80);
 }
 

@@ -744,6 +744,11 @@ def test_root_is_get_only_and_unknown_paths_are_not_found() -> None:
     assert status == "405 Method Not Allowed"
     assert headers["Allow"] == "GET"
 
+    status, headers, body = _request("GET", "/favicon.ico")
+    assert status == "204 No Content"
+    assert headers["Cache-Control"] == "no-store"
+    assert body == b""
+
     status, _, _ = _request("GET", "/api/preview")
     assert status == "404 Not Found"
 

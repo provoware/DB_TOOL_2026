@@ -1142,6 +1142,9 @@ def application(environ: dict[str, object], start_response):
     if method != "GET":
         start_response("405 Method Not Allowed", [("Content-Type", "text/plain; charset=utf-8"), ("Allow", "GET")])
         return [b"Nur GET ist in diesem Editor-Slice erlaubt.\n"]
+    if path == "/favicon.ico":
+        start_response("204 No Content", [("Content-Length", "0"), ("Cache-Control", "no-store")])
+        return [b""]
     if path != "/":
         start_response("404 Not Found", [("Content-Type", "text/plain; charset=utf-8")])
         return [b"Nicht gefunden.\n"]
