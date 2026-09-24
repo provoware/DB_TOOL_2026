@@ -28,6 +28,7 @@ _INTERACTION_SCRIPT = r"""
   let selectedWidth = null;
   let movingDraftId = null;
   let editingDraftId = null;
+  let editingHelpDraftId = null;
 
   function setStatus(message) {
     status.textContent = message;
@@ -155,6 +156,42 @@ _INTERACTION_SCRIPT = r"""
     focusLabelEditControl(id);
   }
 
+  function focusHelpEditor(id) {
+    const input = Array.from(placedLayer.querySelectorAll(".help-editor-input"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (input !== undefined) {
+      input.focus();
+      input.select();
+    }
+  }
+
+  function beginHelpEdit(id) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    editingHelpDraftId = id;
+    renderDraft();
+    setStatus(item.label + " · Hilfetext eingeben und übernehmen.");
+    focusHelpEditor(id);
+  }
+
+  function saveHelpEdit(id, input) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    const nextHelpText = input.value.trim();
+    item.helpText = nextHelpText;
+    editingHelpDraftId = null;
+    renderDraft();
+    setStatus(
+      item.label
+      + (nextHelpText.length === 0 ? " · Hilfetext entfernt" : " · Hilfetext geändert")
+      + " · nur temporärer Browserentwurf."
+    );
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -181,6 +218,12 @@ _INTERACTION_SCRIPT = r"""
       label.textContent = item.label;
       card.appendChild(label);
 
+      const helpText = document.createElement("small");
+      helpText.className = "draft-help-text";
+      helpText.textContent = item.helpText;
+      helpText.hidden = item.helpText.length === 0;
+      card.appendChild(helpText);
+
       const editButton = document.createElement("button");
       editButton.type = "button";
       editButton.className = "edit-label";
@@ -189,6 +232,38 @@ _INTERACTION_SCRIPT = r"""
       editButton.setAttribute("aria-label", item.label + " · Beschriftung ändern");
       editButton.addEventListener("click", () => beginLabelEdit(item.id));
       card.appendChild(editButton);
+
+      const helpButton = document.createElement("button");
+      helpButton.type = "button";
+      helpButton.className = "edit-help";
+      helpButton.textContent = "Hilfetext ändern";
+      helpButton.setAttribute("aria-label", item.label + " · Hilfetext ändern");
+      helpButton.addEventListener("click", () => beginHelpEdit(item.id));
+      card.appendChild(helpButton);
+
+      if (editingHelpDraftId === item.id) {
+        const helpEditor = document.createElement("form");
+        helpEditor.className = "help-editor";
+
+        const helpInput = document.createElement("textarea");
+        helpInput.className = "help-editor-input";
+        helpInput.dataset.draftId = item.id;
+        helpInput.rows = 2;
+        helpInput.value = item.helpText;
+        helpInput.setAttribute("aria-label", item.label + " · Hilfetext");
+        helpEditor.appendChild(helpInput);
+
+        const saveHelpButton = document.createElement("button");
+        saveHelpButton.type = "submit";
+        saveHelpButton.className = "save-help";
+        saveHelpButton.textContent = "Übernehmen";
+        helpEditor.appendChild(saveHelpButton);
+        helpEditor.addEventListener("submit", (event) => {
+          event.preventDefault();
+          saveHelpEdit(item.id, helpInput);
+        });
+        card.appendChild(helpEditor);
+      }
 
       if (editingDraftId === item.id) {
         const editor = document.createElement("form");
@@ -261,6 +336,7 @@ _INTERACTION_SCRIPT = r"""
         + String(firstColumn)
         + "–"
         + String(lastColumn)
+        + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
       );
       list.appendChild(row);
     });
@@ -337,6 +413,7 @@ _INTERACTION_SCRIPT = r"""
       label: selectedLabel,
       column,
       width: selectedWidth,
+      helpText: "",
     });
     renderDraft();
     setStatus(
@@ -444,9 +521,10 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.edit-label, .save-label, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
-.label-editor {{ display:flex; gap:.4rem; min-width:0; }}
-.label-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
+.edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
+.label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
+.draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
