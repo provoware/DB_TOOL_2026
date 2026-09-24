@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "iteration": 120,
+  "agent": "control-plane-v2-registry-foundation-agent-120",
+  "size": "M",
+  "goal": "PROVOWARE Development Control Plane V2 in zwei abhaengigen Governance-Schritten ausschliesslich im Shadow Mode aufbauen. Schritt 1 fuehrt eine zentrale maschinenlesbare Projekt-/Pfad-/Capability-Registry, einen deterministischen fail-closed Validator und isolierte Governance-Selbsttests ein. Bestehende Gates und Agenten bleiben autoritativ; kein Produktcode wird ueber die Registry geschrieben. Schritt 2 darf erst nach gruenem Zwischen-Gate Rollenrechte, Lifecycle-Zustaende und Trigger als ebenfalls nicht-autoritative Shadow-Vertraege in denselben vier Dateien ergaenzen.",
+  "change_kind": "governance",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Development Control Plane V2 Shadow Registry",
+    "summary": "I120 aendert keine Produktfunktion. Schritt 1 beschreibt und validiert den bestehenden sicheren Projektzustand erstmals zentral und maschinenlesbar: genau ein Produkt-Writer, read-only Pruefer/Planer/Validator, Frozen-Pfade sowie die I119-gepruefte MASK_PROPERTIES_V1-Baseline.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0120-control-plane-v2-registry-foundation.json",
+    ".provoware/control/registry.json",
+    "scripts/validate_control_plane.py",
+    "tests/governance/test_control_plane_registry.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml",
+    ".provoware/agents/agents.yaml",
+    ".github/workflows/iteration-gates.yml",
+    ".provoware/iterations/0119-mask-builder-property-accessibility-baseline.json",
+    "docs/development/screenshots/iteration-0119/iteration-119-step1-evidence.json",
+    "docs/development/screenshots/iteration-0119/iteration-119-step2-evidence.json"
+  ],
+  "direct_dependencies": [
+    "main 7c9aafb209033979f85c76f74861b93f5acac1eb",
+    "I119 real Chromium property baseline merged green at 100/150/200 percent",
+    "legacy iteration-gate protected paths remain authoritative during shadow mode",
+    "existing .provoware/agents rules and roles remain authoritative during shadow mode",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile control-plane validator and governance test",
+    "Step 1: validate the real registry as SHADOW and non-authoritative",
+    "Step 1: fail closed if single_product_writer is disabled",
+    "Step 1: fail closed if inspectors, planner or validator gain write authority",
+    "Step 1: fail closed if a FROZEN path enables automatic writes",
+    "Step 1: fail closed if a legacy protected path disappears or no longer requires deep gate",
+    "Step 1: fail closed if MASK_PROPERTIES_V1 evidence is missing or non-green",
+    "Step 1: fail closed if latest_product_iteration drifts from product manifests",
+    "Step 1: fail closed if persistence opens or shadow mode becomes authoritative",
+    "Intermediate gate before Step 2",
+    "Step 2 only after green: add role permissions, lifecycle state machine and trigger contracts in the same registry/validator/test scope",
+    "Step 2 only after green: remain SHADOW and non-authoritative; no writer routing yet",
+    "deep governance and repository foundation gates"
+  ],
+  "tests_explicitly_not_run": [
+    "product browser tests because I120 Step 1 changes no product code",
+    "database/repository tests because no persistence or core path changes",
+    "full suite because this is an isolated governance/control-plane foundation"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/validate_control_plane.py",
+      "tests/governance/test_control_plane_registry.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_control_plane_registry.py"
+    ]
+  },
+  "risks": [
+    "shadow registry must not accidentally become a second authoritative source before comparison evidence exists",
+    "legacy protected paths must be represented at least as strictly as the current gate router",
+    "MASK_PROPERTIES_V1 must reference real green I119 evidence",
+    "validator must fail closed without adding third-party dependencies"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, database, repository or CatalogService changes",
+    "no browser-shell changes",
+    "no README, TODO or PRODUCT_ROADMAP cleanup",
+    "no modification of existing agents.yaml or rules.yaml in Step 1",
+    "no GitHub branch-protection or ruleset change",
+    "no existing workflow replacement",
+    "no authoritative write lease or router activation",
+    "no event log, task registry or outcome registry yet",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "a non-authoritative machine-readable control registry exists",
+    "legacy freeze boundaries and the I119 capability baseline are validated fail-closed",
+    "future Control Plane V2 steps can compare decisions against existing governance without changing product behavior"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "mode": "SHADOW",
+  "authoritative": false,
+  "project": {
+    "latest_product_iteration": 119,
+    "baseline_product_sha": "7c9aafb209033979f85c76f74861b93f5acac1eb",
+    "product_stage": "ALPHA_DEVELOPMENT",
+    "persistence": "CLOSED",
+    "frozen_checkpoints": [
+      "CP-03",
+      "CP-06"
+    ]
+  },
+  "workflow": {
+    "single_product_writer": true,
+    "inspectors_read_only": true,
+    "planner_read_only": true,
+    "validator_read_only": true,
+    "side_requests_default": "DEFER"
+  },
+  "paths": [
+    {
+      "pattern": "src/provoware_db/domain/**",
+      "state": "FROZEN",
+      "checkpoints": [
+        "CP-06"
+      ],
+      "automatic_write": false,
+      "required_gate": "deep"
+    },
+    {
+      "pattern": "src/provoware_db/storage/**",
+      "state": "FROZEN",
+      "checkpoints": [
+        "CP-03",
+        "CP-06"
+      ],
+      "automatic_write": false,
+      "required_gate": "deep"
+    },
+    {
+      "pattern": "src/provoware_db/application/catalog_service.py",
+      "state": "FROZEN",
+      "checkpoints": [
+        "CP-06"
+      ],
+      "automatic_write": false,
+      "required_gate": "deep"
+    },
+    {
+      "pattern": "src/provoware_db/mask_builder/**",
+      "state": "ACTIVE",
+      "automatic_write": true,
+      "required_gate": "ui",
+      "preserve_capabilities": [
+        "MASK_PROPERTIES_V1"
+      ]
+    },
+    {
+      "pattern": "docs/development/archive/**",
+      "state": "ARCHIVE",
+      "automatic_write": false,
+      "required_gate": "docs"
+    }
+  ],
+  "capabilities": {
+    "MASK_PROPERTIES_V1": {
+      "state": "STABLE",
+      "baseline_iteration": 119,
+      "evidence": [
+        "docs/development/screenshots/iteration-0119/iteration-119-step1-evidence.json",
+        "docs/development/screenshots/iteration-0119/iteration-119-step2-evidence.json"
+      ],
+      "properties": [
+        "label",
+        "help_text",
+        "required",
+        "datatype",
+        "scalar_default",
+        "choice_options",
+        "visibility",
+        "width",
+        "focus_return",
+        "preview_consistency"
+      ],
+      "reopen_required": true
+    }
+  }
+}
