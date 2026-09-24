@@ -46,6 +46,28 @@ LEASE_FIELDS = {
     "write_files",
     "state",
 }
+RESULT_FIELDS = {
+    "result_schema_version",
+    "plan_id",
+    "lease_id",
+    "base_sha",
+    "creator_role",
+    "state",
+    "changed_files",
+    "acceptance_results",
+    "test_results",
+    "preserved_capabilities",
+    "unexpected_side_effects",
+}
+REPORT_FIELDS = {
+    "schema_version",
+    "report_id",
+    "plan_id",
+    "lease_id",
+    "validator_role",
+    "verdict",
+    "findings",
+}
 
 
 def fail(message: str) -> None:
@@ -69,8 +91,16 @@ def validate_contracts(data: dict[str, Any]) -> None:
     artifacts = data["artifacts"]
     if not isinstance(artifacts, dict):
         fail("contracts.artifacts: object required")
-    if set(artifacts) != {"SEALED_PLAN", "WRITE_LEASE"}:
-        fail("Step-1 contracts must contain exactly SEALED_PLAN and WRITE_LEASE")
+    if set(artifacts) != {
+        "SEALED_PLAN",
+        "WRITE_LEASE",
+        "EXECUTION_RESULT",
+        "VALIDATION_REPORT",
+    }:
+        fail(
+            "Step-2 contracts must contain SEALED_PLAN, WRITE_LEASE, "
+            "EXECUTION_RESULT and VALIDATION_REPORT"
+        )
 
     plan = artifacts["SEALED_PLAN"]
     require_exact_keys(
@@ -103,6 +133,32 @@ def validate_contracts(data: dict[str, Any]) -> None:
         fail("WRITE_LEASE.cardinality must be GLOBAL_SINGLETON")
     if set(require_string_list(lease["required_fields"], "WRITE_LEASE.required_fields")) != LEASE_FIELDS:
         fail("WRITE_LEASE.required_fields do not match the shadow lease contract")
+
+    result = artifacts["EXECUTION_RESULT"]
+    require_exact_keys(
+        result,
+        {"state", "producer_role", "required_fields"},
+        "contracts.EXECUTION_RESULT",
+    )
+    if result["state"] != "EXECUTION_COMPLETE":
+        fail("EXECUTION_RESULT.state must be EXECUTION_COMPLETE")
+    if result["producer_role"] != "CREATOR":
+        fail("EXECUTION_RESULT.producer_role must be CREATOR")
+    if set(require_string_list(result["required_fields"], "EXECUTION_RESULT.required_fields")) != RESULT_FIELDS:
+        fail("EXECUTION_RESULT.required_fields do not match the shadow result contract")
+
+    report = artifacts["VALIDATION_REPORT"]
+    require_exact_keys(
+        report,
+        {"producer_role", "write_product_code", "required_fields"},
+        "contracts.VALIDATION_REPORT",
+    )
+    if report["producer_role"] != "VALIDATOR":
+        fail("VALIDATION_REPORT.producer_role must be VALIDATOR")
+    if report["write_product_code"] is not False:
+        fail("VALIDATION_REPORT may not write product code")
+    if set(require_string_list(report["required_fields"], "VALIDATION_REPORT.required_fields")) != REPORT_FIELDS:
+        fail("VALIDATION_REPORT.required_fields do not match the shadow report contract")
 
 
 def safe_relative_paths(values: Any, label: str) -> list[str]:
@@ -250,6 +306,150 @@ def authorize_write_lease(
     validate_write_lease(lease, plan)
     return lease
 
+
+
+def named_status_map(
+    values: Any,
+    label: str,
+    name_key: str,
+) -> dict[str, str]:
+    if not isinstance(values, list):
+        fail(f"{label}: array required")
+    result: dict[str, str] = {}
+    for index, item in enumerate(values):
+        if not isinstance(item, dict):
+            fail(f"{label}[{index}]: object required")
+        require_exact_keys(item, {name_key, "status"}, f"{label}[{index}]")
+        name = require_string(item[name_key], f"{label}[{index}].{name_key}")
+        if name in result:
+            fail(f"{label}: duplicate {name_key} {name!r}")
+        status = item["status"]
+        if status not in {"PASS", "FAIL"}:
+            fail(f"{label}[{index}].status must be PASS or FAIL")
+        result[name] = status
+    return result
+
+
+def validate_validation_report(report: dict[str, Any], plan: dict[str, Any], lease: dict[str, Any]) -> None:
+    require_exact_keys(report, REPORT_FIELDS, "validation_report")
+    if report["schema_version"] != 1:
+        fail("validation_report.schema_version must be 1")
+    if report["report_id"] != f"VALIDATION-{plan['plan_id']}":
+        fail("validation_report.report_id must be deterministic from plan_id")
+    if report["plan_id"] != plan["plan_id"]:
+        fail("validation_report.plan_id does not match plan")
+    if report["lease_id"] != lease["lease_id"]:
+        fail("validation_report.lease_id does not match lease")
+    if report["validator_role"] != "VALIDATOR":
+        fail("validation_report.validator_role must be VALIDATOR")
+    if report["verdict"] not in {"PASS", "FAIL"}:
+        fail("validation_report.verdict must be PASS or FAIL")
+    findings = require_string_list(report["findings"], "validation_report.findings")
+    if report["verdict"] == "PASS" and findings:
+        fail("PASS validation report may not contain findings")
+    if report["verdict"] == "FAIL" and not findings:
+        fail("FAIL validation report must contain at least one finding")
+
+
+def validate_execution_result(
+    plan: dict[str, Any],
+    lease: dict[str, Any],
+    result: dict[str, Any],
+    registry: dict[str, Any] | None = None,
+    contracts: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    registry = load_registry() if registry is None else registry
+    contracts = load_json(DEFAULT_CONTRACTS) if contracts is None else contracts
+    validate_sealed_plan(plan, registry=registry, contracts=contracts)
+    validate_write_lease(lease, plan)
+    validate_contracts(contracts)
+    require_exact_keys(result, RESULT_FIELDS, "execution_result")
+
+    findings: list[str] = []
+
+    if result["result_schema_version"] != 1:
+        fail("execution_result.result_schema_version must be 1")
+    if result["plan_id"] != plan["plan_id"]:
+        fail("execution_result.plan_id does not match sealed plan")
+    if result["lease_id"] != lease["lease_id"]:
+        fail("execution_result.lease_id does not match active lease")
+    if result["base_sha"] != plan["base_sha"]:
+        fail("execution_result.base_sha does not match sealed plan")
+    if result["creator_role"] != "CREATOR":
+        fail("execution_result.creator_role must be CREATOR")
+    if result["state"] != "EXECUTION_COMPLETE":
+        fail("execution_result.state must be EXECUTION_COMPLETE")
+
+    changed_files = safe_relative_paths(result["changed_files"], "execution_result.changed_files")
+    if not changed_files:
+        findings.append("NO_CHANGED_FILES")
+    unexpected_files = sorted(set(changed_files) - set(plan["write_files"]))
+    if unexpected_files:
+        findings.append("UNPLANNED_FILES:" + ",".join(unexpected_files))
+    forbidden_changed = sorted(set(changed_files) & set(plan["forbidden_files"]))
+    if forbidden_changed:
+        findings.append("FORBIDDEN_FILES_CHANGED:" + ",".join(forbidden_changed))
+
+    acceptance = named_status_map(
+        result["acceptance_results"],
+        "execution_result.acceptance_results",
+        "criterion",
+    )
+    expected_acceptance = set(plan["acceptance_criteria"])
+    if set(acceptance) != expected_acceptance:
+        missing = sorted(expected_acceptance - set(acceptance))
+        extra = sorted(set(acceptance) - expected_acceptance)
+        findings.append(f"ACCEPTANCE_SET_MISMATCH:missing={missing},extra={extra}")
+    failed_acceptance = sorted(name for name, status in acceptance.items() if status != "PASS")
+    if failed_acceptance:
+        findings.append("ACCEPTANCE_FAILED:" + ",".join(failed_acceptance))
+
+    tests = named_status_map(
+        result["test_results"],
+        "execution_result.test_results",
+        "test",
+    )
+    expected_tests = set(plan["tests_required"])
+    if set(tests) != expected_tests:
+        missing = sorted(expected_tests - set(tests))
+        extra = sorted(set(tests) - expected_tests)
+        findings.append(f"TEST_SET_MISMATCH:missing={missing},extra={extra}")
+    failed_tests = sorted(name for name, status in tests.items() if status != "PASS")
+    if failed_tests:
+        findings.append("TEST_FAILED:" + ",".join(failed_tests))
+
+    preserved = named_status_map(
+        result["preserved_capabilities"],
+        "execution_result.preserved_capabilities",
+        "capability",
+    )
+    expected_preserve = set(plan["preserve_capabilities"])
+    if set(preserved) != expected_preserve:
+        missing = sorted(expected_preserve - set(preserved))
+        extra = sorted(set(preserved) - expected_preserve)
+        findings.append(f"PRESERVE_SET_MISMATCH:missing={missing},extra={extra}")
+    failed_preserve = sorted(name for name, status in preserved.items() if status != "PASS")
+    if failed_preserve:
+        findings.append("CAPABILITY_REGRESSION:" + ",".join(failed_preserve))
+
+    side_effects = require_string_list(
+        result["unexpected_side_effects"],
+        "execution_result.unexpected_side_effects",
+    )
+    if side_effects:
+        findings.append("UNEXPECTED_SIDE_EFFECTS:" + ",".join(side_effects))
+
+    report = {
+        "schema_version": 1,
+        "report_id": f"VALIDATION-{plan['plan_id']}",
+        "plan_id": plan["plan_id"],
+        "lease_id": lease["lease_id"],
+        "validator_role": "VALIDATOR",
+        "verdict": "PASS" if not findings else "FAIL",
+        "findings": findings,
+    }
+    validate_validation_report(report, plan, lease)
+    return report
 
 def main() -> int:
     parser = argparse.ArgumentParser(

@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "no_user_change",
     "topic": "Control Plane V2 Shadow Plan und Single-Writer-Lease",
-    "summary": "I121 aendert keine Produktfunktion. Schritt 1 modelliert erstmals technisch den versiegelten Plan und den globalen Write-Lease: ein Creator, ein Plan, ein freigegebener Scope; alle Nebenwuensche bleiben DEFER und geschuetzte Pfade werden vor einer Ausfuehrung geblockt.",
+    "summary": "I121 bleibt ohne Produktwirkung und weiterhin Shadow. Nach gruenem Step-1-Gate vergleicht Schritt 2 ein Creator-Ergebnis deterministisch mit dem versiegelten Plan und dem exklusiven Lease. Der Validator erzeugt ausschliesslich PASS/FAIL + Findings fuer Scope, Akzeptanzkriterien, Tests, Capability-Erhaltung und Seiteneffekte; er repariert keinen Produktcode.",
     "target_doc": null
   },
   "write_files": [
@@ -31,7 +31,8 @@
     "I120 shadow registry/lifecycle/trigger contracts merged after deep green gate",
     "Control Plane remains SHADOW and non-authoritative",
     "MASK_PROPERTIES_V1 remains STABLE and reopen-protected",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I121 Step-1 intermediate deep gate run 36056560574 on head 11308528dd0d9c6ead95b28671281b6dd1f8019c: targeted + governance + foundation success"
   ],
   "tests_required": [
     "Step 1: compile shadow controller and governance test",
@@ -43,9 +44,15 @@
     "Step 1: side requests may only DEFER and cannot silently expand current execution",
     "Step 1: write_files may not intersect forbidden_files",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: execution result must be compared deterministically against sealed scope, acceptance criteria, tests and preserved capabilities",
-    "Step 2 only after green: validator emits PASS/FAIL report but never product writes",
-    "deep governance and repository foundation gates"
+    "Step 2: execution result is compared deterministically against sealed scope, acceptance criteria, tests and preserved capabilities",
+    "Step 2: validator emits PASS/FAIL + findings as a read-only report contract",
+    "deep governance and repository foundation gates",
+    "Step 2: matching execution produces PASS with zero findings",
+    "Step 2: unplanned or forbidden changed files produce FAIL findings",
+    "Step 2: failed/missing acceptance criteria or tests produce FAIL findings",
+    "Step 2: stable capability regression or unexpected side effect produces FAIL",
+    "Step 2: execution identity must match sealed plan and active lease",
+    "Step 2: PASS report may never contain findings"
   ],
   "tests_explicitly_not_run": [
     "product browser tests because I121 changes no product code",
@@ -80,11 +87,11 @@
     "no dependency addition"
   ],
   "expected_side_effects": [
-    "sealed plans and global single-writer leases become machine-validated shadow artifacts",
-    "two simultaneous product writers are deterministically rejected before execution",
-    "side requests are structurally deferred instead of expanding the active plan",
-    "future Step 2 can validate execution results against the exact sealed plan"
+    "sealed plans and global single-writer leases remain machine-validated shadow artifacts",
+    "two simultaneous product writers remain blocked before execution",
+    "execution results can now be deterministically compared with their exact sealed plan and lease",
+    "validator output is a read-only PASS/FAIL finding report suitable for returning failures to the Planner"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

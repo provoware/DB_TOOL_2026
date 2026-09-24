@@ -9,7 +9,12 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.control_plane_shadow import authorize_write_lease, validate_sealed_plan
+from scripts.control_plane_shadow import (
+    authorize_write_lease,
+    validate_execution_result,
+    validate_sealed_plan,
+    validate_validation_report,
+)
 
 
 BASE_SHA = "dd2b84c81cd26729dcef2b1202a328216e65a44b"
@@ -49,6 +54,31 @@ def sample_plan() -> dict:
                 "disposition": "DEFER",
             }
         ],
+    }
+
+
+def sample_result(plan: dict, lease: dict) -> dict:
+    return {
+        "result_schema_version": 1,
+        "plan_id": plan["plan_id"],
+        "lease_id": lease["lease_id"],
+        "base_sha": plan["base_sha"],
+        "creator_role": "CREATOR",
+        "state": "EXECUTION_COMPLETE",
+        "changed_files": list(plan["write_files"]),
+        "acceptance_results": [
+            {"criterion": item, "status": "PASS"}
+            for item in plan["acceptance_criteria"]
+        ],
+        "test_results": [
+            {"test": item, "status": "PASS"}
+            for item in plan["tests_required"]
+        ],
+        "preserved_capabilities": [
+            {"capability": item, "status": "PASS"}
+            for item in plan["preserve_capabilities"]
+        ],
+        "unexpected_side_effects": [],
     }
 
 
@@ -129,6 +159,90 @@ def test_forbidden_file_cannot_also_be_writable() -> None:
     expect_invalid(plan, "write_files intersects plan.forbidden_files")
 
 
+
+def test_matching_execution_result_produces_read_only_validator_pass() -> None:
+    plan = sample_plan()
+    lease = authorize_write_lease(plan)
+    report = validate_execution_result(plan, lease, sample_result(plan, lease))
+    assert report == {
+        "schema_version": 1,
+        "report_id": "VALIDATION-PLAN-I999-SHADOW",
+        "plan_id": "PLAN-I999-SHADOW",
+        "lease_id": "LEASE-PLAN-I999-SHADOW",
+        "validator_role": "VALIDATOR",
+        "verdict": "PASS",
+        "findings": [],
+    }
+    validate_validation_report(report, plan, lease)
+
+
+def test_unplanned_or_forbidden_file_produces_fail_report() -> None:
+    plan = sample_plan()
+    lease = authorize_write_lease(plan)
+    result = sample_result(plan, lease)
+    result["changed_files"].append("src/provoware_db/domain/models.py")
+    report = validate_execution_result(plan, lease, result)
+    assert report["verdict"] == "FAIL"
+    assert any(item.startswith("UNPLANNED_FILES:") for item in report["findings"])
+    assert any(item.startswith("FORBIDDEN_FILES_CHANGED:") for item in report["findings"])
+
+
+def test_failed_or_missing_acceptance_and_tests_are_reported() -> None:
+    plan = sample_plan()
+    lease = authorize_write_lease(plan)
+    result = sample_result(plan, lease)
+    result["acceptance_results"][0]["status"] = "FAIL"
+    result["test_results"] = []
+    report = validate_execution_result(plan, lease, result)
+    assert report["verdict"] == "FAIL"
+    assert any(item.startswith("ACCEPTANCE_FAILED:") for item in report["findings"])
+    assert any(item.startswith("TEST_SET_MISMATCH:") for item in report["findings"])
+
+
+def test_capability_regression_or_side_effect_fails_validation() -> None:
+    plan = sample_plan()
+    lease = authorize_write_lease(plan)
+    result = sample_result(plan, lease)
+    result["preserved_capabilities"][0]["status"] = "FAIL"
+    result["unexpected_side_effects"] = ["unexpected network write"]
+    report = validate_execution_result(plan, lease, result)
+    assert report["verdict"] == "FAIL"
+    assert "CAPABILITY_REGRESSION:MASK_PROPERTIES_V1" in report["findings"]
+    assert "UNEXPECTED_SIDE_EFFECTS:unexpected network write" in report["findings"]
+
+
+def test_execution_identity_must_match_sealed_plan_and_lease() -> None:
+    plan = sample_plan()
+    lease = authorize_write_lease(plan)
+    result = sample_result(plan, lease)
+    result["lease_id"] = "LEASE-WRONG"
+    try:
+        validate_execution_result(plan, lease, result)
+    except ValueError as exc:
+        assert "lease_id does not match active lease" in str(exc)
+    else:
+        raise AssertionError("mismatched execution lease must fail closed")
+
+
+def test_validator_report_cannot_claim_pass_with_findings() -> None:
+    plan = sample_plan()
+    lease = authorize_write_lease(plan)
+    report = {
+        "schema_version": 1,
+        "report_id": "VALIDATION-PLAN-I999-SHADOW",
+        "plan_id": plan["plan_id"],
+        "lease_id": lease["lease_id"],
+        "validator_role": "VALIDATOR",
+        "verdict": "PASS",
+        "findings": ["should-not-exist"],
+    }
+    try:
+        validate_validation_report(report, plan, lease)
+    except ValueError as exc:
+        assert "PASS validation report may not contain findings" in str(exc)
+    else:
+        raise AssertionError("PASS report with findings must fail closed")
+
 def main() -> None:
     test_sealed_plan_is_valid_and_grants_deterministic_creator_lease()
     test_second_active_global_writer_is_blocked()
@@ -137,7 +251,13 @@ def main() -> None:
     test_stable_capability_preservation_is_mandatory()
     test_side_requests_cannot_expand_current_execution_scope()
     test_forbidden_file_cannot_also_be_writable()
-    print("CONTROL PLANE V2 SHADOW PLAN/LEASE I121 STEP 1: GRÜN")
+    test_matching_execution_result_produces_read_only_validator_pass()
+    test_unplanned_or_forbidden_file_produces_fail_report()
+    test_failed_or_missing_acceptance_and_tests_are_reported()
+    test_capability_regression_or_side_effect_fails_validation()
+    test_execution_identity_must_match_sealed_plan_and_lease()
+    test_validator_report_cannot_claim_pass_with_findings()
+    print("CONTROL PLANE V2 SHADOW PLAN/LEASE/VALIDATION I121 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":
