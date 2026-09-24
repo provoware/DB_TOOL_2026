@@ -1,0 +1,101 @@
+{
+  "schema_version": 2,
+  "iteration": 110,
+  "agent": "mask-builder-temporary-default-value-agent-110",
+  "size": "M",
+  "goal": "Den naechsten offenen P1-Slice als rein temporaeren Standardwert im Browser-Draft umsetzen. Schritt 1 fuegt ausschliesslich fuer field-Drafts defaultValue hinzu und validiert den Wert gegen die vier aktuell freigegebenen Browser-Datentypen text, number, date und boolean. Nur item.defaultValue darf bei erfolgreicher Uebernahme mutieren; ungueltige Eingaben bleiben unveraendert. Schritt 2 darf erst nach gruenem Zwischen-Gate Semantik, Fokus und schmale Bedienbarkeit haerten. Keine Optionen, kein MaskFieldSpec.default_value, kein Store und keine Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaerer typabhaengiger Standardwert im Masken-Baukasten",
+    "summary": "Schritt 1 fuehrt einen ausschliesslich browserlokalen Standardwert fuer field-Drafts ein. Leere Werte bleiben erlaubt; Text wird unveraendert akzeptiert, Zahl muss endlich parsebar sein, Datum muss ein echtes ISO-Datum YYYY-MM-DD sein und Boolean wird ueber eine feste Auswahl leer/Ja/Nein gesetzt. Keine stille Typkonvertierung und keine Persistenz.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0110-mask-builder-temporary-default-value.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0109-mask-builder-temporary-datatype.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/domain/models.py"
+  ],
+  "direct_dependencies": [
+    "main 10f1538464f681c0e2e9aa8304f9b88a3c533f03",
+    "I109 temporary datatype draft property merged",
+    "TODO A next open capability: typabhaengigen Standardwert validieren",
+    "Browser datatype vocabulary remains intentionally limited to text, number, date, boolean for this temporary slice",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+  ],
+  "tests_required": [
+    "Plan gate before product write",
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 1: newly placed field drafts start with empty defaultValue and non-field drafts use null",
+    "Step 1: default-value controls render only for field drafts",
+    "Step 1: text accepts arbitrary value including empty",
+    "Step 1: number accepts empty or finite parseable numeric text and rejects invalid/non-finite text before mutation",
+    "Step 1: date accepts empty or a real ISO date YYYY-MM-DD and rejects impossible dates before mutation",
+    "Step 1: boolean uses deterministic empty/true/false selection rather than free text",
+    "Step 1: successful update mutates only item.defaultValue and preserves draft identity, datatype, required state and layout",
+    "Step 1: invalid update leaves item.defaultValue unchanged and reports a user-readable status",
+    "Step 1: preview reflects non-empty default values deterministically",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, MaskFieldSpec default, store, options, network-write or database dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the slice is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "MaskTemplate model/store tests because no persistent template contract changes",
+    "selection-option tests because options remain explicitly out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "browser number vocabulary is broader than persistent integer/decimal FieldType and must not be treated as a persistence mapping",
+    "invalid default input must never mutate the previous browser draft value",
+    "date validation must reject syntactically shaped but impossible calendar dates",
+    "datatype changes must not silently convert or erase an existing default value",
+    "the slice must not grow into options, persistent model fields or rule infrastructure"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no MaskFieldSpec.default_value or ApplicationFieldPlan change",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no selection options",
+    "no visibility or width editing",
+    "no domain FieldType mapping or normalization",
+    "no dependency addition",
+    "no TODO.md checkbox mutation",
+    "no repository cleanup in this product iteration",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "a field draft can hold a temporary validated defaultValue without changing identity or layout",
+    "invalid default input leaves the prior defaultValue unchanged",
+    "preview shows an accepted non-empty default value",
+    "reloading the page still clears the draft"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED"
+}
