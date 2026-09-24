@@ -412,7 +412,7 @@ def test_choice_option_add_is_browser_local_monotone_and_append_only() -> None:
     assert 'addOptionButton.className = "add-option";' in html
     assert 'addDraftOption(item.id, optionInput);' in html
     assert 'optionRow.dataset.optionId = option.id;' in html
-    assert 'item.options.forEach((option) =>' in html
+    assert 'item.options.forEach((option, optionIndex) =>' in html
     assert 'item.options.map((option) => option.label).join(" | ")' in html
 
     assert 'defaultSelection' not in html
