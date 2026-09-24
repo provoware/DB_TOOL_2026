@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Auswahloptionen im Masken-Baukasten",
-    "summary": "I113 startet Auswahloptionen browserlokal. Schritt 1 erlaubt nur das Hinzufuegen nicht-leerer, nicht doppelt vorhandener Optionen mit stabilen monotonen Draft-IDs. Entfernen und Neuordnen bleiben bis zum Zwischen-Gate gesperrt.",
+    "summary": "Schritt 1 fuegt fuer aktive Choice-Drafts ausschliesslich browserlokale Optionen hinzu: ein options-Array, monotone draft-option-IDs, Validierung gegen Leerwert und doppelte Bezeichnungen sowie eine read-only Liste/Preview in Einfuegereihenfolge. Remove, Reorder und defaultSelection bleiben gesperrt.",
     "target_doc": null
   },
   "write_files": [
@@ -32,7 +32,8 @@
     "I112 temporary choice datatypes merged",
     "choice options are valid only for single_choice and multi_choice",
     "persistent MaskFieldSpec already models deterministic option order but remains untouched",
-    "Step 2 Remove/Reorder is blocked until Step 1 Add intermediate gate is green"
+    "Step 2 Remove/Reorder is blocked until Step 1 Add intermediate gate is green",
+    "I113 plan gate run 36030223255: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -101,5 +102,5 @@
     "reload still clears all draft options"
   ],
   "screenshot_required": false,
-  "status": "PLANNED"
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
 }

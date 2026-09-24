@@ -348,8 +348,6 @@ def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -
     assert 'defaultValue = ' not in change_block
 
     assert 'defaultSelection' not in html
-    assert 'draft-option-' not in html
-    assert 'option-editor' not in html
 
 
 
@@ -358,7 +356,8 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     html = render_editor_shell()
     assert 'choiceState.className = "choice-state";' in html
     assert 'choiceState.id = "draft-choice-state-" + item.id;' in html
-    assert 'choiceState.textContent = "Auswahltyp unvollständig · noch keine Optionen konfiguriert.";' in html
+    assert 'choiceState.textContent = item.options.length === 0' in html
+    assert '"Auswahltyp unvollständig · noch keine Optionen konfiguriert."' in html
     assert 'dataTypeSelect.setAttribute("aria-describedby", choiceState.id);' in html
     assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
     assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
@@ -376,6 +375,50 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert 'defaultSelection' not in html
     assert 'draft-option-' not in html
     assert 'option-editor' not in html
+
+
+
+
+def test_choice_option_add_is_browser_local_monotone_and_append_only() -> None:
+    html = render_editor_shell()
+    assert 'let nextDraftOptionId = 1;' in html
+    assert 'options: selectedKind === "field" ? [] : null,' in html
+    assert 'function addDraftOption(id, input)' in html
+    assert 'item.kind !== "field" || !isChoiceDataType(item.dataType)' in html
+    assert 'const label = input.value.trim();' in html
+    assert 'if (label.length === 0) {' in html
+    assert 'option.label.toLowerCase() === label.toLowerCase()' in html
+    assert 'item.options.push({' in html
+    assert 'id: "draft-option-" + String(nextDraftOptionId++),' in html
+    assert 'label,' in html
+    assert 'focusOptionInput(id);' in html
+
+    start = html.index('function addDraftOption(id, input)')
+    end = html.index('function removeDraft(id)')
+    add_block = html[start:end]
+    mutation = add_block.index('item.options.push({')
+    assert add_block.index('if (label.length === 0) {') < mutation
+    assert add_block.index('if (duplicate) {') < mutation
+    assert 'item.id =' not in add_block
+    assert 'item.dataType =' not in add_block
+    assert 'item.defaultValue =' not in add_block
+    assert 'item.column =' not in add_block
+    assert 'item.width =' not in add_block
+    assert 'item.options.splice(' not in add_block
+    assert '.sort(' not in add_block
+
+    assert 'optionEditor.className = "option-editor";' in html
+    assert 'optionInput.className = "option-editor-input";' in html
+    assert 'addOptionButton.className = "add-option";' in html
+    assert 'addDraftOption(item.id, optionInput);' in html
+    assert 'optionRow.dataset.optionId = option.id;' in html
+    assert 'item.options.forEach((option) =>' in html
+    assert 'item.options.map((option) => option.label).join(" | ")' in html
+
+    assert 'remove-option' not in html
+    assert 'reorder-option' not in html
+    assert 'move-option' not in html
+    assert 'defaultSelection' not in html
 
 
 def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
@@ -544,6 +587,7 @@ def main() -> None:
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
+    test_choice_option_add_is_browser_local_monotone_and_append_only()
     test_default_value_is_field_only_browser_local_and_type_validated()
     test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
@@ -554,7 +598,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY CHOICE TYPES I112 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY CHOICE OPTIONS I113 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
