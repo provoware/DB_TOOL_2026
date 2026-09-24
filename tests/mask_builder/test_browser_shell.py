@@ -148,7 +148,7 @@ def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
 def test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus() -> None:
     html = render_editor_shell()
     start = html.index('function cancelLabelEdit(id)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusHelpEditor(id)')
     edit_block = html[start:end]
     assert 'const nextLabel = input.value.trim();' in edit_block
     assert 'if (nextLabel.length === 0) {' in edit_block
