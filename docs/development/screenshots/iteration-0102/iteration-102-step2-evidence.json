@@ -1,0 +1,33 @@
+{
+  "iteration": 102,
+  "step": 2,
+  "source_head_sha": "fe9c9b4001b1119c74023da20b6225d4b609874d",
+  "browser": "Chromium 144.0.7559.96",
+  "platform": "linux",
+  "render_method": "Playwright real Chromium run using the current I102 browser interaction/CSS contract; no product patch applied",
+  "zoom_equivalent": {
+    "css_viewport": {"width": 720, "height": 450},
+    "device_scale_factor": 2,
+    "physical_screenshot": {"width": 1440, "height": 900}
+  },
+  "checks": {
+    "rightmost_valid_four_column_field": "Spalten 9–12",
+    "remove_control_visible": true,
+    "remove_control_focused": true,
+    "remove_control_keyboard_operable": true,
+    "focus_return_column_zero_based": 8,
+    "focus": {
+      "outlineStyle": "solid",
+      "outlineWidth": "3px",
+      "outlineOffset": "2px"
+    },
+    "focus_visible_at_least_3px": true,
+    "horizontal_overflow": false,
+    "browser_console_errors": [],
+    "page_errors": []
+  },
+  "status": "GREEN",
+  "hashes": {
+    "zoom_200_png_sha256": "d559d1fb9d8ebe01a417c1a20dab2bf0ceb080db8fdd1be837d9f613e3095df4"
+  }
+}

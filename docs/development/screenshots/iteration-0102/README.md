@@ -43,3 +43,28 @@ Geprüfter Ablauf:
 ## Zwischenstatus
 
 **Schritt 1: GRÜN.** Schritt 2 bleibt bis zum erfolgreichen Zwischen-Gate gesperrt.
+
+
+## Schritt 2 – rechter 4-Spalten-Randfall bei 200-%-Zoom-Äquivalent
+
+Nach grünem Zwischen-Gate #77 wurde der rechte gültige 4-Spalten-Fall mit **720 × 450 CSS-Pixeln bei DPR 2** in echtem Chromium geprüft. Das Eingabefeld wurde an Spalte 9 platziert und belegt damit die Spalten 9–12.
+
+### Evidence Schritt 2
+
+- 🟢 Remove-Button vollständig sichtbar
+- 🟢 Remove-Button fokussierbar
+- 🟢 Remove per Enter funktioniert
+- 🟢 Fokus kehrt nach Remove zu Zielspalte 9 zurück
+- 🟢 sichtbarer Fokusrahmen: solid, 3 px, Offset 2 px
+- 🟢 kein horizontaler Overflow
+- 🟢 Browser-Console-Errors: 0
+- 🟢 Page-Errors: 0
+
+**200-%-Screenshot SHA-256:** `d559d1fb9d8ebe01a417c1a20dab2bf0ceb080db8fdd1be837d9f613e3095df4`
+
+## I102-Ergebnis
+
+**Schritt 1:** GRÜN.  
+**Schritt 2:** GRÜN, **NO_FIX_REQUIRED**.  
+**Produktcode:** unverändert.  
+**Finaler Status:** wartet ausschließlich auf das abschließende I102-Gate.

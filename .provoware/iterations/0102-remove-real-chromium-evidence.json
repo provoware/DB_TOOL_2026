@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Realer Chromium-Nachweis fuer Entfernen im Masken-Baukasten",
-    "summary": "Schritt 1 ist im realen Chromium gruen: Entfernen per Tastatur, Fokus-Rueckgabe, Leerzustand, monotone Draft-ID sowie fehlender horizontaler Overflow wurden bestaetigt. Schritt 2 bleibt bis zum gruenen Zwischen-Gate gesperrt.",
+    "summary": "Schritt 1 und Schritt 2 sind im realen Chromium gruen. Der rechte gueltige 4-Spalten-Fall bei 200-Prozent-Zoom-Aequivalent haelt den Remove-Button sichtbar, fokussierbar und per Tastatur bedienbar; Fokus-Rueckgabe und fehlender horizontaler Overflow sind bestaetigt. Kein Produktfix erforderlich.",
     "target_doc": "docs/development/screenshots/iteration-0102/README.md"
   },
   "write_files": [
@@ -32,7 +32,8 @@
     "I101 temporary browser-only remove",
     "I100 real Chromium evidence pattern",
     "Step 2 is blocked until Step 1 evidence and UI gate are green",
-    "Step 1 real Chromium evidence GREEN on source head f1044d7cd94d260917c7133d16e87d23411f9c16"
+    "Step 1 real Chromium evidence GREEN on source head f1044d7cd94d260917c7133d16e87d23411f9c16",
+    "Step 2 real Chromium 200-percent-equivalent evidence GREEN on source head fe9c9b4001b1119c74023da20b6225d4b609874d"
   ],
   "tests_required": [
     "Step 1: real Chromium normal-view remove interaction",
@@ -79,5 +80,5 @@
     "no product behavior change unless a reproducible I101 defect requires a minimal repair"
   ],
   "screenshot_required": true,
-  "status": "STEP1_EVIDENCE_GREEN_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
 }
