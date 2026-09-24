@@ -29,7 +29,8 @@
     "main 65eb1672b3d31b63024b2bfb7a9d17fc6a42e427",
     "I108 temporary required draft property merged",
     "TODO A next open capability: Datentyp-Eigenschaft im Draft",
-    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I109 plan gate run 36021090760: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -86,5 +87,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "PLANNED"
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
 }

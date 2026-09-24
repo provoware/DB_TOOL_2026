@@ -229,6 +229,21 @@ _INTERACTION_SCRIPT = r"""
     );
   }
 
+  function changeDataType(id, select) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field") {
+      return;
+    }
+    item.dataType = select.value;
+    renderDraft();
+    setStatus(
+      item.label
+      + " · Datentyp "
+      + item.dataType
+      + " · nur temporärer Browserentwurf."
+    );
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -362,6 +377,25 @@ _INTERACTION_SCRIPT = r"""
         requiredButton.setAttribute("aria-label", item.label + " · Pflichtfeld umschalten");
         requiredButton.addEventListener("click", () => toggleRequired(item.id));
         card.appendChild(requiredButton);
+
+        const dataTypeSelect = document.createElement("select");
+        dataTypeSelect.className = "datatype-select";
+        dataTypeSelect.dataset.draftId = item.id;
+        dataTypeSelect.setAttribute("aria-label", item.label + " · Datentyp");
+        [
+          ["text", "Text"],
+          ["number", "Zahl"],
+          ["date", "Datum"],
+          ["boolean", "Ja/Nein"],
+        ].forEach(([value, labelText]) => {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = labelText;
+          option.selected = item.dataType === value;
+          dataTypeSelect.appendChild(option);
+        });
+        dataTypeSelect.addEventListener("change", () => changeDataType(item.id, dataTypeSelect));
+        card.appendChild(dataTypeSelect);
       }
 
       const moveButton = document.createElement("button");
@@ -407,6 +441,7 @@ _INTERACTION_SCRIPT = r"""
         + String(lastColumn)
         + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
         + (item.isRequired ? " · Pflichtfeld" : "")
+        + (item.kind === "field" ? " · Datentyp: " + item.dataType : "")
       );
       list.appendChild(row);
     });
@@ -485,6 +520,7 @@ _INTERACTION_SCRIPT = r"""
       width: selectedWidth,
       helpText: "",
       isRequired: false,
+      dataType: selectedKind === "field" ? "text" : null,
     });
     renderDraft();
     setStatus(
