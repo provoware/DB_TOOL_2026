@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "iteration": 107,
+  "agent": "mask-builder-temporary-help-text-agent-107",
+  "size": "M",
+  "goal": "Den naechsten offenen P1-TODO-Slice als rein temporaere Hilfetext-Eigenschaft im Browser-Draft umsetzen. Schritt 1 fuegt einem bestehenden Draft-Element ausschliesslich helpText hinzu und macht ihn keyboard-first editierbar, ohne ID, kind, label, column oder width zu aendern. Schritt 2 darf erst nach gruenem Zwischen-Gate semantische aria-describedby-Verknuepfung, Escape/Fokus-Rueckgabe und schmale Bedienbarkeit haerten. Keine Persistenz und keine weiteren Eigenschaften.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaerer Hilfetext im Masken-Baukasten",
+    "summary": "Schritt 2 verbindet vorhandenen Hilfetext ueber eine deterministische draft-help-<draft-id>-DOM-ID und aria-describedby mit der Draft-Karte als zugaenglicher Gruppe. Escape bricht ohne helpText-Mutation ab und gibt den Fokus an Hilfetext aendern zurueck; nach Uebernehmen kehrt der Fokus ebenfalls deterministisch zurueck. Schmale Layouts stapeln Hilfetext-Editor und Controls.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0107-mask-builder-temporary-help-text.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0106-mask-builder-temporary-label-edit.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 38132b09a43fdee8e1f1163901bff03da9bb9dff",
+    "I106 temporary keyboard-first label edit merged",
+    "TODO A next open capability: Hilfetext temporaer editieren",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I107 plan gate run 36006222157: success",
+    "I107 Step 1 gate run 36006432485: success"
+  ],
+  "tests_required": [
+    "Plan gate before product write",
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 1: placed draft exposes keyboard-reachable Hilfetext-aendern control",
+    "Step 1: valid help-text edit changes only item.helpText",
+    "Step 1: empty help text may clear the optional help text deterministically",
+    "Step 1: draft ID, kind, label, column and width remain unchanged",
+    "Step 1: preview reflects help text deterministically without allocating a new draft ID",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "Step 2: help text receives deterministic DOM id and aria-describedby association",
+    "Step 2: Escape cancels without mutation and restores focus deterministically",
+    "Step 2: narrow layout keeps help editor reachable without horizontal overflow",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, network-write, database or store dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the slice is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "helpText must remain optional and independent from label",
+    "editing help text must not recreate the draft or allocate a new ID",
+    "accessibility association must reference an existing deterministic element only when help text is present",
+    "the slice must not grow into a general property editor"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no required flag, datatype, default value, options, visibility or width editing",
+    "no general property editor",
+    "no drag-and-drop",
+    "no dependency addition",
+    "no TODO.md checkbox mutation in this product iteration",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "after Step 1 a placed temporary component can receive, replace or clear optional help text without changing its identity or layout",
+    "after Step 2 present help text is exposed through a deterministic accessible-description relationship",
+    "reloading the page still clears the draft"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
