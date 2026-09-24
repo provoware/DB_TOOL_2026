@@ -23,6 +23,7 @@ _INTERACTION_SCRIPT = r"""
   const gridColumns = Number(canvas.dataset.gridColumns);
   const draftElements = [];
   let nextDraftId = 1;
+  let nextDraftOptionId = 1;
   let selectedKind = null;
   let selectedLabel = null;
   let selectedWidth = null;
@@ -248,7 +249,7 @@ _INTERACTION_SCRIPT = r"""
       item.label
       + " · Datentyp "
       + item.dataType
-      + (isChoiceDataType(item.dataType) ? " · Auswahltyp unvollständig: noch keine Optionen konfiguriert" : "")
+      + (isChoiceDataType(item.dataType)\n        ? (item.options.length === 0\n          ? " · Auswahltyp unvollständig: noch keine Optionen konfiguriert"\n          : " · " + String(item.options.length) + " Auswahloption(en) konfiguriert")\n        : "")
       + " · nur temporärer Browserentwurf."
     );
     focusDataTypeControl(id);
@@ -327,6 +328,117 @@ _INTERACTION_SCRIPT = r"""
       return item.defaultValue === "true" ? "Ja" : "Nein";
     }
     return item.defaultValue;
+  }
+
+  function focusOptionInput(id) {
+    const input = Array.from(placedLayer.querySelectorAll(".option-editor-input"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (input !== undefined) {
+      input.focus();
+    }
+  }
+
+  function addDraftOption(id, input) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field" || !isChoiceDataType(item.dataType)) {
+      return;
+    }
+    const label = input.value.trim();
+    if (label.length === 0) {
+      setStatus("Nicht übernommen: Auswahloption darf nicht leer sein.");
+      input.focus();
+      return;
+    }
+    const duplicate = item.options.some(
+      (option) => option.label.toLowerCase() === label.toLowerCase()
+    );
+    if (duplicate) {
+      setStatus("Nicht übernommen: Diese Auswahloption existiert bereits.");
+      input.focus();
+      return;
+    }
+    item.options.push({
+      id: "draft-option-" + String(nextDraftOptionId++),
+      label,
+    });
+    renderDraft();
+    setStatus(
+      item.label
+      + " · Auswahloption „"
+      + label
+      + "“ hinzugefügt · nur temporärer Browserentwurf."
+    );
+    focusOptionInput(id);
+  }
+
+  function focusOptionControl(draftId, optionId, selector) {
+    const control = Array.from(placedLayer.querySelectorAll(selector))
+      .find(
+        (candidate) =>
+          candidate.dataset.draftId === draftId
+          && candidate.dataset.optionId === optionId
+      );
+    if (control !== undefined) {
+      control.focus();
+    }
+  }
+
+  function removeDraftOption(draftId, optionId) {
+    const item = draftElements.find((candidate) => candidate.id === draftId);
+    if (item === undefined || item.kind !== "field" || !isChoiceDataType(item.dataType)) {
+      return;
+    }
+    const index = item.options.findIndex((option) => option.id === optionId);
+    if (index < 0) {
+      return;
+    }
+    const removed = item.options[index];
+    item.options.splice(index, 1);
+    const focusOption = item.options[index] ?? item.options[index - 1] ?? null;
+    renderDraft();
+    setStatus(
+      item.label
+      + " · Auswahloption „"
+      + removed.label
+      + "“ entfernt · nur temporärer Browserentwurf."
+    );
+    if (focusOption === null) {
+      focusOptionInput(draftId);
+    } else {
+      focusOptionControl(draftId, focusOption.id, ".remove-option");
+    }
+  }
+
+  function moveDraftOption(draftId, optionId, direction) {
+    const item = draftElements.find((candidate) => candidate.id === draftId);
+    if (
+      item === undefined
+      || item.kind !== "field"
+      || !isChoiceDataType(item.dataType)
+      || ![-1, 1].includes(direction)
+    ) {
+      return;
+    }
+    const index = item.options.findIndex((option) => option.id === optionId);
+    const targetIndex = index + direction;
+    if (index < 0 || targetIndex < 0 || targetIndex >= item.options.length) {
+      return;
+    }
+    const [option] = item.options.splice(index, 1);
+    item.options.splice(targetIndex, 0, option);
+    renderDraft();
+    setStatus(
+      item.label
+      + " · Auswahloption „"
+      + option.label
+      + (direction < 0 ? "“ nach oben verschoben" : "“ nach unten verschoben")
+      + " · nur temporärer Browserentwurf."
+    );
+    focusOptionControl(
+      draftId,
+      option.id,
+      direction < 0 ? ".move-option-up" : ".move-option-down"
+    );
   }
 
   function removeDraft(id) {
@@ -496,9 +608,90 @@ _INTERACTION_SCRIPT = r"""
           const choiceState = document.createElement("span");
           choiceState.className = "choice-state";
           choiceState.id = "draft-choice-state-" + item.id;
-          choiceState.textContent = "Auswahltyp unvollständig · noch keine Optionen konfiguriert.";
+          choiceState.textContent = item.options.length === 0
+            ? "Auswahltyp unvollständig · noch keine Optionen konfiguriert."
+            : String(item.options.length) + " Auswahloption(en) konfiguriert.";
           dataTypeSelect.setAttribute("aria-describedby", choiceState.id);
           card.appendChild(choiceState);
+
+          const optionEditor = document.createElement("form");
+          optionEditor.className = "option-editor";
+
+          const optionLabel = document.createElement("label");
+          optionLabel.className = "option-editor-label";
+          optionLabel.id = "draft-option-label-" + item.id;
+          optionLabel.textContent = "Option hinzufügen";
+          optionEditor.appendChild(optionLabel);
+
+          const optionInput = document.createElement("input");
+          optionInput.type = "text";
+          optionInput.className = "option-editor-input";
+          optionInput.dataset.draftId = item.id;
+          optionInput.id = "draft-option-input-" + item.id;
+          optionInput.setAttribute("aria-labelledby", optionLabel.id);
+          optionLabel.htmlFor = optionInput.id;
+          optionEditor.appendChild(optionInput);
+
+          const addOptionButton = document.createElement("button");
+          addOptionButton.type = "submit";
+          addOptionButton.className = "add-option";
+          addOptionButton.textContent = "Hinzufügen";
+          optionEditor.appendChild(addOptionButton);
+          optionEditor.addEventListener("submit", (event) => {
+            event.preventDefault();
+            addDraftOption(item.id, optionInput);
+          });
+          card.appendChild(optionEditor);
+
+          if (item.options.length > 0) {
+            const optionList = document.createElement("ol");
+            optionList.className = "choice-options-list";
+            item.options.forEach((option, optionIndex) => {
+              const optionRow = document.createElement("li");
+              optionRow.className = "choice-option-row";
+              optionRow.dataset.optionId = option.id;
+
+              const optionText = document.createElement("span");
+              optionText.className = "choice-option-label";
+              optionText.textContent = option.label;
+              optionRow.appendChild(optionText);
+
+              const moveUpButton = document.createElement("button");
+              moveUpButton.type = "button";
+              moveUpButton.className = "move-option-up";
+              moveUpButton.dataset.draftId = item.id;
+              moveUpButton.dataset.optionId = option.id;
+              moveUpButton.textContent = "Hoch";
+              moveUpButton.disabled = optionIndex === 0;
+              moveUpButton.setAttribute("aria-label", item.label + " · " + option.label + " nach oben");
+              moveUpButton.addEventListener("click", () => moveDraftOption(item.id, option.id, -1));
+              optionRow.appendChild(moveUpButton);
+
+              const moveDownButton = document.createElement("button");
+              moveDownButton.type = "button";
+              moveDownButton.className = "move-option-down";
+              moveDownButton.dataset.draftId = item.id;
+              moveDownButton.dataset.optionId = option.id;
+              moveDownButton.textContent = "Runter";
+              moveDownButton.disabled = optionIndex === item.options.length - 1;
+              moveDownButton.setAttribute("aria-label", item.label + " · " + option.label + " nach unten");
+              moveDownButton.addEventListener("click", () => moveDraftOption(item.id, option.id, 1));
+              optionRow.appendChild(moveDownButton);
+
+              const removeOptionButton = document.createElement("button");
+              removeOptionButton.type = "button";
+              removeOptionButton.className = "remove-option";
+              removeOptionButton.dataset.draftId = item.id;
+              removeOptionButton.dataset.optionId = option.id;
+              removeOptionButton.textContent = "Option entfernen";
+              removeOptionButton.setAttribute("aria-label", item.label + " · " + option.label + " entfernen");
+              removeOptionButton.addEventListener("click", () => removeDraftOption(item.id, option.id));
+              optionRow.appendChild(removeOptionButton);
+
+              optionList.appendChild(optionRow);
+            });
+            card.appendChild(optionList);
+          }
         }
 
         if (!isChoiceDataType(item.dataType)) {
@@ -586,7 +779,15 @@ _INTERACTION_SCRIPT = r"""
         + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
         + (item.isRequired ? " · Pflichtfeld" : "")
         + (item.kind === "field" ? " · Datentyp: " + item.dataType : "")
-        + (item.kind === "field" && isChoiceDataType(item.dataType) ? " · Auswahloptionen: noch nicht konfiguriert" : "")
+        + (
+          item.kind === "field" && isChoiceDataType(item.dataType)
+            ? (
+              item.options.length === 0
+                ? " · Auswahloptionen: noch nicht konfiguriert"
+                : " · Auswahloptionen: " + item.options.map((option) => option.label).join(" | ")
+            )
+            : ""
+        )
         + (defaultValuePreview(item).length === 0 ? "" : " · Standard: " + defaultValuePreview(item))
       );
       list.appendChild(row);
@@ -668,6 +869,7 @@ _INTERACTION_SCRIPT = r"""
       isRequired: false,
       dataType: selectedKind === "field" ? "text" : null,
       defaultValue: selectedKind === "field" ? "" : null,
+      options: selectedKind === "field" ? [] : null,
     });
     renderDraft();
     setStatus(
@@ -776,17 +978,21 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
 .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
-.label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
-.label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
+.label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
+.label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
 .required-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
+.option-editor-label {{ color:#d7def5; font-weight:600; }}
+.choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
+.choice-option-row {{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.25rem 0; }}
+.choice-option-label {{ flex:1 1 12rem; min-width:0; overflow-wrap:anywhere; }}
 .default-value-control {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

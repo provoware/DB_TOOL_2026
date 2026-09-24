@@ -170,9 +170,9 @@ def test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus() -> No
 
 def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
-    assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
-    assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.label-editor, .help-editor, .option-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
+    assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -237,9 +237,9 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
     assert 'item.helpText =' not in help_block.split('function saveHelpEdit(id, input)')[0]
     assert 'focusHelpEditControl(id);' in help_block
 
-    assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
-    assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.label-editor, .help-editor, .option-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
+    assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
@@ -291,7 +291,7 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert move_button > required_button
 
     assert '.required-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 
@@ -348,8 +348,6 @@ def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -
     assert 'defaultValue = ' not in change_block
 
     assert 'defaultSelection' not in html
-    assert 'draft-option-' not in html
-    assert 'option-editor' not in html
 
 
 
@@ -358,7 +356,8 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     html = render_editor_shell()
     assert 'choiceState.className = "choice-state";' in html
     assert 'choiceState.id = "draft-choice-state-" + item.id;' in html
-    assert 'choiceState.textContent = "Auswahltyp unvollständig · noch keine Optionen konfiguriert.";' in html
+    assert 'choiceState.textContent = item.options.length === 0' in html
+    assert '"Auswahltyp unvollständig · noch keine Optionen konfiguriert."' in html
     assert 'dataTypeSelect.setAttribute("aria-describedby", choiceState.id);' in html
     assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
     assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
@@ -368,14 +367,119 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     start = html.index('function changeDataType(id, select)')
     end = html.index('function isChoiceDataType(dataType)')
     change_block = html[start:end]
+    assert 'item.options.length === 0' in change_block
+    assert '" · " + String(item.options.length) + " Auswahloption(en) konfiguriert"' in change_block
     assert 'renderDraft();' in change_block
     assert 'focusDataTypeControl(id);' in change_block
     assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
     assert 'item.defaultValue =' not in change_block
 
     assert 'defaultSelection' not in html
-    assert 'draft-option-' not in html
-    assert 'option-editor' not in html
+
+
+
+
+def test_choice_option_add_is_browser_local_monotone_and_append_only() -> None:
+    html = render_editor_shell()
+    assert 'let nextDraftOptionId = 1;' in html
+    assert 'options: selectedKind === "field" ? [] : null,' in html
+    assert 'function addDraftOption(id, input)' in html
+    assert 'item.kind !== "field" || !isChoiceDataType(item.dataType)' in html
+    assert 'const label = input.value.trim();' in html
+    assert 'if (label.length === 0) {' in html
+    assert 'option.label.toLowerCase() === label.toLowerCase()' in html
+    assert 'item.options.push({' in html
+    assert 'id: "draft-option-" + String(nextDraftOptionId++),' in html
+    assert 'label,' in html
+    assert 'focusOptionInput(id);' in html
+
+    start = html.index('function addDraftOption(id, input)')
+    end = html.index('function focusOptionControl(draftId, optionId, selector)')
+    add_block = html[start:end]
+    mutation = add_block.index('item.options.push({')
+    assert add_block.index('if (label.length === 0) {') < mutation
+    assert add_block.index('if (duplicate) {') < mutation
+    assert 'item.id =' not in add_block
+    assert 'item.dataType =' not in add_block
+    assert 'item.defaultValue =' not in add_block
+    assert 'item.column =' not in add_block
+    assert 'item.width =' not in add_block
+    assert 'item.options.splice(' not in add_block
+    assert '.sort(' not in add_block
+
+    assert 'optionEditor.className = "option-editor";' in html
+    assert 'optionInput.className = "option-editor-input";' in html
+    assert 'addOptionButton.className = "add-option";' in html
+    assert 'addDraftOption(item.id, optionInput);' in html
+    assert 'optionRow.dataset.optionId = option.id;' in html
+    assert 'item.options.forEach((option, optionIndex) =>' in html
+    assert 'item.options.map((option) => option.label).join(" | ")' in html
+
+    assert 'defaultSelection' not in html
+
+
+def test_choice_option_remove_preserves_ids_and_restores_focus() -> None:
+    html = render_editor_shell()
+    assert 'function removeDraftOption(draftId, optionId)' in html
+    assert 'item.options.findIndex((option) => option.id === optionId)' in html
+    assert 'item.options.splice(index, 1);' in html
+    assert 'const focusOption = item.options[index] ?? item.options[index - 1] ?? null;' in html
+    assert 'focusOptionInput(draftId);' in html
+    assert 'focusOptionControl(draftId, focusOption.id, ".remove-option");' in html
+    assert 'removeOptionButton.dataset.optionId = option.id;' in html
+    assert 'removeOptionButton.setAttribute("aria-label", item.label + " · " + option.label + " entfernen");' in html
+    assert 'removeOptionButton.addEventListener("click", () => removeDraftOption(item.id, option.id));' in html
+
+    start = html.index('function removeDraftOption(draftId, optionId)')
+    end = html.index('function moveDraftOption(draftId, optionId, direction)')
+    block = html[start:end]
+    assert 'option.id = ' not in block
+    assert 'nextDraftOptionId' not in block
+    assert 'defaultSelection' not in block
+    assert 'item.defaultValue =' not in block
+
+
+def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable() -> None:
+    html = render_editor_shell()
+    assert 'function moveDraftOption(draftId, optionId, direction)' in html
+    assert '![-1, 1].includes(direction)' in html
+    assert 'const targetIndex = index + direction;' in html
+    assert 'const [option] = item.options.splice(index, 1);' in html
+    assert 'item.options.splice(targetIndex, 0, option);' in html
+    assert 'focusOptionControl(' in html
+    assert '".move-option-up"' in html
+    assert '".move-option-down"' in html
+
+    assert 'moveUpButton.type = "button";' in html
+    assert 'moveDownButton.type = "button";' in html
+    assert 'moveUpButton.disabled = optionIndex === 0;' in html
+    assert 'moveDownButton.disabled = optionIndex === item.options.length - 1;' in html
+    assert 'moveUpButton.setAttribute("aria-label", item.label + " · " + option.label + " nach oben");' in html
+    assert 'moveDownButton.setAttribute("aria-label", item.label + " · " + option.label + " nach unten");' in html
+    assert 'moveUpButton.addEventListener("click", () => moveDraftOption(item.id, option.id, -1));' in html
+    assert 'moveDownButton.addEventListener("click", () => moveDraftOption(item.id, option.id, 1));' in html
+
+    start = html.index('function moveDraftOption(draftId, optionId, direction)')
+    end = html.index('function removeDraft(id)')
+    block = html[start:end]
+    assert 'option.id = ' not in block
+    assert 'nextDraftOptionId' not in block
+    assert '.sort(' not in block
+    assert 'defaultSelection' not in block
+    assert 'item.defaultValue =' not in block
+
+
+def test_choice_option_controls_are_narrow_safe_and_use_live_status() -> None:
+    html = render_editor_shell()
+    assert '.choice-option-row { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.25rem 0; }' in html
+    assert '.choice-option-label { flex:1 1 12rem; min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.choice-option-row { align-items:stretch; flex-direction:column; }' in html
+    assert '.move-option-up, .move-option-down, .remove-option' in html
+    assert 'id="interaction-status" role="status" aria-live="polite"' in html
+    assert '" entfernt · nur temporärer Browserentwurf."' in html
+    assert '"“ nach oben verschoben"' in html
+    assert '"“ nach unten verschoben"' in html
+    assert 'defaultSelection' not in html
 
 
 def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
@@ -434,7 +538,7 @@ def test_default_value_semantics_focus_and_narrow_layout() -> None:
 
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
     assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
     update_start = html.index('function updateDefaultValue(id, control)')
     update_end = html.index('function defaultValuePreview(item)')
@@ -544,6 +648,10 @@ def main() -> None:
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
+    test_choice_option_add_is_browser_local_monotone_and_append_only()
+    test_choice_option_remove_preserves_ids_and_restores_focus()
+    test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable()
+    test_choice_option_controls_are_narrow_safe_and_use_live_status()
     test_default_value_is_field_only_browser_local_and_type_validated()
     test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
@@ -554,7 +662,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY CHOICE TYPES I112 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY CHOICE OPTIONS I113 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
