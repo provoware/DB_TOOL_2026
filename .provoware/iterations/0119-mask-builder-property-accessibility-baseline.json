@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "iteration": 119,
+  "agent": "mask-builder-property-accessibility-baseline-agent-119",
+  "size": "M",
+  "goal": "Die inzwischen vorhandene browserlokale Eigenschaftenbearbeitung vor jedem Development-Control-Plane-Refactor als reale Chromium-Baseline einfrieren. Schritt 1 prueft 100 und 150 Prozent inklusive Tastaturinteraktion, Fokus-Rueckgabe, Preview, Choice-Optionen, horizontalem Overflow und Browserfehlern mit einem dependency-freien reproduzierbaren Evidence-Harness. Schritt 2 darf erst nach gruenem Zwischen-Gate 200 Prozent und die finale gemeinsame Property-Baseline pruefen. Produktcode darf nur bei einem reproduzierbaren Accessibility-/Runtime-Befund minimal repariert werden. Keine Persistenz und kein Frozen-Core-Reopen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Reproduzierbare Accessibility-Baseline fuer die gesamte Masken-Eigenschaftenbearbeitung",
+    "summary": "I119 fuegt keinen neuen Produktumfang hinzu. Ein reproduzierbarer Chrome/Chromium-Harness prueft die vorhandenen Properties zuerst bei 100 und 150 Prozent; 200 Prozent bleibt bis zum gruenen Zwischen-Gate gesperrt.",
+    "target_doc": "docs/development/screenshots/iteration-0119/README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0119-mask-builder-property-accessibility-baseline.json",
+    "tests/mask_builder/i119_chromium_evidence.mjs",
+    "tests/mask_builder/test_i119_accessibility_evidence.py",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "docs/development/screenshots/iteration-0119/README.md",
+    "docs/development/screenshots/iteration-0119/iteration-119-step1-evidence.json",
+    "docs/development/screenshots/iteration-0119/iteration-119-step2-evidence.json"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    ".provoware/iterations/0100-real-chromium-interaction-evidence.json",
+    ".provoware/iterations/0102-remove-real-chromium-evidence.json",
+    ".provoware/iterations/0118-mask-builder-temporary-width.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 913fdf5f5a92cefc83e01e3847a101835b90dae8",
+    "I118 temporary width editing merged with targeted and foundation green",
+    "I100/I102 real Chromium evidence pattern",
+    "current property set: label, help text, required, datatype, scalar default, choice options, visibility and width",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile browser shell and Python evidence wrapper",
+    "Step 1: node --check the dependency-free Chromium evidence harness",
+    "Step 1: existing focused browser-shell regression remains green",
+    "Step 1: real Chromium at 100 percent",
+    "Step 1: real Chromium at 150-percent equivalent",
+    "Step 1: keyboard palette selection and field placement",
+    "Step 1: label and help editing by keyboard with focus return",
+    "Step 1: required, visibility, width and datatype controls remain keyboard operable",
+    "Step 1: scalar default value updates preview and returns focus",
+    "Step 1: choice options can be added, reordered and removed by keyboard",
+    "Step 1: visible focus is at least 3px",
+    "Step 1: no horizontal overflow, console warnings/errors or page exceptions",
+    "Intermediate gate before Step 2",
+    "Step 2 only after green: real Chromium at 200-percent equivalent",
+    "Step 2 only after green: repeat the complete property interaction matrix and freeze the resulting behavior baseline",
+    "GET-only, loopback-only and no-persistence contracts remain unchanged",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because I119 is isolated to the browser mask-builder property baseline",
+    "database/repository tests because no persistent path changes",
+    "MaskTemplate store tests because save/load remains closed"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i119_accessibility_evidence.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i119_accessibility_evidence.py"
+    ]
+  },
+  "risks": [
+    "real Chromium may expose focus loss that source-fragment tests could not detect",
+    "native select keyboard behavior must remain deterministic on the Linux CI browser",
+    "the evidence harness must stay a test tool and must not become a product dependency",
+    "product repairs are allowed only for a reproducible I119 finding"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, SQL or writer changes",
+    "no MaskTemplateStore save/load",
+    "no POST endpoint or persistence",
+    "no defaultSelection",
+    "no new mask-builder property",
+    "no README/TODO cleanup inside I119",
+    "no package dependency addition",
+    "no unrelated refactor or browser-shell modularization"
+  ],
+  "expected_side_effects": [
+    "reproducible runtime evidence is emitted below runtime/iteration-0119",
+    "100/150-percent property behavior is objectively verified before the 200-percent step",
+    "any actual focus/runtime defect becomes a targeted repair finding rather than a speculative refactor"
+  ],
+  "screenshot_required": true,
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+}
