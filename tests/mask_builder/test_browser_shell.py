@@ -394,7 +394,7 @@ def test_choice_option_add_is_browser_local_monotone_and_append_only() -> None:
     assert 'focusOptionInput(id);' in html
 
     start = html.index('function addDraftOption(id, input)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusOptionControl(draftId, optionId, selector)')
     add_block = html[start:end]
     mutation = add_block.index('item.options.push({')
     assert add_block.index('if (label.length === 0) {') < mutation
