@@ -77,6 +77,16 @@ def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     assert 'Noch keine Komponenten platziert.' in html
 
 
+
+def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
+    html = render_editor_shell()
+    assert 'data-width="4"' in html
+    assert 'data-column="8"' in html
+    assert '@media (max-width:1000px)' in html
+    assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
+    assert '.placed-element > span { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.remove-draft { align-self:stretch; width:100%; }' in html
+
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
     html = render_editor_shell()
     assert html.count('aria-keyshortcuts="Enter Space ArrowLeft ArrowRight"') == GRID_COLUMNS
@@ -144,6 +154,7 @@ def main() -> None:
     test_grid_boundaries_are_blocked_before_draft_mutation()
     test_preview_and_draft_identifiers_are_deterministic_and_monotone()
     test_remove_is_browser_only_and_restores_original_target_focus()
+    test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
     test_empty_state_hidden_rule_wins_after_placement()
     test_temporary_interaction_has_no_persistence_or_network_write_path()
