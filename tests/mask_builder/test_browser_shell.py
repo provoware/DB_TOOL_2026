@@ -329,6 +329,55 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
 
 
 
+
+
+def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -> None:
+    html = render_editor_shell()
+    assert 'function isChoiceDataType(dataType)' in html
+    assert 'dataType === "single_choice" || dataType === "multi_choice"' in html
+    assert '["single_choice", "Einfachauswahl"]' in html
+    assert '["multi_choice", "Mehrfachauswahl"]' in html
+    assert 'if (!isChoiceDataType(item.dataType)) {' in html
+    assert 'item.kind !== "field" || isChoiceDataType(item.dataType) || item.defaultValue.length === 0' in html
+
+    start = html.index('function changeDataType(id, select)')
+    end = html.index('function isChoiceDataType(dataType)')
+    change_block = html[start:end]
+    assert 'item.dataType = select.value;' in change_block
+    assert 'item.defaultValue =' not in change_block
+    assert 'defaultValue = ' not in change_block
+
+    assert 'defaultSelection' not in html
+    assert 'draft-option-' not in html
+    assert 'option-editor' not in html
+
+
+
+
+def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -> None:
+    html = render_editor_shell()
+    assert 'choiceState.className = "choice-state";' in html
+    assert 'choiceState.id = "draft-choice-state-" + item.id;' in html
+    assert 'choiceState.textContent = "Auswahltyp unvollständig · noch keine Optionen konfiguriert.";' in html
+    assert 'dataTypeSelect.setAttribute("aria-describedby", choiceState.id);' in html
+    assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
+    assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
+    assert '.choice-state { color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
+
+    start = html.index('function changeDataType(id, select)')
+    end = html.index('function isChoiceDataType(dataType)')
+    change_block = html[start:end]
+    assert 'renderDraft();' in change_block
+    assert 'focusDataTypeControl(id);' in change_block
+    assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
+    assert 'item.defaultValue =' not in change_block
+
+    assert 'defaultSelection' not in html
+    assert 'draft-option-' not in html
+    assert 'option-editor' not in html
+
+
 def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
     html = render_editor_shell()
     assert 'defaultValue: selectedKind === "field" ? "" : null,' in html
@@ -384,7 +433,7 @@ def test_default_value_semantics_focus_and_narrow_layout() -> None:
     assert 'aria-label", item.label + " · Standardwert"' not in html
 
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
     update_start = html.index('function updateDefaultValue(id, control)')
@@ -413,7 +462,7 @@ def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
     assert 'data-column="8"' in html
     assert '@media (max-width:1000px)' in html
     assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
@@ -493,6 +542,8 @@ def main() -> None:
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
+    test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
+    test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
     test_default_value_is_field_only_browser_local_and_type_validated()
     test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
@@ -503,7 +554,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY DEFAULT VALUE I110 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY CHOICE TYPES I112 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

@@ -248,9 +248,14 @@ _INTERACTION_SCRIPT = r"""
       item.label
       + " · Datentyp "
       + item.dataType
+      + (isChoiceDataType(item.dataType) ? " · Auswahltyp unvollständig: noch keine Optionen konfiguriert" : "")
       + " · nur temporärer Browserentwurf."
     );
     focusDataTypeControl(id);
+  }
+
+  function isChoiceDataType(dataType) {
+    return dataType === "single_choice" || dataType === "multi_choice";
   }
 
   function defaultValueCandidate(dataType, rawValue) {
@@ -315,7 +320,7 @@ _INTERACTION_SCRIPT = r"""
   }
 
   function defaultValuePreview(item) {
-    if (item.kind !== "field" || item.defaultValue.length === 0) {
+    if (item.kind !== "field" || isChoiceDataType(item.dataType) || item.defaultValue.length === 0) {
       return "";
     }
     if (item.dataType === "boolean") {
@@ -472,6 +477,8 @@ _INTERACTION_SCRIPT = r"""
           ["number", "Zahl"],
           ["date", "Datum"],
           ["boolean", "Ja/Nein"],
+          ["single_choice", "Einfachauswahl"],
+          ["multi_choice", "Mehrfachauswahl"],
         ].forEach(([value, labelText]) => {
           const option = document.createElement("option");
           option.value = value;
@@ -485,43 +492,54 @@ _INTERACTION_SCRIPT = r"""
         card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
 
-        const defaultValueLabel = document.createElement("label");
-        defaultValueLabel.className = "default-value-label";
-        defaultValueLabel.id = "draft-default-value-label-" + item.id;
-        defaultValueLabel.textContent = "Standardwert";
-        card.appendChild(defaultValueLabel);
-
-        let defaultValueControl;
-        if (item.dataType === "boolean") {
-          defaultValueControl = document.createElement("select");
-          [
-            ["", "Leer"],
-            ["true", "Ja"],
-            ["false", "Nein"],
-          ].forEach(([value, labelText]) => {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = labelText;
-            option.selected = item.defaultValue === value;
-            defaultValueControl.appendChild(option);
-          });
-        } else {
-          defaultValueControl = document.createElement("input");
-          defaultValueControl.type = "text";
-          defaultValueControl.value = item.defaultValue;
-          if (item.dataType === "number") {
-            defaultValueControl.inputMode = "decimal";
-          } else if (item.dataType === "date") {
-            defaultValueControl.placeholder = "JJJJ-MM-TT";
-          }
+        if (isChoiceDataType(item.dataType)) {
+          const choiceState = document.createElement("span");
+          choiceState.className = "choice-state";
+          choiceState.id = "draft-choice-state-" + item.id;
+          choiceState.textContent = "Auswahltyp unvollständig · noch keine Optionen konfiguriert.";
+          dataTypeSelect.setAttribute("aria-describedby", choiceState.id);
+          card.appendChild(choiceState);
         }
-        defaultValueControl.className = "default-value-control";
-        defaultValueControl.dataset.draftId = item.id;
-        defaultValueControl.id = "draft-default-value-" + item.id;
-        defaultValueLabel.htmlFor = defaultValueControl.id;
-        defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);
-        defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
-        card.appendChild(defaultValueControl);
+
+        if (!isChoiceDataType(item.dataType)) {
+          const defaultValueLabel = document.createElement("label");
+          defaultValueLabel.className = "default-value-label";
+          defaultValueLabel.id = "draft-default-value-label-" + item.id;
+          defaultValueLabel.textContent = "Standardwert";
+          card.appendChild(defaultValueLabel);
+
+          let defaultValueControl;
+          if (item.dataType === "boolean") {
+            defaultValueControl = document.createElement("select");
+            [
+              ["", "Leer"],
+              ["true", "Ja"],
+              ["false", "Nein"],
+            ].forEach(([value, labelText]) => {
+              const option = document.createElement("option");
+              option.value = value;
+              option.textContent = labelText;
+              option.selected = item.defaultValue === value;
+              defaultValueControl.appendChild(option);
+            });
+          } else {
+            defaultValueControl = document.createElement("input");
+            defaultValueControl.type = "text";
+            defaultValueControl.value = item.defaultValue;
+            if (item.dataType === "number") {
+              defaultValueControl.inputMode = "decimal";
+            } else if (item.dataType === "date") {
+              defaultValueControl.placeholder = "JJJJ-MM-TT";
+            }
+          }
+          defaultValueControl.className = "default-value-control";
+          defaultValueControl.dataset.draftId = item.id;
+          defaultValueControl.id = "draft-default-value-" + item.id;
+          defaultValueLabel.htmlFor = defaultValueControl.id;
+          defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);
+          defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
+          card.appendChild(defaultValueControl);
+        }
       }
 
       const moveButton = document.createElement("button");
@@ -568,6 +586,7 @@ _INTERACTION_SCRIPT = r"""
         + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
         + (item.isRequired ? " · Pflichtfeld" : "")
         + (item.kind === "field" ? " · Datentyp: " + item.dataType : "")
+        + (item.kind === "field" && isChoiceDataType(item.dataType) ? " · Auswahloptionen: noch nicht konfiguriert" : "")
         + (defaultValuePreview(item).length === 0 ? "" : " · Standard: " + defaultValuePreview(item))
       );
       list.appendChild(row);
@@ -761,12 +780,13 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
 .required-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
+.choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .default-value-control {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
