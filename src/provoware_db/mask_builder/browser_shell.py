@@ -267,7 +267,7 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
