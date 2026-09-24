@@ -165,6 +165,14 @@ _INTERACTION_SCRIPT = r"""
     }
   }
 
+  function focusHelpEditControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".edit-help"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
   function beginHelpEdit(id) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
@@ -174,6 +182,20 @@ _INTERACTION_SCRIPT = r"""
     renderDraft();
     setStatus(item.label + " · Hilfetext eingeben und übernehmen.");
     focusHelpEditor(id);
+  }
+
+  function cancelHelpEdit(id) {
+    if (editingHelpDraftId !== id) {
+      return;
+    }
+    const item = draftElements.find((candidate) => candidate.id === id);
+    editingHelpDraftId = null;
+    renderDraft();
+    setStatus(
+      (item === undefined ? "Hilfetext" : item.label + " · Hilfetext")
+      + " Bearbeitung abgebrochen · Entwurf unverändert."
+    );
+    focusHelpEditControl(id);
   }
 
   function saveHelpEdit(id, input) {
@@ -190,6 +212,7 @@ _INTERACTION_SCRIPT = r"""
       + (nextHelpText.length === 0 ? " · Hilfetext entfernt" : " · Hilfetext geändert")
       + " · nur temporärer Browserentwurf."
     );
+    focusHelpEditControl(id);
   }
 
   function removeDraft(id) {
@@ -211,6 +234,8 @@ _INTERACTION_SCRIPT = r"""
       card.className = "placed-element";
       card.dataset.kind = item.kind;
       card.dataset.draftId = item.id;
+      card.setAttribute("role", "group");
+      card.setAttribute("aria-label", item.label);
       card.style.gridColumn = String(item.column + 1) + " / span " + String(item.width);
       card.style.gridRow = String(index + 1);
 
@@ -220,8 +245,12 @@ _INTERACTION_SCRIPT = r"""
 
       const helpText = document.createElement("small");
       helpText.className = "draft-help-text";
+      helpText.id = "draft-help-" + item.id;
       helpText.textContent = item.helpText;
       helpText.hidden = item.helpText.length === 0;
+      if (item.helpText.length > 0) {
+        card.setAttribute("aria-describedby", helpText.id);
+      }
       card.appendChild(helpText);
 
       const editButton = document.createElement("button");
@@ -236,6 +265,7 @@ _INTERACTION_SCRIPT = r"""
       const helpButton = document.createElement("button");
       helpButton.type = "button";
       helpButton.className = "edit-help";
+      helpButton.dataset.draftId = item.id;
       helpButton.textContent = "Hilfetext ändern";
       helpButton.setAttribute("aria-label", item.label + " · Hilfetext ändern");
       helpButton.addEventListener("click", () => beginHelpEdit(item.id));
@@ -251,6 +281,12 @@ _INTERACTION_SCRIPT = r"""
         helpInput.rows = 2;
         helpInput.value = item.helpText;
         helpInput.setAttribute("aria-label", item.label + " · Hilfetext");
+        helpInput.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            cancelHelpEdit(item.id);
+          }
+        });
         helpEditor.appendChild(helpInput);
 
         const saveHelpButton = document.createElement("button");
@@ -529,7 +565,7 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input {{ max-width:none; width:100%; }} .edit-label, .save-label, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

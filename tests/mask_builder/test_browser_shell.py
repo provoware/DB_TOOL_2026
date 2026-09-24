@@ -209,6 +209,38 @@ def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> Non
     assert 'helpText.hidden = item.helpText.length === 0;' in html
     assert '" · Hilfe: " + item.helpText' in html
 
+
+def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
+    html = render_editor_shell()
+
+    assert 'helpText.id = "draft-help-" + item.id;' in html
+    assert 'card.setAttribute("role", "group");' in html
+    assert 'card.setAttribute("aria-label", item.label);' in html
+    assert 'if (item.helpText.length > 0) {' in html
+    assert 'card.setAttribute("aria-describedby", helpText.id);' in html
+
+    assert 'function focusHelpEditControl(id)' in html
+    assert 'candidate.dataset.draftId === id' in html
+    assert 'helpButton.dataset.draftId = item.id;' in html
+    assert 'function cancelHelpEdit(id)' in html
+    assert 'if (editingHelpDraftId !== id) {' in html
+    assert 'editingHelpDraftId = null;' in html
+    assert 'focusHelpEditControl(id);' in html
+    assert 'event.key === "Escape"' in html
+    assert 'cancelHelpEdit(item.id);' in html
+    assert 'Hilfetext")' in html
+    assert 'Bearbeitung abgebrochen · Entwurf unverändert.' in html
+
+    start = html.index('function cancelHelpEdit(id)')
+    end = html.index('function removeDraft(id)')
+    help_block = html[start:end]
+    assert 'item.helpText =' not in help_block.split('function saveHelpEdit(id, input)')[0]
+    assert 'focusHelpEditControl(id);' in help_block
+
+    assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
+    assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -304,6 +336,7 @@ def main() -> None:
     test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus()
     test_label_editor_remains_reachable_at_narrow_width()
     test_help_text_edit_is_browser_only_optional_and_preserves_identity()
+    test_help_text_accessibility_cancel_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -312,7 +345,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY HELP TEXT I107 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY HELP TEXT I107 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

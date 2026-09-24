@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaerer Hilfetext im Masken-Baukasten",
-    "summary": "Schritt 1 implementiert ausschliesslich optionalen browserinternen helpText pro Draft. Hilfetext aendern oeffnet einen keyboard-erreichbaren Editor; Uebernehmen mutiert nur item.helpText, leere Eingabe entfernt den optionalen Hilfetext, und die Vorschau aktualisiert sich deterministisch.",
+    "summary": "Schritt 2 verbindet vorhandenen Hilfetext ueber eine deterministische draft-help-<draft-id>-DOM-ID und aria-describedby mit der Draft-Karte als zugaenglicher Gruppe. Escape bricht ohne helpText-Mutation ab und gibt den Fokus an Hilfetext aendern zurueck; nach Uebernehmen kehrt der Fokus ebenfalls deterministisch zurueck. Schmale Layouts stapeln Hilfetext-Editor und Controls.",
     "target_doc": null
   },
   "write_files": [
@@ -30,7 +30,8 @@
     "I106 temporary keyboard-first label edit merged",
     "TODO A next open capability: Hilfetext temporaer editieren",
     "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
-    "I107 plan gate run 36006222157: success"
+    "I107 plan gate run 36006222157: success",
+    "I107 Step 1 gate run 36006432485: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -89,5 +90,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
