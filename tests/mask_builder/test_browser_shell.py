@@ -450,6 +450,12 @@ def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable
     assert 'focusOptionControl(' in html
     assert '".move-option-up"' in html
     assert '".move-option-down"' in html
+    assert 'let focusSelector = direction < 0 ? ".move-option-up" : ".move-option-down";' in html
+    assert 'if (targetIndex === 0) {' in html
+    assert 'focusSelector = ".move-option-down";' in html
+    assert 'if (targetIndex === item.options.length - 1) {' in html
+    assert 'focusSelector = ".move-option-up";' in html
+    assert 'focusOptionControl(draftId, option.id, focusSelector);' in html
 
     assert 'moveUpButton.type = "button";' in html
     assert 'moveDownButton.type = "button";' in html

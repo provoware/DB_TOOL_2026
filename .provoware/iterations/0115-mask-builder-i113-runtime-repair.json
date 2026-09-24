@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Browser-Masken-Baukasten Laufzeitreparatur nach I113",
-    "summary": "Schritt 1 stellt sicher, dass der gerenderte Browsercode in changeDataType echte Quelltextzeilen statt literaler \\\\n-Zeichen enthaelt. Schritt 2 ist bis zum gruenen Zwischen-Gate gesperrt.",
+    "summary": "Schritt 1 repariert die versehentlich literal emittierten \\\\n-Zeichen in changeDataType. Nach gruenem Zwischen-Gate haertet Schritt 2 die Reorder-Fokus-Rueckgabe so, dass nach einem Zug an die erste oder letzte Position stets ein aktivierbarer Hoch-/Runter-Button fokussiert wird.",
     "target_doc": null
   },
   "write_files": [
@@ -31,15 +31,16 @@
     "I113 merged as 8243f42f82d107212a129950056bf4226a4431b6",
     "I114 documentation sync merged",
     "PR #116 review identified literal \\\\n JavaScript syntax defect and boundary focus risk",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I115 Step-1 intermediate gate run 36039440468 on head 167e11872fcae929de780729b5ad48decf5fc619: success"
   ],
   "tests_required": [
     "Step 1: compile browser shell and focused browser regression",
     "Step 1: changeDataType rendered JavaScript contains no literal backslash-n escape between expressions",
     "Step 1: choice option state announcement semantics remain unchanged",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: reorder focus must target an enabled control after moves to first or last option",
-    "Step 2 only after green: stable draft-option IDs and deterministic order remain unchanged",
+    "Step 2: reorder focus targets an enabled control after moves to first or last option",
+    "Step 2: stable draft-option IDs and deterministic order remain unchanged",
     "GET-only, loopback-only and no-persistence contracts remain unchanged",
     "repository foundation gate"
   ],
@@ -75,9 +76,10 @@
     "no unrelated formatting"
   ],
   "expected_side_effects": [
-    "changeDataType browser script parses as intended instead of containing literal backslash-n source text",
-    "choice announcement behavior remains otherwise unchanged"
+    "changeDataType browser script contains real source newlines and no literal backslash-n expression separators",
+    "reorder focus remains on the moved option through an enabled direction control, including first/last boundaries",
+    "choice option IDs, order semantics, GET-only behavior and non-persistence remain unchanged"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

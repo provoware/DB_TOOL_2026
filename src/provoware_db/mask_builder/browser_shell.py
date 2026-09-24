@@ -438,11 +438,14 @@ _INTERACTION_SCRIPT = r"""
       + (direction < 0 ? "“ nach oben verschoben" : "“ nach unten verschoben")
       + " · nur temporärer Browserentwurf."
     );
-    focusOptionControl(
-      draftId,
-      option.id,
-      direction < 0 ? ".move-option-up" : ".move-option-down"
-    );
+    let focusSelector = direction < 0 ? ".move-option-up" : ".move-option-down";
+    if (targetIndex === 0) {
+      focusSelector = ".move-option-down";
+    }
+    if (targetIndex === item.options.length - 1) {
+      focusSelector = ".move-option-up";
+    }
+    focusOptionControl(draftId, option.id, focusSelector);
   }
 
   function removeDraft(id) {
