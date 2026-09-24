@@ -303,7 +303,7 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert 'item.dataType = select.value;' in html
     assert 'dataTypeSelect.className = "datatype-select";' in html
     assert 'dataTypeSelect.dataset.draftId = item.id;' in html
-    assert 'dataTypeSelect.setAttribute("aria-label", item.label + " · Datentyp");' in html
+    assert 'dataTypeSelect.setAttribute("aria-labelledby", dataTypeLabel.id);' in html
     assert '["text", "Text"]' in html
     assert '["number", "Zahl"]' in html
     assert '["date", "Datum"]' in html
