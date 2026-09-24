@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 117,
+  "agent": "readme-todo-i116-status-sync-agent-117",
+  "size": "S",
+  "goal": "README und Master-TODO ausschliesslich an den gruen gemergten I116-Stand angleichen, sicheren Nur-Lese-Start klar dokumentieren und den Fortschritt reproduzierbar aus dem Implementierungspool A-M ausweisen. Keine Produktfunktion und kein Frozen-Core-Reopen.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Projektstand, sicherer Start und Fortschritt nach I116",
+    "summary": "README beschreibt I115/I116, Nur-Lese-Start, Sicherheitsgrenzen und die naechste sichere Reihenfolge. TODO markiert statische Sichtbarkeit als erledigt und weist 15 von 132 Punkten im Pool A-M aus.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0117-readme-todo-i116-status-sync.json",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0115-mask-builder-i113-runtime-repair.json",
+    ".provoware/iterations/0116-mask-builder-temporary-visibility.json",
+    "scripts/start_readonly_web.py",
+    "scripts/repo_self_check.sh"
+  ],
+  "direct_dependencies": [
+    "main c8dd3988b48b9f246423ae02c4f5ede172f4d9d3",
+    "I115 runtime repair merged after targeted and foundation green",
+    "I116 static visibility merged after targeted and foundation green",
+    "CP-03 and CP-06 remain frozen",
+    "browser draft remains non-persistent"
+  ],
+  "tests_required": [
+    "Step 1: README and TODO describe only confirmed capabilities through I116",
+    "Step 1: TODO pool A-M contains exactly 15 completed and 117 open items",
+    "Step 1: README progress matches TODO pool count at 11.4 percent",
+    "Step 1: safe read-only startup command matches scripts/start_readonly_web.py contract",
+    "Step 1: no product, schema, domain, repository or SQL files change",
+    "Step 2 after green: cross-check next-priority wording, freeze boundaries and persistence disclaimers; NO_FIX_REQUIRED if already consistent",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "browser interaction tests because no product code changes",
+    "database/repository tests because no persistent path changes",
+    "full suite because this is documentation-only synchronization"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "documentation must not claim browser persistence",
+    "progress percentage must exclude the duplicated priority list",
+    "startup instructions must remain read-only and loopback-only",
+    "next-step wording must not reopen CP-03 or CP-06"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no domain, repository, service, SQL or database changes",
+    "no browser shell changes",
+    "no tests changed",
+    "no dependency changes",
+    "no PRODUCT_ROADMAP mutation",
+    "no I118 product implementation"
+  ],
+  "expected_side_effects": [
+    "README reflects I116 as latest confirmed product slice",
+    "TODO marks static visibility complete and prioritizes width next",
+    "project progress is reproducible from TODO A-M rather than estimated"
+  ],
+  "screenshot_required": false,
+  "status": "DOCS_IMPLEMENTED_AWAITING_GATE"
+}
