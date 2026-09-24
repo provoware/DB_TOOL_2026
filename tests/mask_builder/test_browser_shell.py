@@ -350,7 +350,7 @@ def test_visibility_accessibility_focus_and_narrow_layout() -> None:
     assert 'visibilityButton.setAttribute("aria-pressed", String(item.isVisible));' in html
     assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
     assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
-    assert '.toggle-visibility, .datatype-select' in html
+    assert '.toggle-visibility, .width-select, .datatype-select' in html
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
 
 
