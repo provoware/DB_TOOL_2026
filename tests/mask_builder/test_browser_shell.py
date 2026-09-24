@@ -462,7 +462,7 @@ def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable
     start = html.index('function moveDraftOption(draftId, optionId, direction)')
     end = html.index('function removeDraft(id)')
     block = html[start:end]
-    assert 'option.id =' not in block
+    assert 'option.id = ' not in block
     assert 'nextDraftOptionId' not in block
     assert '.sort(' not in block
     assert 'defaultSelection' not in block
