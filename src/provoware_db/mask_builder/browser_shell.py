@@ -22,6 +22,7 @@ _INTERACTION_SCRIPT = r"""
   const status = document.getElementById("interaction-status");
   const gridColumns = Number(canvas.dataset.gridColumns);
   const draftElements = [];
+  let nextDraftId = 1;
   let selectedKind = null;
   let selectedLabel = null;
   let selectedWidth = null;
@@ -54,6 +55,18 @@ _INTERACTION_SCRIPT = r"""
     });
   }
 
+  function removeDraft(id) {
+    const index = draftElements.findIndex((item) => item.id === id);
+    if (index < 0) {
+      return;
+    }
+    const removed = draftElements[index];
+    draftElements.splice(index, 1);
+    renderDraft();
+    setStatus(removed.label + " entfernt · nur temporärer Browserentwurf.");
+    targetButtons[removed.column].focus();
+  }
+
   function renderDraft() {
     placedLayer.replaceChildren();
     draftElements.forEach((item, index) => {
@@ -63,7 +76,18 @@ _INTERACTION_SCRIPT = r"""
       card.dataset.draftId = item.id;
       card.style.gridColumn = String(item.column + 1) + " / span " + String(item.width);
       card.style.gridRow = String(index + 1);
-      card.textContent = item.label;
+
+      const label = document.createElement("span");
+      label.textContent = item.label;
+      card.appendChild(label);
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "remove-draft";
+      removeButton.textContent = "Entfernen";
+      removeButton.setAttribute("aria-label", item.label + " entfernen");
+      removeButton.addEventListener("click", () => removeDraft(item.id));
+      card.appendChild(removeButton);
       placedLayer.appendChild(card);
     });
 
@@ -129,7 +153,7 @@ _INTERACTION_SCRIPT = r"""
     }
 
     draftElements.push({
-      id: "draft-" + String(draftElements.length + 1),
+      id: "draft-" + String(nextDraftId++),
       kind: selectedKind,
       label: selectedLabel,
       column,
@@ -237,7 +261,8 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .placement-target {{ min-width:0; min-height:2.5rem; border:1px solid #4a526b; border-radius:7px; background:#202536; color:#f4f6fb; font:inherit; }}
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
-.placed-element {{ display:flex; align-items:center; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
+.placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
+.remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
