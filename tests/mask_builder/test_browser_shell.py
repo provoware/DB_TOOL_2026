@@ -59,7 +59,7 @@ def test_preview_and_draft_identifiers_are_deterministic_and_monotone() -> None:
     assert 'id: "draft-" + String(nextDraftId++)' in html
     assert 'draftElements.length + 1' not in html
     assert 'draftElements.forEach((item, index) =>' in html
-    assert 'draftElements.forEach((item) =>' in html
+    assert 'visibleDraftElements.forEach((item) =>' in html
     assert 'row.dataset.draftId = item.id;' in html
     forbidden = ("Math.random", "Date.now", "crypto.randomUUID", "performance.now")
     assert all(token not in html for token in forbidden)
