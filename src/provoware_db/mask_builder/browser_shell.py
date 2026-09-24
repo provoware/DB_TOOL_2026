@@ -249,7 +249,11 @@ _INTERACTION_SCRIPT = r"""
       item.label
       + " · Datentyp "
       + item.dataType
-      + (isChoiceDataType(item.dataType)\n        ? (item.options.length === 0\n          ? " · Auswahltyp unvollständig: noch keine Optionen konfiguriert"\n          : " · " + String(item.options.length) + " Auswahloption(en) konfiguriert")\n        : "")
+      + (isChoiceDataType(item.dataType)
+        ? (item.options.length === 0
+          ? " · Auswahltyp unvollständig: noch keine Optionen konfiguriert"
+          : " · " + String(item.options.length) + " Auswahloption(en) konfiguriert")
+        : "")
       + " · nur temporärer Browserentwurf."
     );
     focusDataTypeControl(id);

@@ -369,6 +369,7 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     change_block = html[start:end]
     assert 'item.options.length === 0' in change_block
     assert '" · " + String(item.options.length) + " Auswahloption(en) konfiguriert"' in change_block
+    assert "\\n" not in change_block
     assert 'renderDraft();' in change_block
     assert 'focusDataTypeControl(id);' in change_block
     assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
