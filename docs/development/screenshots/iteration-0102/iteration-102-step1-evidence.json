@@ -1,0 +1,36 @@
+{
+  "iteration": 102,
+  "step": 1,
+  "base_main_sha": "fe62618745c2009139be93420f0898aada6cea1f",
+  "source_head_sha": "f1044d7cd94d260917c7133d16e87d23411f9c16",
+  "browser": "Chromium 144.0.7559.96",
+  "platform": "linux",
+  "render_method": "Playwright set_content using the I102 browser_shell HTML/CSS/JavaScript from the branch head; no product patch applied",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "device_scale_factor": 1
+  },
+  "checks": {
+    "keyboard_field_selection": true,
+    "keyboard_place_enter": true,
+    "first_draft_id": "draft-1",
+    "preview_after_first_place": "Eingabefeld · Spalten 3–6",
+    "keyboard_remove_enter": true,
+    "focus_return_column_zero_based": 2,
+    "placed_count_after_remove": 0,
+    "empty_state_visible_after_last_remove": true,
+    "preview_after_remove": "Noch keine Komponenten platziert.",
+    "re_place_via_returned_focus": true,
+    "second_draft_id": "draft-2",
+    "preview_after_re_place": "Eingabefeld · Spalten 3–6",
+    "draft_id_monotone_non_reused": true,
+    "horizontal_overflow": false,
+    "browser_console_errors": [],
+    "page_errors": []
+  },
+  "status": "GREEN",
+  "hashes": {
+    "step1_png_sha256": "f500cc807ff6a7b45feb32b2cc0bc81c366643b2080cda5d8679b11e52b12197"
+  }
+}
