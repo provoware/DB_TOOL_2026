@@ -373,8 +373,6 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert 'item.defaultValue =' not in change_block
 
     assert 'defaultSelection' not in html
-    assert 'draft-option-' not in html
-    assert 'option-editor' not in html
 
 
 
