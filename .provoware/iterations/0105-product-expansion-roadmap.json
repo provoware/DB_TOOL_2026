@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Produkt-Roadmap und Implementierungspool",
-    "summary": "Der grosse Ausbaupool wird in kleine, gatebare Capability-Bloecke mit klaren Abhaengigkeiten, Risikoklassen und Freeze-Grenzen zerlegt.",
+    "summary": "Roadmap und Master-TODO sind erstellt; AGENTS.md trennt nun Produktpool von Implementierungsfreigabe und klassifiziert Risiken A-D. README dokumentiert I103 als aktuellen bestaetigten Produktstand und verlinkt Roadmap/TODO.",
     "target_doc": "docs/PRODUCT_ROADMAP.md"
   },
   "write_files": [
@@ -30,7 +30,8 @@
     "main 96774430ba6d88deab516b0d3771a85aff3ac62e",
     "I103 temporary keyboard-first move slice merged",
     "I104 plan exists on separate branch and remains untouched by this docs iteration",
-    "Step 2 is blocked until Step 1 documentation gate is green"
+    "Step 2 is blocked until Step 1 documentation gate is green",
+    "I105 Step 1 docs gate run 36000800709: success"
   ],
   "tests_required": [
     "Step 1: changed paths limited to I105 manifest, PRODUCT_ROADMAP.md and TODO.md",
@@ -74,5 +75,5 @@
     "developers can distinguish current product state from future pool"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

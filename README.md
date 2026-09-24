@@ -15,25 +15,37 @@ PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, auch für 
 
 ### Neuester bestätigter Produktstand
 
-**Iteration 92** ist der neueste bestätigte Produkt-Slice auf `main`.
+**Iteration 103** ist der neueste bestätigte Produkt-Slice auf `main`.
 
-Der Browser-Maskeneditor zeigt bereits:
+Der Browser-Maskeneditor besitzt inzwischen:
 - eine Komponentenpalette,
 - eine feste 12-Spalten-Arbeitsfläche,
-- einen Vorschau-Bereich.
+- einen deterministischen Vorschau-Bereich,
+- temporäre Platzierung mit monotonen Draft-IDs,
+- temporäres Entfernen,
+- keyboard-first Verschieben bei stabiler Draft-ID,
+- Blockierung ungültiger Rasterziele,
+- Escape-/Fokus-Rückgabe beim Verschieben,
+- reale Chromium-Nachweise bis 200-%-Zoom-Äquivalent ohne horizontalen Overflow.
 
-Wichtig: Dieser Schritt ist absichtlich noch **ohne Speichern und ohne Datenbankzugriff**. Dadurch bleibt der bestehende Datenbankkern geschützt.
+Wichtig: Der Browser-Draft bleibt absichtlich **ohne Persistenz und ohne produktiven Datenbankzugriff**. Ein Reload verwirft den Entwurf. Damit bleibt die spätere Save-Grenze separat plan- und prüfbar.
 
 ### Repository-Hygiene
 
-**Iteration 98** schließt die historische Branch-Bereinigung ab.
+**Iteration 98** dokumentiert den damaligen Hygiene-Freeze als historischen Nachweis. Aussagen dort über Branches oder offene Pull Requests beziehen sich auf diesen damaligen Zeitpunkt und sind kein dauerhafter Statusvertrag.
 
-Der Remote-Zustand wurde vor dem Freeze verifiziert:
-- nur `main` ist noch als Remote-Branch vorhanden,
-- es gibt keine offenen Pull Requests,
-- historische Arbeitsbranches wurden nach I94–I97 nur nach belegter Freigabe entfernt.
+Neue Entwicklungsiterationen starten weiterhin vom bestätigten `main` und verwenden klar begrenzte Branches/PRs.
 
-Dieser Hygiene-Freeze ist **keine neue Produktfunktion**. Er stellt nur sicher, dass die weitere Entwicklung wieder von einer sauberen, eindeutigen `main`-Basis startet.
+## Produkt-Roadmap
+
+Der freigegebene langfristige Ausbaupool ist jetzt getrennt vom aktuellen Produktstand dokumentiert:
+
+- **`docs/PRODUCT_ROADMAP.md`** – Abhängigkeiten, Risikoklassen und empfohlene Reihenfolge
+- **`TODO.md`** – abhakbarer Implementierungspool
+
+Dort enthalten sind unter anderem Masken-Eigenschaften, Layout/Struktur, Suche und Filter, Regeln/Validierung, Assistentenmodus, Vorlagen, Undo/Recovery, Import/Export, Anhänge, Dashboard, Accessibility, Gesundheitsbereich und Beziehungen.
+
+Wichtig: Ein Roadmap-Punkt ist **keine automatische Implementierungsfreigabe**. Jede Capability wird weiterhin als kleine, gatebare Iteration umgesetzt.
 
 ## Für Einsteiger
 
