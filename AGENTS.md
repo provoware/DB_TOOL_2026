@@ -99,6 +99,27 @@ Ungeeignete Kombinationen:
 - Frozen-Core-Änderung plus Komfortarbeit
 - zwei Schritte, die unterschiedliche Reopen-/Freeze-Entscheidungen benötigen
 
+## 1.7 Produktpool, Roadmap und große Funktionsanforderungen
+
+Breite Funktionswünsche werden zuerst als **Roadmap/Produktpool** zerlegt. Eine Roadmap ist Planungsgrundlage, aber **keine Implementierungsfreigabe**.
+
+Regeln:
+- kein Sammel-PR für fachlich unabhängige Features
+- jedes Feature erhält eine eigene kleine Iteration oder einen klar abgegrenzten Teil einer zusammenhängenden Zwei-Schritt-Iteration
+- TODO-Checkboxen beschreiben offenen Umfang, nicht Freigabe- oder Fertigstatus
+- vor Umsetzung wird jede Capability einer Risikoklasse zugeordnet:
+  - **A:** temporär/read-only/UI
+  - **B:** Application-/Datenzugriff ohne Schemaänderung
+  - **C:** produktive Persistenz/Schreibpfad
+  - **D:** Schema, Beziehungen, Attachment-Speicher oder Frozen Core
+- Klasse C benötigt vor produktivem Write einen expliziten Preview-/Simulation-, Integritäts- und Recovery-/Undo-Vertrag
+- Klasse D benötigt einen separaten Reopen-/Impact-Plan und Deep-Gate; CP-03/CP-06 dürfen nicht als Nebeneffekt geöffnet werden
+- Assistenten, Rastervorschläge und Vorlagen arbeiten zuerst als Vorschlag/Preview; produktive Übernahme braucht eine eigene Freigabe
+- Massenänderungen und Import benötigen vor Commit eine deterministische Operationsliste beziehungsweise Mapping-Vorschau
+- Accessibility ist Bestandteil des Funktionsvertrags, nicht nachträgliche Kosmetik
+
+Der aktuelle langfristige Funktionspool steht in `docs/PRODUCT_ROADMAP.md`; die abhakbare Umsetzungsliste in `TODO.md`.
+
 ## 2. Dateibesitz und Kollisionsschutz
 
 Pro Iteration darf jede schreibbare Datei genau einem Änderungsagenten gehören.

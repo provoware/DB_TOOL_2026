@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 105,
+  "agent": "product-expansion-roadmap-agent-105",
+  "size": "M",
+  "goal": "Den vom Nutzer freigegebenen langfristigen Funktionspool vor weiterer Produktimplementierung in eine professionelle, risikobasierte Roadmap und abhakbare Master-TODO ueberfuehren. Schritt 1 erstellt Roadmap und TODO. Schritt 2 darf erst nach gruenem Zwischen-Gate AGENTS.md und README.md an diese Roadmap anbinden und die aktuelle I103-Basis korrekt dokumentieren. Kein Produktcode.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Produkt-Roadmap und Implementierungspool",
+    "summary": "Roadmap und Master-TODO sind erstellt; AGENTS.md trennt nun Produktpool von Implementierungsfreigabe und klassifiziert Risiken A-D. README dokumentiert I103 als aktuellen bestaetigten Produktstand und verlinkt Roadmap/TODO.",
+    "target_doc": "docs/PRODUCT_ROADMAP.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0105-product-expansion-roadmap.json",
+    "docs/PRODUCT_ROADMAP.md",
+    "TODO.md",
+    "AGENTS.md",
+    "README.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "docs/PROJECT_STANDARDS.md",
+    ".provoware/iterations/0103-mask-builder-temporary-move.json",
+    ".provoware/iterations/0104-mask-builder-temporary-label-edit.json"
+  ],
+  "direct_dependencies": [
+    "main 96774430ba6d88deab516b0d3771a85aff3ac62e",
+    "I103 temporary keyboard-first move slice merged",
+    "I104 plan exists on separate branch and remains untouched by this docs iteration",
+    "Step 2 is blocked until Step 1 documentation gate is green",
+    "I105 Step 1 docs gate run 36000800709: success"
+  ],
+  "tests_required": [
+    "Step 1: changed paths limited to I105 manifest, PRODUCT_ROADMAP.md and TODO.md",
+    "Step 1: all requested feature families are represented with dependencies and risk classes",
+    "Step 1: no product, database, schema, migration or frozen-core file changes",
+    "Intermediate docs gate before AGENTS.md/README.md integration",
+    "Step 2: README current confirmed product status reflects I103 on main",
+    "Step 2: README links to PRODUCT_ROADMAP.md and TODO.md",
+    "Step 2: AGENTS.md states roadmap items are not implementation authorization",
+    "Step 2: AGENTS.md requires separate gates for persistence/schema/Frozen Core",
+    "repository documentation/foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "product test suite because this iteration is documentation/governance only",
+    "database regressions because no database path changes",
+    "UI tests because no runtime UI changes"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "a broad roadmap must not be mistaken for approval to batch unrelated product changes",
+    "README must distinguish merged capabilities from planned capabilities",
+    "I104 product branch must remain scope-isolated"
+  ],
+  "non_changes": [
+    "no product code",
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database/repository changes",
+    "no browser-shell changes",
+    "no CI or dependency changes",
+    "no historical evidence rewrite",
+    "no changes to I104 branch"
+  ],
+  "expected_side_effects": [
+    "future features have a single prioritized planning source",
+    "large feature requests can be decomposed without losing requested scope",
+    "developers can distinguish current product state from future pool"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
