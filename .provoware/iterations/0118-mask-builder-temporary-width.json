@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "iteration": 118,
+  "agent": "mask-builder-temporary-width-agent-118",
+  "size": "M",
+  "goal": "Breite eines Draft-Elements im festen 12-Spalten-Raster in genau zwei abhaengigen Schritten ausschliesslich browserlokal aenderbar machen. Schritt 1 fuegt ein Breiten-Control 1 bis 12 hinzu und validiert column + width vor jeder Mutation. Schritt 2 darf erst nach gruenem Zwischen-Gate Fokus-Rueckgabe, Tastatur-/Narrow-Semantik und Preview-Konsistenz haerten. Keine Persistenz, kein Domain-/Store-Vertrag und kein Frozen-Core-Reopen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Breite im temporären 12-Spalten-Maskenentwurf",
+    "summary": "Schritt 1 erlaubt Breiten von 1 bis 12 Spalten, aber nur wenn das Element an seiner aktuellen Startspalte vollständig im Raster bleibt. Ungültige Breiten werden vor der Draft-Mutation abgewiesen.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0118-mask-builder-temporary-width.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    ".provoware/iterations/0116-mask-builder-temporary-visibility.json",
+    ".provoware/iterations/0117-readme-todo-i116-status-sync.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "src/provoware_db/mask_builder/model.py"
+  ],
+  "direct_dependencies": [
+    "main 5a5f8df9e68484675622458be2a44db186ac3210",
+    "I116 static visibility merged green",
+    "I117 documentation sync merged",
+    "placementFitsGrid(column, width) is the existing browser-local 12-column boundary contract",
+    "persistent LayoutBox width contract remains untouched",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile browser shell and focused browser regression",
+    "Step 1: width choices are deterministic integers 1 through 12",
+    "Step 1: widths that overflow from current column are disabled",
+    "Step 1: placementFitsGrid guard executes before item.width mutation",
+    "Step 1: invalid width leaves draft width and all unrelated properties unchanged",
+    "Step 1: valid width rerenders canvas and preview from the same item.width",
+    "Step 1: width change has no persistence or domain dependency",
+    "Intermediate gate before Step 2",
+    "Step 2 only after green: successful width change restores focus to the same width control",
+    "Step 2 only after green: width label/control and status remain keyboard reachable and narrow-layout safe",
+    "Step 2 only after green: preview and move target availability remain consistent after resize",
+    "GET-only, loopback-only and no-persistence contracts remain unchanged",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because scope is limited to browser mask-builder width",
+    "database/repository tests because no persistent path changes",
+    "MaskTemplate store tests because width edits are not persisted"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "width mutation must never allow column + width beyond 12",
+    "invalid selection must not mutate draft identity or layout",
+    "preview and canvas must read the same width value",
+    "Step 2 focus must target the same draft identity after rerender"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no domain LayoutBox, MaskElement, repository or store changes",
+    "no database, SQL, service or MaskTemplateStore changes",
+    "no POST endpoint or persistence",
+    "no defaultSelection",
+    "no static visibility changes",
+    "no README or TODO mutation in I118",
+    "no dependency addition",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "draft element width can change between 1 and the remaining grid columns",
+    "invalid widths are rejected before mutation",
+    "canvas and preview update from the accepted width",
+    "reload still discards temporary width changes"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+}

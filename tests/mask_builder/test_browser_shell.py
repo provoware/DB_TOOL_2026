@@ -354,6 +354,47 @@ def test_visibility_accessibility_focus_and_narrow_layout() -> None:
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
 
 
+def test_width_change_is_browser_local_prevalidated_and_preview_driven() -> None:
+    html = render_editor_shell()
+    assert 'function changeDraftWidth(id, select)' in html
+    assert 'const nextWidth = Number(select.value);' in html
+    assert 'if (!placementFitsGrid(item.column, nextWidth)) {' in html
+    assert 'select.value = String(item.width);' in html
+    assert 'item.width = nextWidth;' in html
+    assert 'updateTargetAvailability();' in html
+    assert 'widthLabel.className = "width-label";' in html
+    assert 'widthLabel.id = "draft-width-label-" + item.id;' in html
+    assert 'widthSelect.className = "width-select";' in html
+    assert 'widthSelect.dataset.draftId = item.id;' in html
+    assert 'widthSelect.setAttribute("aria-labelledby", widthLabel.id);' in html
+    assert 'for (let width = 1; width <= gridColumns; width += 1) {' in html
+    assert 'option.selected = item.width === width;' in html
+    assert 'option.disabled = !placementFitsGrid(item.column, width);' in html
+    assert 'widthSelect.addEventListener("change", () => changeDraftWidth(item.id, widthSelect));' in html
+    assert 'const lastColumn = item.column + item.width;' in html
+
+    start = html.index('function changeDraftWidth(id, select)')
+    end = html.index('function focusDataTypeControl(id)')
+    block = html[start:end]
+    guard = block.index('if (!placementFitsGrid(item.column, nextWidth)) {')
+    mutation = block.index('item.width = nextWidth;')
+    assert guard >= 0
+    assert mutation > guard
+    assert 'return;' in block[guard:mutation]
+    assert 'item.id =' not in block
+    assert 'item.kind =' not in block
+    assert 'item.label =' not in block
+    assert 'item.helpText =' not in block
+    assert 'item.isRequired =' not in block
+    assert 'item.isVisible =' not in block
+    assert 'item.dataType =' not in block
+    assert 'item.defaultValue =' not in block
+    assert 'item.column =' not in block
+    assert 'draftElements.push(' not in block
+    assert 'draftElements.splice(' not in block
+    assert 'defaultSelection' not in html
+
+
 def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> None:
     html = render_editor_shell()
     assert 'dataType: selectedKind === "field" ? "text" : null,' in html
@@ -713,6 +754,7 @@ def main() -> None:
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_visibility_toggle_is_browser_local_and_preview_filters_hidden()
     test_visibility_accessibility_focus_and_narrow_layout()
+    test_width_change_is_browser_local_prevalidated_and_preview_driven()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
@@ -730,7 +772,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY VISIBILITY I116 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY WIDTH I118 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
