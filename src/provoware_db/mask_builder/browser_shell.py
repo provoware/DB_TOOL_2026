@@ -253,6 +253,68 @@ _INTERACTION_SCRIPT = r"""
     focusDataTypeControl(id);
   }
 
+  function defaultValueCandidate(dataType, rawValue) {
+    if (dataType === "text") {
+      return { valid: true, value: rawValue };
+    }
+    const value = rawValue.trim();
+    if (value.length === 0) {
+      return { valid: true, value: "" };
+    }
+    if (dataType === "number") {
+      const parsed = Number(value);
+      return Number.isFinite(parsed)
+        ? { valid: true, value }
+        : { valid: false, message: "Standardwert muss eine gültige endliche Zahl sein." };
+    }
+    if (dataType === "date") {
+      if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) {
+        return { valid: false, message: "Standardwert muss ein Datum im Format JJJJ-MM-TT sein." };
+      }
+      const parsed = new Date(value + "T00:00:00Z");
+      const valid = !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+      return valid
+        ? { valid: true, value }
+        : { valid: false, message: "Standardwert enthält kein gültiges Kalenderdatum." };
+    }
+    if (dataType === "boolean") {
+      return ["", "true", "false"].includes(value)
+        ? { valid: true, value }
+        : { valid: false, message: "Standardwert für Ja/Nein ist ungültig." };
+    }
+    return { valid: false, message: "Datentyp für Standardwert ist unbekannt." };
+  }
+
+  function updateDefaultValue(id, control) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field") {
+      return;
+    }
+    const candidate = defaultValueCandidate(item.dataType, control.value);
+    if (!candidate.valid) {
+      setStatus("Nicht übernommen: " + candidate.message);
+      control.focus();
+      return;
+    }
+    item.defaultValue = candidate.value;
+    renderDraft();
+    setStatus(
+      item.label
+      + (item.defaultValue.length === 0 ? " · Standardwert geleert" : " · Standardwert übernommen")
+      + " · nur temporärer Browserentwurf."
+    );
+  }
+
+  function defaultValuePreview(item) {
+    if (item.kind !== "field" || item.defaultValue.length === 0) {
+      return "";
+    }
+    if (item.dataType === "boolean") {
+      return item.defaultValue === "true" ? "Ja" : "Nein";
+    }
+    return item.defaultValue;
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -413,6 +475,41 @@ _INTERACTION_SCRIPT = r"""
         dataTypeSelect.addEventListener("change", () => changeDataType(item.id, dataTypeSelect));
         card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
+
+        const defaultValueLabel = document.createElement("span");
+        defaultValueLabel.className = "default-value-label";
+        defaultValueLabel.textContent = "Standardwert";
+        card.appendChild(defaultValueLabel);
+
+        let defaultValueControl;
+        if (item.dataType === "boolean") {
+          defaultValueControl = document.createElement("select");
+          [
+            ["", "Leer"],
+            ["true", "Ja"],
+            ["false", "Nein"],
+          ].forEach(([value, labelText]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = labelText;
+            option.selected = item.defaultValue === value;
+            defaultValueControl.appendChild(option);
+          });
+        } else {
+          defaultValueControl = document.createElement("input");
+          defaultValueControl.type = "text";
+          defaultValueControl.value = item.defaultValue;
+          if (item.dataType === "number") {
+            defaultValueControl.inputMode = "decimal";
+          } else if (item.dataType === "date") {
+            defaultValueControl.placeholder = "JJJJ-MM-TT";
+          }
+        }
+        defaultValueControl.className = "default-value-control";
+        defaultValueControl.dataset.draftId = item.id;
+        defaultValueControl.setAttribute("aria-label", item.label + " · Standardwert");
+        defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
+        card.appendChild(defaultValueControl);
       }
 
       const moveButton = document.createElement("button");
@@ -459,6 +556,7 @@ _INTERACTION_SCRIPT = r"""
         + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
         + (item.isRequired ? " · Pflichtfeld" : "")
         + (item.kind === "field" ? " · Datentyp: " + item.dataType : "")
+        + (defaultValuePreview(item).length === 0 ? "" : " · Standard: " + defaultValuePreview(item))
       );
       list.appendChild(row);
     });
@@ -538,6 +636,7 @@ _INTERACTION_SCRIPT = r"""
       helpText: "",
       isRequired: false,
       dataType: selectedKind === "field" ? "text" : null,
+      defaultValue: selectedKind === "field" ? "" : null,
     });
     renderDraft();
     setStatus(
@@ -649,7 +748,8 @@ button:focus-visible, select:focus-visible {{ outline:3px solid #ffe66d; outline
 .label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
-.required-state, .datatype-label {{ color:#d7def5; font-weight:600; }}
+.required-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
+.default-value-control {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}

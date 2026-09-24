@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaerer typabhaengiger Standardwert im Masken-Baukasten",
-    "summary": "Schritt 1 fuehrt einen ausschliesslich browserlokalen Standardwert fuer field-Drafts ein. Leere Werte bleiben erlaubt; Text wird unveraendert akzeptiert, Zahl muss endlich parsebar sein, Datum muss ein echtes ISO-Datum YYYY-MM-DD sein und Boolean wird ueber eine feste Auswahl leer/Ja/Nein gesetzt. Keine stille Typkonvertierung und keine Persistenz.",
+    "summary": "Schritt 1 fuegt ausschliesslich fuer field-Drafts einen browserlokalen defaultValue hinzu. Text bleibt frei, Zahl wird endlich numerisch geprueft, Datum muss ein echtes ISO-Datum sein und Boolean nutzt die feste Auswahl Leer/Ja/Nein. Ungueltige Eingaben mutieren den Draft nicht; Optionen und Persistenz bleiben ausgeschlossen.",
     "target_doc": null
   },
   "write_files": [
@@ -32,7 +32,8 @@
     "I109 temporary datatype draft property merged",
     "TODO A next open capability: typabhaengigen Standardwert validieren",
     "Browser datatype vocabulary remains intentionally limited to text, number, date, boolean for this temporary slice",
-    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I110 plan gate run 36024284911: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -97,5 +98,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "PLANNED"
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
 }

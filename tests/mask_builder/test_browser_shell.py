@@ -327,6 +327,49 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert 'draftElements.splice(' not in datatype_block
     assert html.count('id: "draft-" + String(nextDraftId++)') == 1
 
+
+
+def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
+    html = render_editor_shell()
+    assert 'defaultValue: selectedKind === "field" ? "" : null,' in html
+    assert 'function defaultValueCandidate(dataType, rawValue)' in html
+    assert 'function updateDefaultValue(id, control)' in html
+    assert 'item.kind !== "field"' in html
+    assert 'item.defaultValue = candidate.value;' in html
+    assert 'Number.isFinite(parsed)' in html
+    assert '/^\\\\d{4}-\\\\d{2}-\\\\d{2}$/.test(value)' in html
+    assert 'parsed.toISOString().slice(0, 10) === value' in html
+    assert '["", "true", "false"].includes(value)' in html
+    assert 'defaultValueControl.className = "default-value-control";' in html
+    assert 'defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));' in html
+    assert 'defaultValueControl.inputMode = "decimal";' in html
+    assert 'defaultValueControl.placeholder = "JJJJ-MM-TT";' in html
+    assert '["", "Leer"]' in html
+    assert '["true", "Ja"]' in html
+    assert '["false", "Nein"]' in html
+    assert '" · Standard: " + defaultValuePreview(item)' in html
+
+    start = html.index('function updateDefaultValue(id, control)')
+    end = html.index('function defaultValuePreview(item)')
+    update_block = html[start:end]
+    invalid_guard = update_block.index('if (!candidate.valid) {')
+    mutation = update_block.index('item.defaultValue = candidate.value;')
+    assert invalid_guard >= 0
+    assert mutation > invalid_guard
+    assert 'return;' in update_block[invalid_guard:mutation]
+    assert 'item.id =' not in update_block
+    assert 'item.kind =' not in update_block
+    assert 'item.label =' not in update_block
+    assert 'item.helpText =' not in update_block
+    assert 'item.isRequired =' not in update_block
+    assert 'item.dataType =' not in update_block
+    assert 'item.column =' not in update_block
+    assert 'item.width =' not in update_block
+    assert 'draftElements.push(' not in update_block
+    assert 'draftElements.splice(' not in update_block
+    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -426,6 +469,7 @@ def main() -> None:
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
+    test_default_value_is_field_only_browser_local_and_type_validated()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -434,7 +478,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY DATATYPE I109 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY DEFAULT VALUE I110 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
