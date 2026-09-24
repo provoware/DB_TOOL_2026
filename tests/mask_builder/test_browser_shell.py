@@ -112,6 +112,37 @@ def test_move_controls_remain_stacked_at_narrow_width() -> None:
     assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
     assert '.move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
+
+def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
+    html = render_editor_shell()
+    assert 'let editingDraftId = null;' in html
+    assert 'function beginLabelEdit(id)' in html
+    assert 'editingDraftId = id;' in html
+    assert 'editButton.type = "button";' in html
+    assert 'editButton.textContent = "Beschriftung ändern";' in html
+    assert 'editButton.addEventListener("click", () => beginLabelEdit(item.id));' in html
+    assert 'input.type = "text";' in html
+    assert 'input.className = "label-editor-input";' in html
+    assert 'saveButton.type = "submit";' in html
+    assert 'saveButton.textContent = "Übernehmen";' in html
+    assert 'editor.addEventListener("submit", (event) =>' in html
+    assert 'focusLabelEditor(id);' in html
+
+    start = html.index('function saveLabelEdit(id, input)')
+    end = html.index('function removeDraft(id)')
+    save_block = html[start:end]
+    assert 'item.label = input.value;' in save_block
+    assert 'renderDraft();' in save_block
+    assert 'item.id =' not in save_block
+    assert 'item.kind =' not in save_block
+    assert 'item.column =' not in save_block
+    assert 'item.width =' not in save_block
+    assert 'draftElements.push(' not in save_block
+    assert 'draftElements.splice(' not in save_block
+    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert 'row.dataset.draftId = item.id;' in html
+    assert 'row.textContent = (' in html
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -203,6 +234,7 @@ def main() -> None:
     test_move_is_browser_only_preserves_identity_and_changes_column_only()
     test_move_rejects_invalid_target_before_mutation_and_supports_cancel_focus()
     test_move_controls_remain_stacked_at_narrow_width()
+    test_label_edit_is_keyboard_reachable_and_mutates_only_label()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -211,7 +243,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY MOVE I103 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY LABEL EDIT I106 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":

@@ -27,6 +27,7 @@ _INTERACTION_SCRIPT = r"""
   let selectedLabel = null;
   let selectedWidth = null;
   let movingDraftId = null;
+  let editingDraftId = null;
 
   function setStatus(message) {
     status.textContent = message;
@@ -94,6 +95,37 @@ _INTERACTION_SCRIPT = r"""
     focusMoveControl(id);
   }
 
+  function focusLabelEditor(id) {
+    const input = Array.from(placedLayer.querySelectorAll(".label-editor-input"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (input !== undefined) {
+      input.focus();
+      input.select();
+    }
+  }
+
+  function beginLabelEdit(id) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    editingDraftId = id;
+    renderDraft();
+    setStatus(item.label + " · neue Beschriftung eingeben und übernehmen.");
+    focusLabelEditor(id);
+  }
+
+  function saveLabelEdit(id, input) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    item.label = input.value;
+    editingDraftId = null;
+    renderDraft();
+    setStatus(item.label + " · Beschriftung geändert · nur temporärer Browserentwurf.");
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -119,6 +151,38 @@ _INTERACTION_SCRIPT = r"""
       const label = document.createElement("span");
       label.textContent = item.label;
       card.appendChild(label);
+
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.className = "edit-label";
+      editButton.textContent = "Beschriftung ändern";
+      editButton.setAttribute("aria-label", item.label + " · Beschriftung ändern");
+      editButton.addEventListener("click", () => beginLabelEdit(item.id));
+      card.appendChild(editButton);
+
+      if (editingDraftId === item.id) {
+        const editor = document.createElement("form");
+        editor.className = "label-editor";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "label-editor-input";
+        input.dataset.draftId = item.id;
+        input.value = item.label;
+        input.setAttribute("aria-label", item.label + " · neue Beschriftung");
+        editor.appendChild(input);
+
+        const saveButton = document.createElement("button");
+        saveButton.type = "submit";
+        saveButton.className = "save-label";
+        saveButton.textContent = "Übernehmen";
+        editor.appendChild(saveButton);
+        editor.addEventListener("submit", (event) => {
+          event.preventDefault();
+          saveLabelEdit(item.id, input);
+        });
+        card.appendChild(editor);
+      }
 
       const moveButton = document.createElement("button");
       moveButton.type = "button";
@@ -344,7 +408,9 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.edit-label, .save-label, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.label-editor {{ display:flex; gap:.4rem; min-width:0; }}
+.label-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}

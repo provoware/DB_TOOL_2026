@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Beschriftung im Masken-Baukasten",
-    "summary": "Der unveraenderte Label-Edit-Scope aus I104 wird nach dem bereits gemergten I105 formal als I106 fortgefuehrt, damit der Gate-Router wieder das korrekte neueste Manifest prueft. Produktumfang und Freeze-Grenzen bleiben identisch.",
+    "summary": "Schritt 1 implementiert ausschliesslich den gueltigen temporaeren Label-Edit-Pfad: Beschriftung aendern oeffnet einen keyboard-erreichbaren Inline-Editor, Uebernehmen mutiert nur item.label und rendert die deterministische Vorschau neu. Draft-ID, kind, column und width bleiben unveraendert.",
     "target_doc": null
   },
   "write_files": [
@@ -30,7 +30,8 @@
     "I103 temporary keyboard-first move slice",
     "I105 product roadmap/governance merged",
     "I104 plan superseded because the gate router selects the newest iteration manifest and I105 is already on main",
-    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I106 plan gate run 36001622358: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -87,5 +88,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "PLAN_RENUMBERED_FROM_I104_AWAITING_GATE"
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
 }
