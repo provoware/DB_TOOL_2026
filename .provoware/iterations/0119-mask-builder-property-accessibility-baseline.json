@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Reproduzierbare Accessibility-Baseline fuer die gesamte Masken-Eigenschaftenbearbeitung",
-    "summary": "I119 fuegt keinen neuen Produktumfang hinzu. Nach gruenem 100-/150-Prozent-Zwischen-Gate wiederholt Schritt 2 die komplette Property-Matrix gemeinsam bei 100, 150 und 200 Prozent und bildet damit die finale Behavioral-/Accessibility-Baseline.",
+    "summary": "Die komplette vorhandene Masken-Eigenschaftenbearbeitung ist nach einem real gefundenen und behobenen Pflichtfeld-Fokusfehler bei 100, 150 und 200 Prozent in echtem Chrome gruen. I119 liefert damit die reproduzierbare Behavioral-/Accessibility-Baseline vor dem Development Control Plane V2.",
     "target_doc": "docs/development/screenshots/iteration-0119/README.md"
   },
   "write_files": [
@@ -38,7 +38,8 @@
     "I100/I102 real Chromium evidence pattern",
     "current property set: label, help text, required, datatype, scalar default, choice options, visibility and width",
     "CP-03 and CP-06 remain frozen",
-    "I119 Step-1 intermediate gate run 36054718120 on head 194e9268c0c1b5683e3a1b86e3bcdc18780a59e3: targeted + foundation success"
+    "I119 Step-1 intermediate gate run 36054718120 on head 194e9268c0c1b5683e3a1b86e3bcdc18780a59e3: targeted + foundation success",
+    "I119 Step-2 evidence gate run 36054873714 on head d3a2fa64d8f63c28a63769bf0a51493a9d3f0384: targeted + foundation success"
   ],
   "tests_required": [
     "Step 1: compile browser shell and Python evidence wrapper",
@@ -101,5 +102,5 @@
     "the resulting behavior can serve as the stable pre-Control-Plane baseline"
   ],
   "screenshot_required": true,
-  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
 }
