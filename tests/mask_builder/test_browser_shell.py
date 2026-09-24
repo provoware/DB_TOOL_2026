@@ -415,9 +415,70 @@ def test_choice_option_add_is_browser_local_monotone_and_append_only() -> None:
     assert 'item.options.forEach((option) =>' in html
     assert 'item.options.map((option) => option.label).join(" | ")' in html
 
-    assert 'remove-option' not in html
-    assert 'reorder-option' not in html
-    assert 'move-option' not in html
+    assert 'defaultSelection' not in html
+
+
+def test_choice_option_remove_preserves_ids_and_restores_focus() -> None:
+    html = render_editor_shell()
+    assert 'function removeDraftOption(draftId, optionId)' in html
+    assert 'item.options.findIndex((option) => option.id === optionId)' in html
+    assert 'item.options.splice(index, 1);' in html
+    assert 'const focusOption = item.options[index] ?? item.options[index - 1] ?? null;' in html
+    assert 'focusOptionInput(draftId);' in html
+    assert 'focusOptionControl(draftId, focusOption.id, ".remove-option");' in html
+    assert 'removeOptionButton.dataset.optionId = option.id;' in html
+    assert 'removeOptionButton.setAttribute("aria-label", item.label + " · " + option.label + " entfernen");' in html
+    assert 'removeOptionButton.addEventListener("click", () => removeDraftOption(item.id, option.id));' in html
+
+    start = html.index('function removeDraftOption(draftId, optionId)')
+    end = html.index('function moveDraftOption(draftId, optionId, direction)')
+    block = html[start:end]
+    assert 'option.id =' not in block
+    assert 'nextDraftOptionId' not in block
+    assert 'defaultSelection' not in block
+    assert 'item.defaultValue =' not in block
+
+
+def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable() -> None:
+    html = render_editor_shell()
+    assert 'function moveDraftOption(draftId, optionId, direction)' in html
+    assert '![-1, 1].includes(direction)' in html
+    assert 'const targetIndex = index + direction;' in html
+    assert 'const [option] = item.options.splice(index, 1);' in html
+    assert 'item.options.splice(targetIndex, 0, option);' in html
+    assert 'focusOptionControl(' in html
+    assert '".move-option-up"' in html
+    assert '".move-option-down"' in html
+
+    assert 'moveUpButton.type = "button";' in html
+    assert 'moveDownButton.type = "button";' in html
+    assert 'moveUpButton.disabled = optionIndex === 0;' in html
+    assert 'moveDownButton.disabled = optionIndex === item.options.length - 1;' in html
+    assert 'moveUpButton.setAttribute("aria-label", item.label + " · " + option.label + " nach oben");' in html
+    assert 'moveDownButton.setAttribute("aria-label", item.label + " · " + option.label + " nach unten");' in html
+    assert 'moveUpButton.addEventListener("click", () => moveDraftOption(item.id, option.id, -1));' in html
+    assert 'moveDownButton.addEventListener("click", () => moveDraftOption(item.id, option.id, 1));' in html
+
+    start = html.index('function moveDraftOption(draftId, optionId, direction)')
+    end = html.index('function removeDraft(id)')
+    block = html[start:end]
+    assert 'option.id =' not in block
+    assert 'nextDraftOptionId' not in block
+    assert '.sort(' not in block
+    assert 'defaultSelection' not in block
+    assert 'item.defaultValue =' not in block
+
+
+def test_choice_option_controls_are_narrow_safe_and_use_live_status() -> None:
+    html = render_editor_shell()
+    assert '.choice-option-row { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.25rem 0; }' in html
+    assert '.choice-option-label { flex:1 1 12rem; min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.choice-option-row { align-items:stretch; flex-direction:column; }' in html
+    assert '.move-option-up, .move-option-down, .remove-option' in html
+    assert 'id="interaction-status" role="status" aria-live="polite"' in html
+    assert '" entfernt · nur temporärer Browserentwurf."' in html
+    assert '" nach oben verschoben"' in html
+    assert '" nach unten verschoben"' in html
     assert 'defaultSelection' not in html
 
 
@@ -588,6 +649,9 @@ def main() -> None:
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
     test_choice_option_add_is_browser_local_monotone_and_append_only()
+    test_choice_option_remove_preserves_ids_and_restores_focus()
+    test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable()
+    test_choice_option_controls_are_narrow_safe_and_use_live_status()
     test_default_value_is_field_only_browser_local_and_type_validated()
     test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
