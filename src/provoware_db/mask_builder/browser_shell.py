@@ -285,6 +285,14 @@ _INTERACTION_SCRIPT = r"""
     return { valid: false, message: "Datentyp für Standardwert ist unbekannt." };
   }
 
+  function focusDefaultValueControl(id) {
+    const control = Array.from(placedLayer.querySelectorAll(".default-value-control"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (control !== undefined) {
+      control.focus();
+    }
+  }
+
   function updateDefaultValue(id, control) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined || item.kind !== "field") {
@@ -293,7 +301,7 @@ _INTERACTION_SCRIPT = r"""
     const candidate = defaultValueCandidate(item.dataType, control.value);
     if (!candidate.valid) {
       setStatus("Nicht übernommen: " + candidate.message);
-      control.focus();
+      focusDefaultValueControl(id);
       return;
     }
     item.defaultValue = candidate.value;
@@ -303,6 +311,7 @@ _INTERACTION_SCRIPT = r"""
       + (item.defaultValue.length === 0 ? " · Standardwert geleert" : " · Standardwert übernommen")
       + " · nur temporärer Browserentwurf."
     );
+    focusDefaultValueControl(id);
   }
 
   function defaultValuePreview(item) {
@@ -476,8 +485,9 @@ _INTERACTION_SCRIPT = r"""
         card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
 
-        const defaultValueLabel = document.createElement("span");
+        const defaultValueLabel = document.createElement("label");
         defaultValueLabel.className = "default-value-label";
+        defaultValueLabel.id = "draft-default-value-label-" + item.id;
         defaultValueLabel.textContent = "Standardwert";
         card.appendChild(defaultValueLabel);
 
@@ -507,7 +517,9 @@ _INTERACTION_SCRIPT = r"""
         }
         defaultValueControl.className = "default-value-control";
         defaultValueControl.dataset.draftId = item.id;
-        defaultValueControl.setAttribute("aria-label", item.label + " · Standardwert");
+        defaultValueControl.id = "draft-default-value-" + item.id;
+        defaultValueLabel.htmlFor = defaultValueControl.id;
+        defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);
         defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
         card.appendChild(defaultValueControl);
       }
@@ -729,7 +741,7 @@ def render_editor_shell() -> str:
 * {{ box-sizing:border-box; }} body {{ margin:0; min-height:100vh; }}
 header {{ padding:1.25rem 1.5rem; border-bottom:1px solid #34384a; }}
 header p {{ margin:.35rem 0 0; color:#b8bfd2; }}
-button:focus-visible, select:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
+button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .editor {{ display:grid; grid-template-columns:minmax(14rem,20rem) minmax(32rem,1fr) minmax(18rem,26rem); gap:1rem; padding:1rem; }}
 .panel {{ border:1px solid #34384a; border-radius:14px; background:#191c26; padding:1rem; min-width:0; }}
 .panel h2 {{ margin-top:0; font-size:1.05rem; }}
@@ -754,7 +766,7 @@ button:focus-visible, select:focus-visible {{ outline:3px solid #ffe66d; outline
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

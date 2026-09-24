@@ -370,6 +370,30 @@ def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
     assert html.count('id: "draft-" + String(nextDraftId++)') == 1
 
 
+def test_default_value_semantics_focus_and_narrow_layout() -> None:
+    html = render_editor_shell()
+    assert 'function focusDefaultValueControl(id)' in html
+    assert 'placedLayer.querySelectorAll(".default-value-control")' in html
+    assert html.count('focusDefaultValueControl(id);') >= 2
+
+    assert 'defaultValueLabel = document.createElement("label")' in html
+    assert 'defaultValueLabel.id = "draft-default-value-label-" + item.id;' in html
+    assert 'defaultValueControl.id = "draft-default-value-" + item.id;' in html
+    assert 'defaultValueLabel.htmlFor = defaultValueControl.id;' in html
+    assert 'defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);' in html
+    assert 'aria-label", item.label + " · Standardwert"' not in html
+
+    assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
+    update_start = html.index('function updateDefaultValue(id, control)')
+    update_end = html.index('function defaultValuePreview(item)')
+    update_block = html[update_start:update_end]
+    assert 'if (!candidate.valid) {' in update_block
+    assert update_block.count('focusDefaultValueControl(id);') == 2
+
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -470,6 +494,7 @@ def main() -> None:
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_default_value_is_field_only_browser_local_and_type_validated()
+    test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
