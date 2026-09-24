@@ -216,6 +216,14 @@ _INTERACTION_SCRIPT = r"""
     focusHelpEditControl(id);
   }
 
+  function focusRequiredControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".toggle-required"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
   function toggleRequired(id) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
@@ -228,6 +236,7 @@ _INTERACTION_SCRIPT = r"""
       + (item.isRequired ? " · als Pflichtfeld markiert" : " · nicht mehr als Pflichtfeld markiert")
       + " · nur temporärer Browserentwurf."
     );
+    focusRequiredControl(id);
   }
 
   function focusVisibilityControl(id) {
@@ -1142,6 +1151,9 @@ def application(environ: dict[str, object], start_response):
     if method != "GET":
         start_response("405 Method Not Allowed", [("Content-Type", "text/plain; charset=utf-8"), ("Allow", "GET")])
         return [b"Nur GET ist in diesem Editor-Slice erlaubt.\n"]
+    if path == "/favicon.ico":
+        start_response("204 No Content", [("Content-Length", "0"), ("Cache-Control", "no-store")])
+        return [b""]
     if path != "/":
         start_response("404 Not Found", [("Content-Type", "text/plain; charset=utf-8")])
         return [b"Nicht gefunden.\n"]

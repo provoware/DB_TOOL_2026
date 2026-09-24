@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "iteration": 119,
+  "step": 2,
+  "source_head": "d3a2fa64d8f63c28a63769bf0a51493a9d3f0384",
+  "workflow_run": 36054873714,
+  "artifact_id": 10832336046,
+  "artifact_digest": "sha256:0c6e5c097ae57b8b2e934457023902bde7d40bd3ebe0001b443fe7e28445e100",
+  "browser": "/usr/bin/google-chrome",
+  "scales": [
+    {
+      "percent": 100,
+      "css_viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "device_scale_factor": 1,
+      "screenshot_sha256": "b4c4b61d31597c34af51dced8b2d6aa50f4fa4872e59217e1e15d4d94eaa0285",
+      "status": "GREEN"
+    },
+    {
+      "percent": 150,
+      "css_viewport": {
+        "width": 960,
+        "height": 600
+      },
+      "device_scale_factor": 1.5,
+      "screenshot_sha256": "dea4529ae5f26b8f59d289573b3acecfcd8eaa2268265e9b37c66154a5d6ede0",
+      "status": "GREEN"
+    },
+    {
+      "percent": 200,
+      "css_viewport": {
+        "width": 720,
+        "height": 450
+      },
+      "device_scale_factor": 2,
+      "screenshot_sha256": "84946b7b314f4546aeeaf921ec9b55da004f9476549c046e4d2deb8b1db0d06d",
+      "status": "GREEN"
+    }
+  ],
+  "checks": [
+    "initial-no-horizontal-overflow",
+    "keyboard-focus-visible",
+    "keyboard-place-field",
+    "property-controls-reachable",
+    "label-edit-keyboard-and-focus-return",
+    "help-edit-keyboard-and-focus-return",
+    "required-toggle-keyboard-and-focus-return",
+    "visibility-toggle-preview-and-focus-return",
+    "width-keyboard-preview-and-focus-return",
+    "datatype-keyboard-and-focus-return",
+    "default-value-keyboard-preview-and-focus-return",
+    "choice-options-keyboard-add-reorder-remove",
+    "final-no-horizontal-overflow",
+    "browser-errors"
+  ],
+  "all_checks_green": true,
+  "behavioral_baseline": [
+    "keyboard palette selection and field placement",
+    "label edit and focus return",
+    "help-text edit and focus return",
+    "required toggle and focus return",
+    "visibility toggle, preview update and focus return",
+    "width change and focus return",
+    "datatype change and focus return",
+    "scalar default value and preview",
+    "choice option add, reorder and remove",
+    "visible 3px focus outline",
+    "no horizontal overflow",
+    "no browser console warnings/errors or page exceptions"
+  ],
+  "frozen_unchanged": [
+    "CP-03",
+    "CP-06",
+    "schema",
+    "migrations",
+    "database",
+    "MaskTemplateStore"
+  ],
+  "persistence": "CLOSED",
+  "overall_status": "GREEN"
+}
