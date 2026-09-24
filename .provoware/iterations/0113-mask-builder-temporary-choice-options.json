@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Auswahloptionen im Masken-Baukasten",
-    "summary": "Schritt 1 fuegt fuer aktive Choice-Drafts ausschliesslich browserlokale Optionen hinzu: ein options-Array, monotone draft-option-IDs, Validierung gegen Leerwert und doppelte Bezeichnungen sowie eine read-only Liste/Preview in Einfuegereihenfolge. Remove, Reorder und defaultSelection bleiben gesperrt.",
+    "summary": "Schritt 2 ergänzt für aktive Choice-Drafts ausschließlich browserlokales Remove sowie deterministisches Hoch/Runter-Reorder. draft-option-IDs bleiben stabil; native Buttons, eindeutige aria-labels, Live-Status, deterministische Fokus-Rückgabe und schmale Darstellung sind abgesichert. Persistenz und defaultSelection bleiben gesperrt.",
     "target_doc": null
   },
   "write_files": [
@@ -33,7 +33,8 @@
     "choice options are valid only for single_choice and multi_choice",
     "persistent MaskFieldSpec already models deterministic option order but remains untouched",
     "Step 2 Remove/Reorder is blocked until Step 1 Add intermediate gate is green",
-    "I113 plan gate run 36030223255: success"
+    "I113 plan gate run 36030223255: success",
+    "I113 Step-1 intermediate gate run 36035332109 on head 7878541c61002b8b339fd7008589caa44f5770b2: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -49,8 +50,16 @@
     "Step 1: visible list and preview preserve insertion order",
     "Step 1: no remove/reorder/defaultSelection implementation exists",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: Remove must not silently break future defaultSelection contract",
-    "Step 2 only after green: deterministic Reorder preserves option IDs",
+    "GET-only, loopback-only and no-persistence contracts remain unchanged",
+    "repository foundation gate",
+    "Step 2: Remove deletes exactly the addressed option without rewriting surviving draft-option IDs",
+    "Step 2: Remove restores focus deterministically to next option, previous option, or Add input when empty",
+    "Step 2: Reorder is limited to one deterministic adjacent up/down move and preserves option IDs",
+    "Step 2: first Up and last Down controls are disabled at boundaries",
+    "Step 2: native buttons provide keyboard activation; controls have unique accessible names and live status",
+    "Step 2: option rows and controls remain reachable in narrow layout",
+    "Step 2: Remove/Reorder do not mutate draft identity, datatype, scalar defaultValue or layout",
+    "Step 2: no defaultSelection or persistence path exists",
     "GET-only, loopback-only and no-persistence contracts remain unchanged",
     "repository foundation gate"
   ],
@@ -74,8 +83,8 @@
     "option identity must not be derived from label or array index",
     "duplicate rejection must happen before mutation",
     "inactive options must not be silently destroyed by datatype changes",
-    "Step 1 must not leak into Remove/Reorder or defaultSelection",
-    "temporary browser options must not be mistaken for persisted FieldOption IDs"
+    "temporary browser options must not be mistaken for persisted FieldOption IDs",
+    "focus restoration after rerender must continue to target the same option identity, not an array index"
   ],
   "non_changes": [
     "no CP-03 or CP-06 reopen",
@@ -85,8 +94,6 @@
     "no MaskTemplateStore save or load",
     "no POST endpoint",
     "no persistence or network write",
-    "no option removal in Step 1",
-    "no option reorder in Step 1",
     "no defaultSelection",
     "no scalar defaultValue conversion or deletion",
     "no visibility or width editing",
@@ -96,11 +103,12 @@
     "no unrelated formatting"
   ],
   "expected_side_effects": [
-    "choice field drafts can accumulate temporary options with stable monotone IDs",
-    "option insertion order is visible and deterministic",
-    "choice incomplete state can become configured once at least one valid temporary option exists",
+    "choice field drafts can add and remove temporary options with stable monotone IDs",
+    "option order can be changed deterministically one adjacent position at a time without ID rewriting",
+    "keyboard users receive explicit control names, live status and deterministic focus restoration",
+    "choice incomplete state returns when the last temporary option is removed",
     "reload still clears all draft options"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
