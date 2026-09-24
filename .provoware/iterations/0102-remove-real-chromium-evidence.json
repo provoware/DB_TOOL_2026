@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "iteration": 102,
+  "agent": "remove-real-chromium-evidence-agent-102",
+  "size": "M",
+  "goal": "Realen Chromium-Nachweis fuer den in I101 eingefuehrten Remove-Slice in zwei abhaengigen Schritten erbringen, ohne neuen Produkt-Scope oder Persistenz zu oeffnen: Schritt 1 prueft den normalen Remove-Workflow; Schritt 2 darf nur nach gruenem Step-1-Gate den rechten 4-Spalten-Randfall bei 200-Prozent-Zoom-Aequivalent pruefen. Bei einem reproduzierbaren Fehler wird ausschliesslich dessen konkrete Ursache minimal in den vorab freigegebenen Repair-Dateien behoben und erneut geprueft.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Realer Chromium-Nachweis fuer Entfernen im Masken-Baukasten",
+    "summary": "Schritt 1 und Schritt 2 sind im realen Chromium gruen. Der rechte gueltige 4-Spalten-Fall bei 200-Prozent-Zoom-Aequivalent haelt den Remove-Button sichtbar, fokussierbar und per Tastatur bedienbar; Fokus-Rueckgabe und fehlender horizontaler Overflow sind bestaetigt. Kein Produktfix erforderlich.",
+    "target_doc": "docs/development/screenshots/iteration-0102/README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0102-remove-real-chromium-evidence.json",
+    "docs/development/screenshots/iteration-0102/README.md",
+    "docs/development/screenshots/iteration-0102/iteration-102-step1-evidence.json",
+    "docs/development/screenshots/iteration-0102/iteration-102-step2-evidence.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0100-real-chromium-interaction-evidence.json",
+    ".provoware/iterations/0101-mask-builder-temporary-remove.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main fe62618745c2009139be93420f0898aada6cea1f",
+    "I101 temporary browser-only remove",
+    "I100 real Chromium evidence pattern",
+    "Step 2 is blocked until Step 1 evidence and UI gate are green",
+    "Step 1 real Chromium evidence GREEN on source head f1044d7cd94d260917c7133d16e87d23411f9c16",
+    "Step 2 real Chromium 200-percent-equivalent evidence GREEN on source head fe9c9b4001b1119c74023da20b6225d4b609874d"
+  ],
+  "tests_required": [
+    "Step 1: real Chromium normal-view remove interaction",
+    "Step 1: focus returns to original placement target",
+    "Step 1: removing last item restores empty state",
+    "Step 1: re-placement receives a higher non-reused draft ID",
+    "Step 1: no browser console/page errors or horizontal overflow",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "Step 2: rightmost valid four-column field at 200-percent zoom-equivalent",
+    "Step 2: remove control remains visible, focusable and operable",
+    "Step 2: visible keyboard focus and no horizontal overflow",
+    "targeted browser-shell regression only if a repair is required",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because no database or core path is changed",
+    "database regressions because persistence remains out of scope",
+    "template-store tests because no save/load path is opened"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "static CSS regression does not alone prove real Chromium interaction at 200-percent zoom-equivalent",
+    "evidence must distinguish expected vertical scrolling from forbidden horizontal overflow",
+    "conditional product repair files are predeclared in write scope but must remain unchanged unless a reproducible I101 defect is found"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no Edit/Move feature",
+    "no dependency addition",
+    "no unrelated formatting",
+    "no product-file change without a reproducible I101 defect"
+  ],
+  "expected_side_effects": [
+    "auditable real-browser evidence for the I101 remove interaction",
+    "no product behavior change unless a reproducible I101 defect requires a minimal repair"
+  ],
+  "screenshot_required": true,
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
+}
