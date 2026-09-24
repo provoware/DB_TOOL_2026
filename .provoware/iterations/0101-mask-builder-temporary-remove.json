@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "iteration": 101,
+  "agent": "mask-builder-temporary-remove-agent-101",
+  "size": "M",
+  "goal": "Den temporären Browserentwurf um genau einen Remove-Slice erweitern: platzierte Komponente entfernen, monotone Draft-ID-Vergabe und Fokus zur ursprünglichen Zielspalte zurückgeben; weiterhin ohne Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporäres Entfernen im Masken-Baukasten",
+    "summary": "Nur der flüchtige Browserentwurf erhält Entfernen und Fokus-Rückgabe. Speichern, Datenbank und persistente Template-Semantik bleiben ausgeschlossen.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0101-mask-builder-temporary-remove.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0100-real-chromium-interaction-evidence.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main e69f2dd30d02df7b9fe690189b1a3af7bbd2d5a0",
+    "I100 real Chromium interaction evidence",
+    "existing temporary draftElements browser state"
+  ],
+  "tests_required": [
+    "targeted browser-shell compile and regression tests",
+    "remove changes only draftElements browser state",
+    "draft IDs remain monotone and are not reused after removal",
+    "focus returns to the removed element's original placement target",
+    "removing last element restores empty canvas and preview state",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, network-write, database or store dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the slice is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "focus restoration must remain deterministic after DOM re-render",
+    "draft ID generation must not derive from current list length after removals",
+    "diff churn must remain minimal after the abandoned first I101 attempt"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no dependency addition",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "a placed temporary component can be removed before page reload",
+    "keyboard focus returns to the corresponding placement target",
+    "draft identifiers remain stable and non-reused within the browser session"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED_MINIMAL_DELTA_AWAITING_IMPLEMENTATION"
+}
