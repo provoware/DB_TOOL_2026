@@ -477,8 +477,8 @@ def test_choice_option_controls_are_narrow_safe_and_use_live_status() -> None:
     assert '.move-option-up, .move-option-down, .remove-option' in html
     assert 'id="interaction-status" role="status" aria-live="polite"' in html
     assert '" entfernt · nur temporärer Browserentwurf."' in html
-    assert '" nach oben verschoben"' in html
-    assert '" nach unten verschoben"' in html
+    assert '"“ nach oben verschoben"' in html
+    assert '"“ nach unten verschoben"' in html
     assert 'defaultSelection' not in html
 
 
