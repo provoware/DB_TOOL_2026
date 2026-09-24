@@ -26,6 +26,7 @@ _INTERACTION_SCRIPT = r"""
   let selectedKind = null;
   let selectedLabel = null;
   let selectedWidth = null;
+  let movingDraftId = null;
 
   function setStatus(message) {
     status.textContent = message;
@@ -42,17 +43,55 @@ _INTERACTION_SCRIPT = r"""
   }
 
   function updateTargetAvailability() {
+    const moving = movingDraftId === null
+      ? null
+      : draftElements.find((item) => item.id === movingDraftId);
+    const activeWidth = moving === null ? selectedWidth : moving.width;
     targetButtons.forEach((button) => {
       const column = Number(button.dataset.column);
       const invalid = (
-        selectedWidth !== null
-        && !placementFitsGrid(column, selectedWidth)
+        activeWidth !== null
+        && !placementFitsGrid(column, activeWidth)
       );
       button.setAttribute("aria-disabled", String(invalid));
       button.title = invalid
         ? "Diese Komponente passt ab hier nicht vollständig ins 12-Spalten-Raster."
         : "";
     });
+  }
+
+  function beginMove(id) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    movingDraftId = id;
+    updateTargetAvailability();
+    setStatus(item.label + " verschieben · Zielspalte wählen. Escape bricht ab.");
+    targetButtons[item.column].focus();
+  }
+
+  function focusMoveControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".move-draft"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
+  function cancelMove() {
+    if (movingDraftId === null) {
+      return;
+    }
+    const id = movingDraftId;
+    const item = draftElements.find((candidate) => candidate.id === id);
+    movingDraftId = null;
+    updateTargetAvailability();
+    setStatus(
+      (item === undefined ? "Verschieben" : item.label + " verschieben")
+      + " abgebrochen · Entwurf unverändert."
+    );
+    focusMoveControl(id);
   }
 
   function removeDraft(id) {
@@ -80,6 +119,15 @@ _INTERACTION_SCRIPT = r"""
       const label = document.createElement("span");
       label.textContent = item.label;
       card.appendChild(label);
+
+      const moveButton = document.createElement("button");
+      moveButton.type = "button";
+      moveButton.className = "move-draft";
+      moveButton.dataset.draftId = item.id;
+      moveButton.textContent = "Verschieben";
+      moveButton.setAttribute("aria-label", item.label + " verschieben");
+      moveButton.addEventListener("click", () => beginMove(item.id));
+      card.appendChild(moveButton);
 
       const removeButton = document.createElement("button");
       removeButton.type = "button";
@@ -136,6 +184,37 @@ _INTERACTION_SCRIPT = r"""
   }
 
   function placeAt(column) {
+    if (movingDraftId !== null) {
+      const moving = draftElements.find((item) => item.id === movingDraftId);
+      if (moving === undefined) {
+        movingDraftId = null;
+        updateTargetAvailability();
+        return;
+      }
+      if (!placementFitsGrid(column, moving.width)) {
+        setStatus(
+          "Nicht verschoben: "
+          + moving.label
+          + " passt ab Spalte "
+          + String(column + 1)
+          + " nicht vollständig ins Raster."
+        );
+        return;
+      }
+      moving.column = column;
+      movingDraftId = null;
+      renderDraft();
+      updateTargetAvailability();
+      setStatus(
+        moving.label
+        + " nach Spalte "
+        + String(column + 1)
+        + " verschoben · nur temporärer Browserentwurf."
+      );
+      targetButtons[column].focus();
+      return;
+    }
+
     if (selectedKind === null || selectedLabel === null || selectedWidth === null) {
       setStatus("Zuerst eine Komponente auswählen.");
       return;
@@ -186,6 +265,9 @@ _INTERACTION_SCRIPT = r"""
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
         focusSiblingTarget(index, 1);
+      } else if (event.key === "Escape" && movingDraftId !== null) {
+        event.preventDefault();
+        cancelMove();
       }
     });
   });
@@ -231,7 +313,7 @@ def render_editor_shell() -> str:
         (
             f'<button type="button" class="placement-target" data-column="{column}" '
             f'aria-label="In Spalte {column + 1} platzieren" '
-            f'aria-keyshortcuts="Enter Space ArrowLeft ArrowRight" aria-disabled="false">'
+            f'aria-keyshortcuts="Enter Space ArrowLeft ArrowRight Escape" aria-disabled="false">'
             f'{column + 1}</button>'
         )
         for column in range(GRID_COLUMNS)
@@ -262,12 +344,12 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

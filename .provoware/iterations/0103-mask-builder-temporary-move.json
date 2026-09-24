@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "iteration": 103,
+  "agent": "mask-builder-temporary-move-agent-103",
+  "size": "M",
+  "goal": "Den temporaeren Browserentwurf in genau zwei abhaengigen Schritten um einen keyboard-first Move-Slice erweitern: Schritt 1 erlaubt fuer ein bereits platziertes Element Verschieben zu einer gueltigen Zielspalte bei unveraenderter Draft-ID, Breite und Komponentenart. Schritt 2 darf erst nach gruenem Zwischen-Gate ungueltige rechte Randziele, Abbruch/Fokus-Rueckgabe sowie reale 200-Prozent-Bedienbarkeit und horizontalen Overflow haerten. Weiterhin keine Persistenz, kein allgemeines Editieren und kein Drag-and-Drop.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaeres Verschieben im Masken-Baukasten",
+    "summary": "Schritt 1 und Schritt 2 sind gruen. Der temporaere Move-Slice behaelt die Draft-ID, blockiert ungueltige rechte Randziele vor Mutation, Escape bricht ohne Draft-Aenderung ab und gibt den Fokus an Verschieben zurueck; nach gueltigem Move fokussiert die neue Zielspalte. Der reale Chromium-Lauf bei 200-Prozent-Zoom-Aequivalent bestaetigt Tastaturbedienbarkeit, 3-px-Fokus und fehlenden horizontalen Overflow.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0103-mask-builder-temporary-move.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0099-mask-builder-temporary-interaction.json",
+    ".provoware/iterations/0101-mask-builder-temporary-remove.json",
+    ".provoware/iterations/0102-remove-real-chromium-evidence.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main bb7599bd5085d6189337e43cc842a1e30133b496",
+    "I99 temporary placement contract",
+    "I101 temporary remove and monotone draft IDs",
+    "I102 real Chromium remove evidence",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I103 plan gate run 35997660831: success",
+    "I103 Step 1 gate run 35997975098: success",
+    "I103 Step 2 code gate run 35998314499: success",
+    "I103 Step 2 real Chromium 200-percent-equivalent evidence GREEN on head 8500cd05637f4c23ba4e79a698acc06eed485d3c; screenshot sha256 55f4b7e55e3965c86b4bdff1cbcd2ea3360f2a3d25ed251a9016c202ece74021"
+  ],
+  "tests_required": [
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 1: placed element exposes a keyboard-reachable Verschieben control",
+    "Step 1: move mode targets the existing explicit placement buttons",
+    "Step 1: valid move changes only the element column in draftElements",
+    "Step 1: moved element keeps the same draft ID, kind, label and width",
+    "Step 1: preview updates deterministically after valid move",
+    "Step 1: no new draft ID is allocated by move",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "Step 2: invalid right-edge move is rejected before draft mutation",
+    "Step 2: cancel returns focus deterministically without draft mutation",
+    "Step 2: focus after valid move returns to a deterministic move-related control or target",
+    "Step 2: real Chromium 200-percent zoom-equivalent remains keyboard-usable with no horizontal overflow",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, network-write, database or store dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the slice is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "move-mode focus must stay deterministic across DOM re-render",
+    "move must mutate an existing draft rather than remove and recreate it",
+    "invalid targets must not alter draft state",
+    "additional controls must remain usable in narrow cards at 200-percent zoom-equivalent"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no general property edit feature",
+    "no drag-and-drop",
+    "no dependency addition",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "a placed temporary component can be moved to another valid grid start column without receiving a new draft ID",
+    "invalid or cancelled moves leave the temporary draft unchanged",
+    "reloading the page still clears the draft"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
+}
