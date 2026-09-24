@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "iteration": 108,
+  "agent": "mask-builder-temporary-required-agent-108",
+  "size": "M",
+  "goal": "Den naechsten offenen P1-TODO-Slice als rein temporaere Pflichtfeld-Eigenschaft im Browser-Draft umsetzen. Schritt 1 fuegt ausschliesslich isRequired samt keyboard-first Toggle zu bestehenden Draft-Elementen hinzu, ohne ID, kind, label, helpText, column oder width zu aendern. Schritt 2 darf erst nach gruenem Zwischen-Gate die Funktion auf Eingabefelder begrenzen, die sichtbare/zugaengliche Pflichtfeld-Kennzeichnung haerten und schmale Bedienbarkeit pruefen. Keine produktive Datenvalidierung, Persistenz oder weitere Eigenschaft.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaere Pflichtfeld-Eigenschaft im Masken-Baukasten",
+    "summary": "Schritt 2 begrenzt den Pflichtfeld-Toggle auf field-Drafts. Ein deterministischer sichtbarer Zustand Pflichtfeld/Optional wird ueber draft-required-<draft-id> ausgegeben und per aria-describedby mit dem Toggle verknuepft. Nicht-field-Drafts erhalten keinen Pflichtfeld-Control; das schmale Layout behandelt den Toggle als Full-Width-Control.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0108-mask-builder-temporary-required.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0107-mask-builder-temporary-help-text.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 9c3831819afdf0f259b8c1aa1967f9d134af2fb3",
+    "I107 temporary keyboard-first help text merged",
+    "TODO A next open capability: Pflichtfeld-Eigenschaft im Draft",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I108 plan gate run 36012400324: success",
+    "I108 Step 1 gate run 36012543249: success"
+  ],
+  "tests_required": [
+    "Plan gate before product write",
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 1: newly placed drafts start with isRequired false",
+    "Step 1: keyboard-reachable native required toggle changes only item.isRequired",
+    "Step 1: draft ID, kind, label, helpText, column and width remain unchanged",
+    "Step 1: preview reflects required state deterministically",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "Step 2: required toggle is offered only for field drafts",
+    "Step 2: field draft exposes visible and accessible required-state semantics",
+    "Step 2: non-field drafts remain unaffected",
+    "Step 2: narrow layout keeps required control reachable",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, data validation, network-write, database or store dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the slice is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "rule/validation tests because productive required-value validation is explicitly out of scope",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "required state must not be confused with productive value validation",
+    "toggle must not recreate the draft or allocate a new ID",
+    "non-field structural elements must not gain meaningless required semantics after Step 2",
+    "the slice must not grow into datatype/default/rules editing"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no productive required-value validation",
+    "no datatype, default value, options, visibility or width editing",
+    "no general property editor",
+    "no drag-and-drop",
+    "no dependency addition",
+    "no TODO.md checkbox mutation in this product iteration",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "after Step 1 a temporary draft can toggle isRequired without changing identity or layout",
+    "after Step 2 only field drafts expose this capability and required state is visibly/accessibly marked",
+    "reloading the page still clears the draft"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}

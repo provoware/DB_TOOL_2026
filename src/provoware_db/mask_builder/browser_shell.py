@@ -215,6 +215,20 @@ _INTERACTION_SCRIPT = r"""
     focusHelpEditControl(id);
   }
 
+  function toggleRequired(id) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    item.isRequired = !item.isRequired;
+    renderDraft();
+    setStatus(
+      item.label
+      + (item.isRequired ? " · als Pflichtfeld markiert" : " · nicht mehr als Pflichtfeld markiert")
+      + " · nur temporärer Browserentwurf."
+    );
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -331,6 +345,25 @@ _INTERACTION_SCRIPT = r"""
         card.appendChild(editor);
       }
 
+      if (item.kind === "field") {
+        const requiredState = document.createElement("span");
+        requiredState.className = "required-state";
+        requiredState.id = "draft-required-" + item.id;
+        requiredState.textContent = item.isRequired ? "Pflichtfeld" : "Optional";
+        card.appendChild(requiredState);
+
+        const requiredButton = document.createElement("button");
+        requiredButton.type = "button";
+        requiredButton.className = "toggle-required";
+        requiredButton.dataset.draftId = item.id;
+        requiredButton.textContent = item.isRequired ? "Pflichtfeld: Ja" : "Pflichtfeld: Nein";
+        requiredButton.setAttribute("aria-pressed", String(item.isRequired));
+        requiredButton.setAttribute("aria-describedby", requiredState.id);
+        requiredButton.setAttribute("aria-label", item.label + " · Pflichtfeld umschalten");
+        requiredButton.addEventListener("click", () => toggleRequired(item.id));
+        card.appendChild(requiredButton);
+      }
+
       const moveButton = document.createElement("button");
       moveButton.type = "button";
       moveButton.className = "move-draft";
@@ -373,6 +406,7 @@ _INTERACTION_SCRIPT = r"""
         + "–"
         + String(lastColumn)
         + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
+        + (item.isRequired ? " · Pflichtfeld" : "")
       );
       list.appendChild(row);
     });
@@ -450,6 +484,7 @@ _INTERACTION_SCRIPT = r"""
       column,
       width: selectedWidth,
       helpText: "",
+      isRequired: false,
     });
     renderDraft();
     setStatus(
@@ -557,15 +592,16 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
+.required-state {{ color:#d7def5; font-weight:600; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

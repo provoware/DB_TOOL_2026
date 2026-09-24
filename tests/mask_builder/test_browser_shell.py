@@ -172,7 +172,7 @@ def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -239,7 +239,59 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
 
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
+
+def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
+    html = render_editor_shell()
+    assert 'isRequired: false,' in html
+    assert 'function toggleRequired(id)' in html
+    assert 'item.isRequired = !item.isRequired;' in html
+    assert 'requiredButton.type = "button";' in html
+    assert 'requiredButton.className = "toggle-required";' in html
+    assert 'requiredButton.dataset.draftId = item.id;' in html
+    assert 'requiredButton.setAttribute("aria-pressed", String(item.isRequired));' in html
+    assert 'requiredButton.addEventListener("click", () => toggleRequired(item.id));' in html
+    assert 'item.isRequired ? "Pflichtfeld: Ja" : "Pflichtfeld: Nein"' in html
+    assert '(item.isRequired ? " · Pflichtfeld" : "")' in html
+
+    start = html.index('function toggleRequired(id)')
+    end = html.index('function removeDraft(id)')
+    toggle_block = html[start:end]
+    assert 'item.isRequired = !item.isRequired;' in toggle_block
+    assert 'renderDraft();' in toggle_block
+    assert 'item.id =' not in toggle_block
+    assert 'item.kind =' not in toggle_block
+    assert 'item.label =' not in toggle_block
+    assert 'item.helpText =' not in toggle_block
+    assert 'item.column =' not in toggle_block
+    assert 'item.width =' not in toggle_block
+    assert 'draftElements.push(' not in toggle_block
+    assert 'draftElements.splice(' not in toggle_block
+    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+
+
+def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
+    html = render_editor_shell()
+
+    assert 'if (item.kind === "field") {' in html
+    assert 'requiredState.className = "required-state";' in html
+    assert 'requiredState.id = "draft-required-" + item.id;' in html
+    assert 'requiredState.textContent = item.isRequired ? "Pflichtfeld" : "Optional";' in html
+    assert 'requiredButton.setAttribute("aria-describedby", requiredState.id);' in html
+
+    render_start = html.index('function renderDraft()')
+    render_end = html.index('function selectKind(button)')
+    render_block = html[render_start:render_end]
+    field_guard = render_block.index('if (item.kind === "field") {')
+    required_button = render_block.index('const requiredButton = document.createElement("button");')
+    move_button = render_block.index('const moveButton = document.createElement("button");')
+    assert field_guard >= 0
+    assert required_button > field_guard
+    assert move_button > required_button
+
+    assert '.required-state { color:#d7def5; font-weight:600; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
@@ -337,6 +389,8 @@ def main() -> None:
     test_label_editor_remains_reachable_at_narrow_width()
     test_help_text_edit_is_browser_only_optional_and_preserves_identity()
     test_help_text_accessibility_cancel_focus_and_narrow_layout()
+    test_required_toggle_is_browser_only_and_mutates_only_required_state()
+    test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -345,7 +399,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY HELP TEXT I107 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY REQUIRED I108 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":
