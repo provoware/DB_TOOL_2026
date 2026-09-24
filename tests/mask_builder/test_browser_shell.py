@@ -170,9 +170,9 @@ def test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus() -> No
 
 def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
-    assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
-    assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.label-editor, .help-editor, .option-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
+    assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -237,9 +237,9 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
     assert 'item.helpText =' not in help_block.split('function saveHelpEdit(id, input)')[0]
     assert 'focusHelpEditControl(id);' in help_block
 
-    assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
-    assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.label-editor, .help-editor, .option-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
+    assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
@@ -291,7 +291,7 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert move_button > required_button
 
     assert '.required-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 
@@ -477,7 +477,7 @@ def test_default_value_semantics_focus_and_narrow_layout() -> None:
 
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
     assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
     update_start = html.index('function updateDefaultValue(id, control)')
     update_end = html.index('function defaultValuePreview(item)')
