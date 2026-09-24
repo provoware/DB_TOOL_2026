@@ -11,7 +11,7 @@ from provoware_db.mask_builder.browser_shell import make_editor_server
 
 ROOT = Path(__file__).resolve().parents[2]
 HARNESS = Path(__file__).with_name("i119_chromium_evidence.mjs")
-OUTPUT = ROOT / "runtime" / "iteration-0119" / "step1-evidence.json"
+OUTPUT = ROOT / "runtime" / "iteration-0119" / "step2-evidence.json"
 
 
 def main() -> int:
@@ -28,7 +28,7 @@ def main() -> int:
         host, port = server.server_address[:2]
         OUTPUT.parent.mkdir(parents=True, exist_ok=True)
         result = subprocess.run(
-            [node, str(HARNESS), f"http://{host}:{port}/", str(OUTPUT), "100,150"],
+            [node, str(HARNESS), f"http://{host}:{port}/", str(OUTPUT), "100,150,200"],
             cwd=ROOT,
             text=True,
         )
@@ -48,10 +48,10 @@ def main() -> int:
         raise SystemExit(result.returncode)
 
     scales = [item["scale_percent"] for item in evidence["scales"]]
-    if scales != [100, 150]:
+    if scales != [100, 150, 200]:
         raise SystemExit(f"I119 EVIDENCE: ROT · unexpected scales {scales!r}")
 
-    print("I119 STEP 1 REAL CHROMIUM EVIDENCE: GRÜN · 100 % + 150 %")
+    print("I119 STEP 2 REAL CHROMIUM EVIDENCE: GRÜN · 100 % + 150 % + 200 %")
     return 0
 
 

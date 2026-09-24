@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Reproduzierbare Accessibility-Baseline fuer die gesamte Masken-Eigenschaftenbearbeitung",
-    "summary": "I119 fuegt keinen neuen Produktumfang hinzu. Ein reproduzierbarer Chrome/Chromium-Harness prueft die vorhandenen Properties zuerst bei 100 und 150 Prozent; 200 Prozent bleibt bis zum gruenen Zwischen-Gate gesperrt.",
+    "summary": "I119 fuegt keinen neuen Produktumfang hinzu. Nach gruenem 100-/150-Prozent-Zwischen-Gate wiederholt Schritt 2 die komplette Property-Matrix gemeinsam bei 100, 150 und 200 Prozent und bildet damit die finale Behavioral-/Accessibility-Baseline.",
     "target_doc": "docs/development/screenshots/iteration-0119/README.md"
   },
   "write_files": [
@@ -37,7 +37,8 @@
     "I118 temporary width editing merged with targeted and foundation green",
     "I100/I102 real Chromium evidence pattern",
     "current property set: label, help text, required, datatype, scalar default, choice options, visibility and width",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I119 Step-1 intermediate gate run 36054718120 on head 194e9268c0c1b5683e3a1b86e3bcdc18780a59e3: targeted + foundation success"
   ],
   "tests_required": [
     "Step 1: compile browser shell and Python evidence wrapper",
@@ -53,8 +54,8 @@
     "Step 1: visible focus is at least 3px",
     "Step 1: no horizontal overflow, console warnings/errors or page exceptions",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: real Chromium at 200-percent equivalent",
-    "Step 2 only after green: repeat the complete property interaction matrix and freeze the resulting behavior baseline",
+    "Step 2: real Chromium at 200-percent equivalent",
+    "Step 2: repeat the complete property interaction matrix at 100/150/200 percent and freeze the resulting behavior baseline",
     "GET-only, loopback-only and no-persistence contracts remain unchanged",
     "repository foundation gate"
   ],
@@ -95,9 +96,10 @@
   ],
   "expected_side_effects": [
     "reproducible runtime evidence is emitted below runtime/iteration-0119",
-    "100/150-percent property behavior is objectively verified before the 200-percent step",
-    "any actual focus/runtime defect becomes a targeted repair finding rather than a speculative refactor"
+    "the complete existing property interaction matrix is verified on one final head at 100, 150 and 200 percent",
+    "the required-toggle focus repair remains regression protected",
+    "the resulting behavior can serve as the stable pre-Control-Plane baseline"
   ],
   "screenshot_required": true,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
