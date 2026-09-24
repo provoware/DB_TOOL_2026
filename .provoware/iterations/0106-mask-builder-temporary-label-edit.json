@@ -1,0 +1,95 @@
+{
+  "schema_version": 2,
+  "iteration": 106,
+  "agent": "mask-builder-temporary-label-edit-agent-106",
+  "size": "M",
+  "goal": "Den naechsten sicheren Masken-Baukasten-Slice als rein temporaere, browserinterne Beschriftungsbearbeitung planen. Schritt 1 soll genau die Beschriftung eines bestehenden Draft-Elements per keyboard-first Editierweg aendern, bei stabiler Draft-ID, kind, column und width. Schritt 2 darf erst nach gruenem Zwischen-Gate leere/Whitespace-Eingaben, Escape-Abbruch, deterministische Fokus-Rueckgabe und schmale/200-Prozent-Bedienbarkeit haerten. Keine Persistenz, kein allgemeiner Eigenschaften-Editor und kein Drag-and-Drop.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaere Beschriftung im Masken-Baukasten",
+    "summary": "I106 Schritt 2 ist gruen: leere/Whitespace-Beschriftungen werden vor Mutation blockiert, Escape verwirft den Edit und fokussiert Beschriftung aendern, gueltige Aenderungen behalten dieselbe Draft-ID. Reales Chromium bei 720x450 CSS-Pixeln/DPR 2 zeigt 3-px-Fokus, keinen horizontalen Overflow und keine Browser-/Page-Errors.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0106-mask-builder-temporary-label-edit.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0103-mask-builder-temporary-move.json",
+    ".provoware/iterations/0105-product-expansion-roadmap.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 5546f221177682647f8213e4052cca107902b1b8",
+    "I103 temporary keyboard-first move slice",
+    "I105 product roadmap/governance merged",
+    "I104 plan superseded because the gate router selects the newest iteration manifest and I105 is already on main",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I106 plan gate run 36001622358: success",
+    "I106 Step 1 gate run 36001977522: success",
+    "I106 Step 2 repaired gate run 36002387053: success",
+    "I106 Step 2 real Chromium 200-percent-equivalent evidence GREEN on head d9e98b02b8313b57aff16da8703008dd44f475f0; screenshot sha256 340c3111f91ccd5d843a7b20836e7c0a6e1b32ef8c3c35ca073a10a0b30762d1"
+  ],
+  "tests_required": [
+    "Plan gate before product write",
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 1: existing draft exposes a keyboard-reachable Beschriftung-aendern control",
+    "Step 1: valid label edit changes only item.label",
+    "Step 1: draft ID, kind, column and width remain unchanged",
+    "Step 1: preview updates deterministically after label edit",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "Step 2: empty or whitespace-only label is rejected before mutation",
+    "Step 2: Escape cancels without mutation and restores focus deterministically",
+    "Step 2: narrow/200-percent-equivalent layout keeps edit controls reachable without horizontal overflow",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, network-write, database or store dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because this plan is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "editing must not allocate a new draft ID or recreate the element",
+    "cancel and validation must not mutate the draft",
+    "edit controls must remain keyboard reachable after DOM re-render",
+    "the small label slice must not grow into a general property editor"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no general property edit feature",
+    "no kind, width or column editing",
+    "no drag-and-drop",
+    "no dependency addition",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "after Step 1 a placed temporary component can receive a different label without changing its identity or layout",
+    "after Step 2 invalid or cancelled edits leave the temporary draft unchanged",
+    "reloading the page still clears the draft"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
+}
