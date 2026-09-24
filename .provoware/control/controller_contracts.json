@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "mode": "SHADOW",
+  "controller_role": "CONTROLLER",
+  "draft_state": "DRAFT",
+  "sealed_state": "SEALED",
+  "decision_state": "PLAN_SEALED",
+  "required_decision_fields": [
+    "schema_version",
+    "decision_id",
+    "plan_id",
+    "source_planner_input_id",
+    "base_sha",
+    "controller_role",
+    "state",
+    "sealed_plan_sha256",
+    "approved_finding_ids"
+  ]
+}

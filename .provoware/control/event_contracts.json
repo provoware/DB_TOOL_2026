@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "mode": "SHADOW",
+  "genesis_hash": "GENESIS",
+  "allowed_effects": [
+    "TRANSITION",
+    "AUDIT",
+    "DEFER",
+    "HARD_STOP"
+  ],
+  "event_fields": [
+    "schema_version",
+    "event_id",
+    "request_id",
+    "sequence",
+    "event_type",
+    "actor_role",
+    "from_state",
+    "to_state",
+    "effect",
+    "payload_ref",
+    "previous_event_sha256",
+    "event_sha256"
+  ],
+  "informational_events": {
+    "FINDING_RECORDED": {
+      "actor_role": "INSPECTOR",
+      "allowed_state": "INSPECTING",
+      "effect": "AUDIT"
+    },
+    "PLAN_SUBMITTED": {
+      "actor_role": "PLANNER",
+      "allowed_state": "PLANNING",
+      "effect": "AUDIT"
+    }
+  }
+}
