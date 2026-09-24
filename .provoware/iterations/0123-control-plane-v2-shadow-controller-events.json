@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "no_user_change",
     "topic": "Control Plane V2 Shadow Controller-Handoff und Audit-Events",
-    "summary": "I123 schliesst im Shadow Mode die Luecke zwischen Planner-Draft und bestehendem I121-Sealed-Plan. Nur CONTROLLER darf einen gueltigen Draft bei aktuellem Base-SHA versiegeln; die exakte versiegelte Payload wird per SHA-256 an die Controller-Entscheidung gebunden. Tests werden als ausdruecklicher Supporting-Write-Scope registriert.",
+    "summary": "I123 verbindet nach gruenem Step-1-Gate den deterministischen Planner->Controller->SEALED_PLAN-Handoff mit einer append-only Shadow-Auditkette. Jeder Event-Datensatz ist sequenziell und per SHA-256 an seinen Vorgaenger gebunden; ungueltige Rollen/Zustandsuebergaenge, Mutation und Reordering werden blockiert. PLAN_SUBMITTED/FINDING_RECORDED bleiben reine Auditereignisse, SIDE_REQUEST_CREATED bleibt DEFER und FROZEN_VIOLATION setzt HARD_STOP.",
     "target_doc": null
   },
   "write_files": [
@@ -17,7 +17,10 @@
     ".provoware/control/registry.json",
     ".provoware/control/controller_contracts.json",
     "scripts/control_plane_controller.py",
-    "tests/governance/test_control_plane_controller.py"
+    "tests/governance/test_control_plane_controller.py",
+    ".provoware/control/event_contracts.json",
+    "scripts/control_plane_events.py",
+    "tests/governance/test_control_plane_events.py"
   ],
   "read_files": [
     ".provoware/control/inspection_contracts.json",
@@ -40,7 +43,8 @@
     "I122 request/inspection/finding/planner/DRAFT_PLAN contracts merged green",
     "Control Plane V2 remains SHADOW and non-authoritative",
     "Legacy governance remains authoritative",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I123 Step-1 intermediate deep gate run 36071301619 on head af277ea1ca5ff7620c0728741a59e63dbbab4cb4: targeted + governance + foundation success"
   ],
   "tests_required": [
     "Step 1: compile controller and focused controller governance test",
@@ -54,10 +58,10 @@
     "Step 1: tests/** may participate in the same Creator scope as product code",
     "Step 1: existing global single-writer lease still rejects a second active writer",
     "Intermediate deep gate before Step 2",
-    "Step 2 only after green: append-only events validate role, state transition and deterministic sequence number",
-    "Step 2 only after green: event chain binds each record to the previous event hash and rejects mutation/reordering",
-    "Step 2 only after green: invalid lifecycle jumps and unknown triggers fail closed",
-    "Step 2 only after green: side-request and frozen-violation special events remain non-state-mutating DEFER/HARD_STOP signals",
+    "Step 2: append-only events validate role, state transition and deterministic sequence number",
+    "Step 2: event chain binds each record to the previous event hash and rejects mutation/reordering",
+    "Step 2: invalid lifecycle jumps and unknown triggers fail closed",
+    "Step 2: side-request stays non-state-mutating DEFER; frozen violation is non-state-mutating HARD_STOP and blocks later events",
     "deep governance and repository foundation gates"
   ],
   "tests_explicitly_not_run": [
@@ -69,11 +73,14 @@
   "ci": {
     "compile": [
       "scripts/control_plane_controller.py",
-      "tests/governance/test_control_plane_controller.py"
+      "scripts/control_plane_events.py",
+      "tests/governance/test_control_plane_controller.py",
+      "tests/governance/test_control_plane_events.py"
     ],
     "python_tests": [
       "tests/governance/test_control_plane_registry.py",
-      "tests/governance/test_control_plane_controller.py"
+      "tests/governance/test_control_plane_controller.py",
+      "tests/governance/test_control_plane_events.py"
     ]
   },
   "risks": [
@@ -100,8 +107,12 @@
     "stale plans are rejected before Creator authorization",
     "product source and regression tests can share one bounded Creator lease",
     "Controller decision cryptographically binds the exact sealed plan",
+    "lifecycle and audit events form an append-only hash chain",
+    "invalid event roles, state jumps, mutation and reordering fail closed",
+    "side requests remain DEFER without changing lifecycle state",
+    "frozen violations produce HARD_STOP and prevent later shadow events",
     "existing I121 single-writer and Validator contracts remain reusable unchanged"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
