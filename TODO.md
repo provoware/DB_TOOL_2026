@@ -1,26 +1,44 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Checkboxen bedeuten **Planungsstatus**, nicht automatische Freigabe.
+Stand: **nach I113 auf `main`**.
+
+Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
+
+## Nächste sichere Prioritäten
+
+1. [ ] statische Sichtbarkeit im Browser-Draft
+2. [ ] Breite im 12-Spalten-Raster ändern, Grenzen vor Mutation prüfen
+3. [ ] gemeinsame Eigenschaften-Vorschau und vollständige Accessibility-Abnahme
+4. [ ] Persistenzgrenze für Masken separat planen
+
+Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen**.
 
 ## A. Masken-Baukasten – Eigenschaften
 
-- [ ] Beschriftung temporär editieren (I104 ist bereits geplant)
-- [ ] Label-Edit: Leerwert, Escape, Fokus, 200-%-Evidence
-- [ ] Hilfetext temporär editieren
-- [ ] Hilfetext mit zugänglicher Beschreibung verbinden
-- [ ] Pflichtfeld-Eigenschaft im Draft
-- [ ] Datentyp-Eigenschaft im Draft
-- [ ] typabhängigen Standardwert validieren
-- [ ] Auswahloptionen hinzufügen/entfernen/neuordnen
+- [x] Beschriftung temporär editieren
+- [x] Label-Edit: Leerwert, Escape und Fokus-Rückgabe absichern
+- [x] Hilfetext temporär editieren
+- [x] Hilfetext mit zugänglicher Beschreibung verbinden
+- [x] Pflichtfeld-Eigenschaft im Draft
+- [x] Datentyp-Eigenschaft im Draft
+- [x] typabhängigen skalaren Standardwert validieren
+- [x] Choice-Datentypen `single_choice` und `multi_choice` browserlokal ergänzen
+- [x] Auswahloptionen hinzufügen
+- [x] Auswahloptionen entfernen
+- [x] Auswahloptionen deterministisch neuordnen
+- [x] stabile monotone `draft-option-*`-IDs beibehalten
+- [x] Option-Controls: zugängliche Namen, Live-Status und Fokus-Rückgabe
+- [x] Option-Controls in schmaler Darstellung erreichbar halten
+- [ ] vollständige 100/150/200-%-Evidence für die gesamte Eigenschaftenbearbeitung
 - [ ] statische Sichtbarkeit
 - [ ] Breite im 12-Spalten-Raster ändern
-- [ ] gemeinsame Eigenschaften-Vorschau
-- [ ] gemeinsame 100/150/200-%-Accessibility-Evidence
+- [ ] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
+- [ ] `defaultSelection`-Vertrag separat planen
 - [ ] Persistenzgrenze für Masken separat planen
 
 ## B. Masken-Baukasten – Struktur
 
-- [ ] Element duplizieren bei neuer monotone Draft-ID
+- [ ] Element duplizieren bei neuer monotoner Draft-ID
 - [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
 - [ ] Abschnitte
 - [ ] einklappbare Gruppen
@@ -138,10 +156,12 @@ Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Checkboxen bedeute
 - [ ] hoher Kontrast
 - [ ] Reduced Motion
 - [ ] vollständige Tastaturmatrix
-- [ ] Screenreader-Semantik
+- [ ] Screenreader-Semantik als Gesamtmatrix
 - [ ] gespeicherte Darstellungsprofile
 - [ ] automatisierte Evidence 100/150/200 %
-- [ ] Desktop/Tablet/schmal ohne horizontalen Overflow
+- [ ] Desktop/Tablet/schmal ohne horizontalen Overflow als Gesamtmatrix
+
+Bereits vorhanden und weiterhin regressionsgeschützt: native Tastaturwege, sichtbarer Fokus, Live-Status und schmale Bedienbarkeit in mehreren Browser-Draft-Slices.
 
 ## L. Gesundheit / Wartung
 
@@ -166,13 +186,16 @@ Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Checkboxen bedeute
 - [ ] Deep-Gate
 - [ ] erst danach Implementierung
 
-## N. Globale Gates
+## N. Dauerregeln für jede Iteration
 
-- [ ] kein Feature direkt aus dieser TODO-Liste implementieren, ohne Iterationsmanifest
-- [ ] pro Iteration genau zwei abhängige Schritte planen
-- [ ] Zwischen-Gate nach Schritt 1
-- [ ] triggerbasierte Tests
-- [ ] Frozen-Core-Schutz
-- [ ] keine ungeplanten Dateien
-- [ ] reale Chromium-Evidence bei vorgesehenem UI-Meilenstein
-- [ ] Persistenz nur mit Recovery-/Integritätsvertrag
+Diese Punkte sind keine einmaligen TODOs, sondern bleiben ständig aktiv:
+
+- Iterationsmanifest vor Feature-Write
+- pro Iteration kleine abhängige Schritte
+- Zwischen-Gate, wenn ein späterer Schritt vom ersten abhängt
+- triggerbasierte statt unnötige Volltests
+- Frozen-Core-Schutz
+- keine ungeplanten Dateien
+- reale Chromium-Evidence an vorgesehenen UI-Meilensteinen
+- Persistenz nur mit geklärtem Recovery-/Integritätsvertrag
+- bei rotem Gate zuerst die konkrete Ursache beheben

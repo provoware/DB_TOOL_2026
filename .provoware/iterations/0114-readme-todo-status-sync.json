@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "iteration": 114,
+  "agent": "readme-todo-status-sync-agent-114",
+  "size": "S",
+  "goal": "README und Master-TODO nach dem gruen gemergten I113 ausschliesslich an den bestaetigten Projektstand angleichen. Keine Produktfunktion, kein Frozen-Core-Reopen und keine Roadmap-Ausweitung.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Projektstand und naechste sichere Arbeitspunkte nach I113",
+    "summary": "README nennt den bestaetigten I113-Stand und seine Nicht-Persistenzgrenzen. TODO markiert bereits erledigte I104-I113-Eigenschaften als abgeschlossen und priorisiert die naechsten noch offenen browserlokalen Eigenschaften, ohne sie zu implementieren.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0114-readme-todo-status-sync.json",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0113-mask-builder-temporary-choice-options.json"
+  ],
+  "direct_dependencies": [
+    "main 8243f42f82d107212a129950056bf4226a4431b6",
+    "I113 merged after targeted and foundation gates succeeded",
+    "CP-03 and CP-06 remain frozen",
+    "browser draft remains non-persistent and GET-only",
+    "I114 plan gate run 36038179180: success"
+  ],
+  "tests_required": [
+    "Plan gate before README/TODO write",
+    "README and TODO only describe confirmed capabilities",
+    "completed TODO marks correspond to merged browser capabilities through I113",
+    "no product, schema, domain, repository or SQL files change",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "browser interaction tests because no product code changes",
+    "database/repository tests because no persistent path changes",
+    "full suite because this is docs-only status synchronization"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "documentation must not claim persistence or defaultSelection",
+    "TODO completion marks must not overstate unverified accessibility evidence",
+    "next-step wording must not reopen CP-03 or CP-06"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no domain, repository, service, SQL or database changes",
+    "no browser shell changes",
+    "no tests changed",
+    "no dependency changes",
+    "no PRODUCT_ROADMAP mutation",
+    "no I115 planning"
+  ],
+  "expected_side_effects": [
+    "README reflects I113 as latest confirmed product slice",
+    "TODO distinguishes completed I104-I113 work from still-open work",
+    "next safe browser-local priorities are easier to identify"
+  ],
+  "screenshot_required": false,
+  "status": "DOCS_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
