@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaeres Verschieben im Masken-Baukasten",
-    "summary": "Geplant ist ausschliesslich browserinternes, tastaturorientiertes Verschieben bereits platzierter Draft-Elemente. Die bestehende Draft-ID bleibt stabil; Persistenz, Eigenschaften-Editieren und Drag-and-Drop bleiben ausgeschlossen.",
+    "summary": "Schritt 1 implementiert ausschliesslich browserinternes, tastaturorientiertes Verschieben bereits platzierter Draft-Elemente zu gueltigen Zielspalten. Die bestehende Draft-ID, Komponentenart, Beschriftung und Breite bleiben stabil; nur die Spalte wird mutiert. Schritt 2 bleibt bis zum gruenen Zwischen-Gate gesperrt.",
     "target_doc": null
   },
   "write_files": [
@@ -30,7 +30,8 @@
     "I99 temporary placement contract",
     "I101 temporary remove and monotone draft IDs",
     "I102 real Chromium remove evidence",
-    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I103 plan gate run 35997660831: success"
   ],
   "tests_required": [
     "Step 1: targeted browser-shell compile and regression tests",
@@ -88,5 +89,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "PLANNED_TWO_STEP_AWAITING_SCOPE_GATE"
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
 }

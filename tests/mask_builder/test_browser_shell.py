@@ -65,6 +65,26 @@ def test_preview_and_draft_identifiers_are_deterministic_and_monotone() -> None:
     assert all(token not in html for token in forbidden)
 
 
+
+def test_move_is_browser_only_preserves_identity_and_changes_column_only() -> None:
+    html = render_editor_shell()
+    assert 'let movingDraftId = null;' in html
+    assert 'function beginMove(id)' in html
+    assert 'movingDraftId = id;' in html
+    assert 'moveButton.textContent = "Verschieben";' in html
+    assert 'moveButton.addEventListener("click", () => beginMove(item.id));' in html
+    assert 'const moving = draftElements.find((item) => item.id === movingDraftId);' in html
+    assert 'if (!placementFitsGrid(column, moving.width)) {' in html
+    assert 'moving.column = column;' in html
+    assert 'movingDraftId = null;' in html
+    assert 'renderDraft();' in html
+    assert 'updateTargetAvailability();' in html
+    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert 'moving.id =' not in html
+    assert 'moving.kind =' not in html
+    assert 'moving.label =' not in html
+    assert 'moving.width =' not in html
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -153,6 +173,7 @@ def main() -> None:
     test_temporary_interaction_selects_palette_and_places_in_browser_state()
     test_grid_boundaries_are_blocked_before_draft_mutation()
     test_preview_and_draft_identifiers_are_deterministic_and_monotone()
+    test_move_is_browser_only_preserves_identity_and_changes_column_only()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -161,7 +182,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY REMOVE I101: GRÜN")
+    print("MASK BUILDER TEMPORARY MOVE I103 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
