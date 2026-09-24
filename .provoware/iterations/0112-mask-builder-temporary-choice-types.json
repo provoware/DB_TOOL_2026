@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Auswahltypen im Masken-Baukasten",
-    "summary": "Schritt 1 ergaenzt single_choice und multi_choice als exakt benannte temporaere Browser-Datentypen. Der bestehende scalar defaultValue wird bei Typwechsel weder geloescht noch konvertiert, aber fuer Auswahltypen nicht als aktives Standardwert-Control oder Preview gerendert. Optionen bleiben vollstaendig ausserhalb des Scopes.",
+    "summary": "Schritt 2 kennzeichnet single_choice und multi_choice ohne Optionen sichtbar als unvollstaendig, verbindet den Status deterministisch per aria-describedby mit der Datentyp-Auswahl, behaelt den bestehenden Fokusvertrag nach Rerender bei und zeigt den unvollstaendigen Choice-Zustand in der Preview. Es werden weiterhin keine Optionen oder Default-Auswahlen erzeugt.",
     "target_doc": null
   },
   "write_files": [
@@ -33,7 +33,8 @@
     "read-only choice contract: browser choice IDs must be single_choice and multi_choice",
     "persistent FieldType already contains SINGLE_CHOICE and MULTI_CHOICE",
     "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
-    "I112 plan gate run 36028832801: success"
+    "I112 plan gate run 36028832801: success",
+    "I112 Step 1 intermediate gate run 36029007522: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -99,5 +100,5 @@
     "reload still clears the browser draft"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

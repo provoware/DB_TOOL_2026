@@ -352,6 +352,32 @@ def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -
     assert 'option-editor' not in html
 
 
+
+
+def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -> None:
+    html = render_editor_shell()
+    assert 'choiceState.className = "choice-state";' in html
+    assert 'choiceState.id = "draft-choice-state-" + item.id;' in html
+    assert 'choiceState.textContent = "Auswahltyp unvollständig · noch keine Optionen konfiguriert.";' in html
+    assert 'dataTypeSelect.setAttribute("aria-describedby", choiceState.id);' in html
+    assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
+    assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
+    assert '.choice-state { color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
+
+    start = html.index('function changeDataType(id, select)')
+    end = html.index('function isChoiceDataType(dataType)')
+    change_block = html[start:end]
+    assert 'renderDraft();' in change_block
+    assert 'focusDataTypeControl(id);' in change_block
+    assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
+    assert 'item.defaultValue =' not in change_block
+
+    assert 'defaultSelection' not in html
+    assert 'draft-option-' not in html
+    assert 'option-editor' not in html
+
+
 def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
     html = render_editor_shell()
     assert 'defaultValue: selectedKind === "field" ? "" : null,' in html
@@ -517,6 +543,7 @@ def main() -> None:
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
+    test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
     test_default_value_is_field_only_browser_local_and_type_validated()
     test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
@@ -527,7 +554,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY CHOICE TYPES I112 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY CHOICE TYPES I112 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":
