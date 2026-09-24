@@ -10,7 +10,9 @@ if str(ROOT) not in sys.path:
 
 from scripts.control_plane_inspection import (
     build_finding_bundle,
+    build_planner_input,
     required_inspectors,
+    validate_draft_plan,
     validate_inspection_report,
     validate_request,
 )
@@ -170,6 +172,112 @@ def test_duplicate_finding_ids_fail_closed() -> None:
     )
 
 
+
+def complete_bundle() -> tuple[dict, dict]:
+    request = sample_request()
+    reports = [
+        report("GENERAL", [finding("F-I122-GEN-001", "width-selector-drift")]),
+        report("ACCESSIBILITY", [finding("F-I122-A11Y-001", "width-selector-drift")]),
+        report("TEST_DESIGN", [finding("F-I122-TEST-001", "width-selector-drift")]),
+    ]
+    return request, build_finding_bundle(request, reports)
+
+
+def sample_draft_plan(planner_input: dict) -> dict:
+    return {
+        "plan_schema_version": 1,
+        "plan_id": "PLAN-I123-SHADOW",
+        "iteration": 123,
+        "base_sha": "a" * 40,
+        "state": "DRAFT",
+        "planner_role": "PLANNER",
+        "creator_role": "CREATOR",
+        "source_planner_input_id": planner_input["input_id"],
+        "goal": "Gebundelte Findings in einer spaeter versiegelbaren Iteration beheben.",
+        "proposed_write_files": ["tests/mask_builder/test_browser_shell.py"],
+        "proposed_read_files": ["src/provoware_db/mask_builder/browser_shell.py"],
+        "forbidden_files": ["src/provoware_db/domain/models.py"],
+        "preserve_capabilities": ["MASK_PROPERTIES_V1"],
+        "acceptance_criteria": ["Alle geplanten Findings sind nachvollziehbar behandelt."],
+        "tests_required": ["gezielter Mask-Builder-Test"],
+        "finding_actions": [
+            {
+                "finding_id": item["finding_id"],
+                "disposition": "PLAN",
+                "rationale": "Gleiche Root Cause wird in einem Repair-Batch geplant.",
+            }
+            for item in planner_input["findings"]
+        ],
+        "side_requests": list(planner_input["side_requests"]),
+    }
+
+
+def test_complete_bundle_becomes_traceable_planner_input() -> None:
+    request, bundle = complete_bundle()
+    planner_input = build_planner_input(request, bundle)
+    assert planner_input["state"] == "FINDINGS_READY"
+    assert planner_input["planner_role"] == "PLANNER"
+    assert planner_input["findings"] == bundle["findings"]
+    assert planner_input["root_causes"] == bundle["root_causes"]
+    assert planner_input["side_requests"] == bundle["side_requests"]
+
+
+def test_planner_draft_accounts_for_every_finding_and_remains_unsealed() -> None:
+    request, bundle = complete_bundle()
+    planner_input = build_planner_input(request, bundle)
+    draft = sample_draft_plan(planner_input)
+    validate_draft_plan(draft, planner_input)
+    assert draft["state"] == "DRAFT"
+    assert "write_files" not in draft
+    assert {item["finding_id"] for item in draft["finding_actions"]} == {
+        item["finding_id"] for item in planner_input["findings"]
+    }
+
+
+def test_planner_cannot_silently_drop_a_finding() -> None:
+    request, bundle = complete_bundle()
+    planner_input = build_planner_input(request, bundle)
+    draft = sample_draft_plan(planner_input)
+    draft["finding_actions"].pop()
+    expect_invalid(
+        lambda: validate_draft_plan(draft, planner_input),
+        "must account for every finding",
+    )
+
+
+def test_planner_cannot_seal_or_execute_the_plan() -> None:
+    request, bundle = complete_bundle()
+    planner_input = build_planner_input(request, bundle)
+    draft = sample_draft_plan(planner_input)
+    draft["state"] = "SEALED"
+    expect_invalid(
+        lambda: validate_draft_plan(draft, planner_input),
+        "Planner may emit only DRAFT plans",
+    )
+
+
+def test_planner_cannot_promote_side_request_into_current_scope() -> None:
+    request, bundle = complete_bundle()
+    planner_input = build_planner_input(request, bundle)
+    draft = sample_draft_plan(planner_input)
+    draft["side_requests"][0]["disposition"] = "EXECUTE"
+    expect_invalid(
+        lambda: validate_draft_plan(draft, planner_input),
+        "side requests must remain DEFER",
+    )
+
+
+def test_planner_write_and_forbidden_scope_may_not_overlap() -> None:
+    request, bundle = complete_bundle()
+    planner_input = build_planner_input(request, bundle)
+    draft = sample_draft_plan(planner_input)
+    draft["forbidden_files"] = list(draft["proposed_write_files"])
+    expect_invalid(
+        lambda: validate_draft_plan(draft, planner_input),
+        "intersects forbidden_files",
+    )
+
+
 def main() -> None:
     test_trigger_selection_is_deterministic_and_read_only()
     test_security_and_frozen_inspectors_are_triggered_only_by_matching_signals()
@@ -179,7 +287,13 @@ def main() -> None:
     test_finding_bundle_requires_every_triggered_inspector()
     test_bundle_groups_same_root_cause_without_merging_findings()
     test_duplicate_finding_ids_fail_closed()
-    print("CONTROL PLANE V2 SHADOW INSPECTION I122 STEP 1: GRÜN")
+    test_complete_bundle_becomes_traceable_planner_input()
+    test_planner_draft_accounts_for_every_finding_and_remains_unsealed()
+    test_planner_cannot_silently_drop_a_finding()
+    test_planner_cannot_seal_or_execute_the_plan()
+    test_planner_cannot_promote_side_request_into_current_scope()
+    test_planner_write_and_forbidden_scope_may_not_overlap()
+    print("CONTROL PLANE V2 SHADOW INSPECTION/PLANNING I122 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

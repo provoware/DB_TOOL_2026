@@ -117,5 +117,42 @@
     "root_causes",
     "findings",
     "side_requests"
+  ],
+  "allowed_finding_dispositions": [
+    "PLAN",
+    "DEFER",
+    "ACCEPT_RISK",
+    "DUPLICATE",
+    "INVALID"
+  ],
+  "planner_input_required_fields": [
+    "schema_version",
+    "input_id",
+    "request_id",
+    "bundle_id",
+    "state",
+    "planner_role",
+    "root_causes",
+    "findings",
+    "side_requests"
+  ],
+  "draft_plan_required_fields": [
+    "plan_schema_version",
+    "plan_id",
+    "iteration",
+    "base_sha",
+    "state",
+    "planner_role",
+    "creator_role",
+    "source_planner_input_id",
+    "goal",
+    "proposed_write_files",
+    "proposed_read_files",
+    "forbidden_files",
+    "preserve_capabilities",
+    "acceptance_criteria",
+    "tests_required",
+    "finding_actions",
+    "side_requests"
   ]
 }

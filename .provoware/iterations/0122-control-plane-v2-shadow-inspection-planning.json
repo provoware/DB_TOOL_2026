@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "no_user_change",
     "topic": "Control Plane V2 Shadow Inspector- und Planner-Kette",
-    "summary": "I122 fuegt im Shadow Mode eine deterministische Triggerauswahl fuer read-only Spezialpruefer hinzu. Alle Pruefer dokumentieren nur Findings; erst ein vollstaendiges Finding-Bundle darf den Planner ausloesen. Produktcode, bestehende Agentenregeln und Legacy-Gates bleiben unveraendert.",
+    "summary": "I122 verbindet nach gruenem Zwischen-Gate ein vollstaendiges FINDINGS_READY-Bundle mit einem unveraendert nachvollziehbaren Planner-Input. Der PLANNER darf daraus nur einen DRAFT_PLAN erzeugen: jedes Finding muss genau dispositioniert werden, Side Requests bleiben DEFER, und Versiegelung/Ausfuehrung bleiben dem bestehenden deterministischen I121-Controller vorbehalten.",
     "target_doc": null
   },
   "write_files": [
@@ -37,7 +37,8 @@
     "I121 sealed plan, global single-writer lease and read-only validation contracts merged",
     "Control Plane V2 remains SHADOW and non-authoritative",
     "Legacy governance remains authoritative",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I122 Step-1 intermediate deep gate run 36069976156 on head e42c177ff1667ce563f2d04cc60ab9c05686855e: targeted + governance + foundation success"
   ],
   "tests_required": [
     "Step 1: compile shadow inspection controller and focused governance test",
@@ -49,9 +50,9 @@
     "Step 1: findings with a shared root_cause_key are grouped without losing individual evidence",
     "Step 1: duplicate finding IDs fail closed",
     "Intermediate deep gate before Step 2",
-    "Step 2 only after green: Planner input accepts only a complete FINDINGS_READY bundle",
-    "Step 2 only after green: Planner may emit DRAFT_PLAN but may not seal or execute it",
-    "Step 2 only after green: findings and side requests must remain traceable into the draft plan",
+    "Step 2: Planner input accepts only a complete FINDINGS_READY bundle",
+    "Step 2: Planner may emit DRAFT_PLAN but may not seal or execute it",
+    "Step 2: every finding is dispositioned exactly once and side requests remain traceable + DEFER",
     "deep governance and repository foundation gates"
   ],
   "tests_explicitly_not_run": [
@@ -92,8 +93,10 @@
     "request signals deterministically select only the necessary read-only inspectors",
     "all triggered inspector results must be present before findings become planner-ready",
     "same-root findings can be bundled for efficient planning without destroying evidence",
-    "side requests remain deferred until the Planner explicitly handles them"
+    "complete bundles become immutable-traceable Planner inputs",
+    "the Planner may propose DRAFT scope but cannot seal or execute it",
+    "every finding must be explicitly dispositioned and every side request remains deferred"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

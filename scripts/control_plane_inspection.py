@@ -54,6 +54,37 @@ BUNDLE_FIELDS = {
     "findings",
     "side_requests",
 }
+PLANNER_INPUT_FIELDS = {
+    "schema_version",
+    "input_id",
+    "request_id",
+    "bundle_id",
+    "state",
+    "planner_role",
+    "root_causes",
+    "findings",
+    "side_requests",
+}
+DRAFT_PLAN_FIELDS = {
+    "plan_schema_version",
+    "plan_id",
+    "iteration",
+    "base_sha",
+    "state",
+    "planner_role",
+    "creator_role",
+    "source_planner_input_id",
+    "goal",
+    "proposed_write_files",
+    "proposed_read_files",
+    "forbidden_files",
+    "preserve_capabilities",
+    "acceptance_criteria",
+    "tests_required",
+    "finding_actions",
+    "side_requests",
+}
+SHA40_RE = re.compile(r"^[0-9a-f]{40}$")
 
 ID_RE = re.compile(r"^[A-Z0-9][A-Z0-9._:-]*$")
 
@@ -103,6 +134,9 @@ def validate_contracts(data: dict[str, Any]) -> None:
             "finding_required_fields",
             "inspection_report_required_fields",
             "finding_bundle_required_fields",
+            "allowed_finding_dispositions",
+            "planner_input_required_fields",
+            "draft_plan_required_fields",
         },
         "inspection_contracts",
     )
@@ -122,6 +156,12 @@ def validate_contracts(data: dict[str, Any]) -> None:
     severities = require_string_list(data["severity_order"], "inspection_contracts.severity_order")
     if severities != ["BLOCKER", "HIGH", "MEDIUM", "LOW", "INFO"]:
         fail("severity_order must be BLOCKER,HIGH,MEDIUM,LOW,INFO")
+    dispositions = require_string_list(
+        data["allowed_finding_dispositions"],
+        "inspection_contracts.allowed_finding_dispositions",
+    )
+    if dispositions != ["PLAN", "DEFER", "ACCEPT_RISK", "DUPLICATE", "INVALID"]:
+        fail("allowed_finding_dispositions must use the fixed shadow ordering")
 
     trigger_map = data["trigger_map"]
     if not isinstance(trigger_map, dict):
@@ -138,6 +178,8 @@ def validate_contracts(data: dict[str, Any]) -> None:
         ("finding_required_fields", FINDING_FIELDS),
         ("inspection_report_required_fields", REPORT_FIELDS),
         ("finding_bundle_required_fields", BUNDLE_FIELDS),
+        ("planner_input_required_fields", PLANNER_INPUT_FIELDS),
+        ("draft_plan_required_fields", DRAFT_PLAN_FIELDS),
     )
     for field_name, expected in expected_fields:
         actual = set(require_string_list(data[field_name], f"inspection_contracts.{field_name}"))
@@ -345,6 +387,138 @@ def validate_finding_bundle(
     validate_side_requests(bundle["side_requests"])
 
 
+
+def build_planner_input(
+    request: dict[str, Any],
+    bundle: dict[str, Any],
+    contracts: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    contracts = load_json(DEFAULT_CONTRACTS) if contracts is None else contracts
+    validate_finding_bundle(bundle, request, contracts=contracts)
+    planner_input = {
+        "schema_version": 1,
+        "input_id": f"PLANNER-{bundle['bundle_id']}",
+        "request_id": request["request_id"],
+        "bundle_id": bundle["bundle_id"],
+        "state": "FINDINGS_READY",
+        "planner_role": "PLANNER",
+        "root_causes": list(bundle["root_causes"]),
+        "findings": list(bundle["findings"]),
+        "side_requests": list(bundle["side_requests"]),
+    }
+    validate_planner_input(planner_input, request, bundle, contracts=contracts)
+    return planner_input
+
+
+def validate_planner_input(
+    planner_input: dict[str, Any],
+    request: dict[str, Any],
+    bundle: dict[str, Any],
+    contracts: dict[str, Any] | None = None,
+) -> None:
+    contracts = load_json(DEFAULT_CONTRACTS) if contracts is None else contracts
+    validate_finding_bundle(bundle, request, contracts=contracts)
+    require_exact_keys(planner_input, PLANNER_INPUT_FIELDS, "planner_input")
+    if planner_input["schema_version"] != 1:
+        fail("planner_input.schema_version must be 1")
+    if planner_input["input_id"] != f"PLANNER-{bundle['bundle_id']}":
+        fail("planner_input.input_id must be deterministic from bundle_id")
+    if planner_input["request_id"] != request["request_id"]:
+        fail("planner_input.request_id does not match request")
+    if planner_input["bundle_id"] != bundle["bundle_id"]:
+        fail("planner_input.bundle_id does not match finding bundle")
+    if planner_input["state"] != "FINDINGS_READY":
+        fail("planner_input.state must be FINDINGS_READY")
+    if planner_input["planner_role"] != "PLANNER":
+        fail("planner_input.planner_role must be PLANNER")
+    if planner_input["root_causes"] != bundle["root_causes"]:
+        fail("planner_input.root_causes must exactly preserve finding bundle")
+    if planner_input["findings"] != bundle["findings"]:
+        fail("planner_input.findings must exactly preserve finding bundle")
+    if planner_input["side_requests"] != bundle["side_requests"]:
+        fail("planner_input.side_requests must exactly preserve deferred side requests")
+
+
+def validate_finding_actions(
+    values: Any,
+    planner_input: dict[str, Any],
+    contracts: dict[str, Any],
+) -> None:
+    if not isinstance(values, list):
+        fail("draft_plan.finding_actions: array required")
+    expected = {item["finding_id"] for item in planner_input["findings"]}
+    seen: set[str] = set()
+    allowed = set(contracts["allowed_finding_dispositions"])
+    for index, item in enumerate(values):
+        label = f"draft_plan.finding_actions[{index}]"
+        if not isinstance(item, dict):
+            fail(f"{label}: object required")
+        require_exact_keys(item, {"finding_id", "disposition", "rationale"}, label)
+        finding_id = require_string(item["finding_id"], f"{label}.finding_id")
+        if finding_id in seen:
+            fail(f"draft_plan.finding_actions duplicate finding_id {finding_id!r}")
+        seen.add(finding_id)
+        if finding_id not in expected:
+            fail(f"draft_plan.finding_actions references unknown finding {finding_id!r}")
+        if item["disposition"] not in allowed:
+            fail(f"{label}.disposition is invalid")
+        require_string(item["rationale"], f"{label}.rationale")
+    if seen != expected:
+        missing = sorted(expected - seen)
+        extra = sorted(seen - expected)
+        fail(f"draft_plan must account for every finding: missing={missing}, extra={extra}")
+
+
+def validate_draft_plan(
+    draft_plan: dict[str, Any],
+    planner_input: dict[str, Any],
+    contracts: dict[str, Any] | None = None,
+) -> None:
+    contracts = load_json(DEFAULT_CONTRACTS) if contracts is None else contracts
+    validate_contracts(contracts)
+    require_exact_keys(draft_plan, DRAFT_PLAN_FIELDS, "draft_plan")
+    if draft_plan["plan_schema_version"] != 1:
+        fail("draft_plan.plan_schema_version must be 1")
+    require_id(draft_plan["plan_id"], "draft_plan.plan_id", "PLAN-")
+    iteration = draft_plan["iteration"]
+    if not isinstance(iteration, int) or isinstance(iteration, bool) or iteration < 1:
+        fail("draft_plan.iteration must be a positive integer")
+    base_sha = require_string(draft_plan["base_sha"], "draft_plan.base_sha")
+    if not SHA40_RE.fullmatch(base_sha):
+        fail("draft_plan.base_sha must be a lowercase 40-character commit SHA")
+    if draft_plan["state"] != "DRAFT":
+        fail("Planner may emit only DRAFT plans; sealing belongs to CONTROLLER")
+    if draft_plan["planner_role"] != "PLANNER":
+        fail("draft_plan.planner_role must be PLANNER")
+    if draft_plan["creator_role"] != "CREATOR":
+        fail("draft_plan.creator_role must be CREATOR")
+    if draft_plan["source_planner_input_id"] != planner_input["input_id"]:
+        fail("draft_plan.source_planner_input_id does not match planner input")
+    require_string(draft_plan["goal"], "draft_plan.goal")
+
+    proposed_write = safe_paths(draft_plan["proposed_write_files"], "draft_plan.proposed_write_files")
+    safe_paths(draft_plan["proposed_read_files"], "draft_plan.proposed_read_files")
+    forbidden = safe_paths(draft_plan["forbidden_files"], "draft_plan.forbidden_files")
+    if not proposed_write:
+        fail("draft_plan.proposed_write_files must not be empty")
+    if set(proposed_write) & set(forbidden):
+        fail("draft_plan proposed_write_files intersects forbidden_files")
+    require_string_list(draft_plan["preserve_capabilities"], "draft_plan.preserve_capabilities")
+    if not require_string_list(draft_plan["acceptance_criteria"], "draft_plan.acceptance_criteria"):
+        fail("draft_plan.acceptance_criteria must not be empty")
+    if not require_string_list(draft_plan["tests_required"], "draft_plan.tests_required"):
+        fail("draft_plan.tests_required must not be empty")
+
+    validate_finding_actions(draft_plan["finding_actions"], planner_input, contracts)
+    side_requests = validate_side_requests(draft_plan["side_requests"])
+    if side_requests != planner_input["side_requests"]:
+        fail("draft_plan.side_requests must preserve all deferred side requests unchanged")
+
+    # A Planner proposes work but has no authority to seal, execute or widen side requests.
+    if "write_files" in draft_plan:
+        fail("draft_plan may not expose executable write_files")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate SHADOW inspection requests/reports and build a finding bundle."
@@ -353,6 +527,7 @@ def main() -> int:
     parser.add_argument("reports", nargs="*", type=Path)
     parser.add_argument("--print-triggers", action="store_true")
     parser.add_argument("--build-bundle", action="store_true")
+    parser.add_argument("--planner-input", action="store_true")
     args = parser.parse_args()
     try:
         contracts = load_json(DEFAULT_CONTRACTS)
@@ -360,15 +535,19 @@ def main() -> int:
         validate_request(request, contracts=contracts)
         if args.print_triggers:
             print(json.dumps(required_inspectors(request, contracts=contracts)))
-        if args.build_bundle:
+        if args.build_bundle or args.planner_input:
             reports = [load_json(path) for path in args.reports]
-            print(
-                json.dumps(
-                    build_finding_bundle(request, reports, contracts=contracts),
-                    ensure_ascii=False,
-                    sort_keys=True,
+            bundle = build_finding_bundle(request, reports, contracts=contracts)
+            if args.build_bundle:
+                print(json.dumps(bundle, ensure_ascii=False, sort_keys=True))
+            if args.planner_input:
+                print(
+                    json.dumps(
+                        build_planner_input(request, bundle, contracts=contracts),
+                        ensure_ascii=False,
+                        sort_keys=True,
+                    )
                 )
-            )
         print("CONTROL PLANE SHADOW INSPECTION: GRÜN")
         return 0
     except (OSError, json.JSONDecodeError, ValueError) as exc:
