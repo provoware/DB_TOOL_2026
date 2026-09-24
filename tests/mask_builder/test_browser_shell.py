@@ -172,7 +172,7 @@ def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -239,7 +239,7 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
 
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
@@ -290,8 +290,8 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert required_button > field_guard
     assert move_button > required_button
 
-    assert '.required-state, .datatype-label { color:#d7def5; font-weight:600; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.required-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 
@@ -327,6 +327,73 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert 'draftElements.splice(' not in datatype_block
     assert html.count('id: "draft-" + String(nextDraftId++)') == 1
 
+
+
+def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
+    html = render_editor_shell()
+    assert 'defaultValue: selectedKind === "field" ? "" : null,' in html
+    assert 'function defaultValueCandidate(dataType, rawValue)' in html
+    assert 'function updateDefaultValue(id, control)' in html
+    assert 'item.kind !== "field"' in html
+    assert 'item.defaultValue = candidate.value;' in html
+    assert 'Number.isFinite(parsed)' in html
+    assert '/^\\\\d{4}-\\\\d{2}-\\\\d{2}$/.test(value)' in html
+    assert 'parsed.toISOString().slice(0, 10) === value' in html
+    assert '["", "true", "false"].includes(value)' in html
+    assert 'defaultValueControl.className = "default-value-control";' in html
+    assert 'defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));' in html
+    assert 'defaultValueControl.inputMode = "decimal";' in html
+    assert 'defaultValueControl.placeholder = "JJJJ-MM-TT";' in html
+    assert '["", "Leer"]' in html
+    assert '["true", "Ja"]' in html
+    assert '["false", "Nein"]' in html
+    assert '" · Standard: " + defaultValuePreview(item)' in html
+
+    start = html.index('function updateDefaultValue(id, control)')
+    end = html.index('function defaultValuePreview(item)')
+    update_block = html[start:end]
+    invalid_guard = update_block.index('if (!candidate.valid) {')
+    mutation = update_block.index('item.defaultValue = candidate.value;')
+    assert invalid_guard >= 0
+    assert mutation > invalid_guard
+    assert 'return;' in update_block[invalid_guard:mutation]
+    assert 'item.id =' not in update_block
+    assert 'item.kind =' not in update_block
+    assert 'item.label =' not in update_block
+    assert 'item.helpText =' not in update_block
+    assert 'item.isRequired =' not in update_block
+    assert 'item.dataType =' not in update_block
+    assert 'item.column =' not in update_block
+    assert 'item.width =' not in update_block
+    assert 'draftElements.push(' not in update_block
+    assert 'draftElements.splice(' not in update_block
+    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+
+
+def test_default_value_semantics_focus_and_narrow_layout() -> None:
+    html = render_editor_shell()
+    assert 'function focusDefaultValueControl(id)' in html
+    assert 'placedLayer.querySelectorAll(".default-value-control")' in html
+    assert html.count('focusDefaultValueControl(id);') >= 2
+
+    assert 'defaultValueLabel = document.createElement("label")' in html
+    assert 'defaultValueLabel.id = "draft-default-value-label-" + item.id;' in html
+    assert 'defaultValueControl.id = "draft-default-value-" + item.id;' in html
+    assert 'defaultValueLabel.htmlFor = defaultValueControl.id;' in html
+    assert 'defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);' in html
+    assert 'aria-label", item.label + " · Standardwert"' not in html
+
+    assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
+    update_start = html.index('function updateDefaultValue(id, control)')
+    update_end = html.index('function defaultValuePreview(item)')
+    update_block = html[update_start:update_end]
+    assert 'if (!candidate.valid) {' in update_block
+    assert update_block.count('focusDefaultValueControl(id);') == 2
+
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -346,7 +413,7 @@ def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
     assert 'data-column="8"' in html
     assert '@media (max-width:1000px)' in html
     assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
-    assert '.placed-element > span, .datatype-label { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
@@ -426,6 +493,8 @@ def main() -> None:
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
+    test_default_value_is_field_only_browser_local_and_type_validated()
+    test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -434,7 +503,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY DATATYPE I109 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY DEFAULT VALUE I110 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":

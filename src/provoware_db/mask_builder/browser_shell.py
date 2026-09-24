@@ -253,6 +253,77 @@ _INTERACTION_SCRIPT = r"""
     focusDataTypeControl(id);
   }
 
+  function defaultValueCandidate(dataType, rawValue) {
+    if (dataType === "text") {
+      return { valid: true, value: rawValue };
+    }
+    const value = rawValue.trim();
+    if (value.length === 0) {
+      return { valid: true, value: "" };
+    }
+    if (dataType === "number") {
+      const parsed = Number(value);
+      return Number.isFinite(parsed)
+        ? { valid: true, value }
+        : { valid: false, message: "Standardwert muss eine gültige endliche Zahl sein." };
+    }
+    if (dataType === "date") {
+      if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) {
+        return { valid: false, message: "Standardwert muss ein Datum im Format JJJJ-MM-TT sein." };
+      }
+      const parsed = new Date(value + "T00:00:00Z");
+      const valid = !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+      return valid
+        ? { valid: true, value }
+        : { valid: false, message: "Standardwert enthält kein gültiges Kalenderdatum." };
+    }
+    if (dataType === "boolean") {
+      return ["", "true", "false"].includes(value)
+        ? { valid: true, value }
+        : { valid: false, message: "Standardwert für Ja/Nein ist ungültig." };
+    }
+    return { valid: false, message: "Datentyp für Standardwert ist unbekannt." };
+  }
+
+  function focusDefaultValueControl(id) {
+    const control = Array.from(placedLayer.querySelectorAll(".default-value-control"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (control !== undefined) {
+      control.focus();
+    }
+  }
+
+  function updateDefaultValue(id, control) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field") {
+      return;
+    }
+    const candidate = defaultValueCandidate(item.dataType, control.value);
+    if (!candidate.valid) {
+      setStatus("Nicht übernommen: " + candidate.message);
+      focusDefaultValueControl(id);
+      return;
+    }
+    item.defaultValue = candidate.value;
+    renderDraft();
+    setStatus(
+      item.label
+      + (item.defaultValue.length === 0 ? " · Standardwert geleert" : " · Standardwert übernommen")
+      + " · nur temporärer Browserentwurf."
+    );
+    focusDefaultValueControl(id);
+  }
+
+  function defaultValuePreview(item) {
+    if (item.kind !== "field" || item.defaultValue.length === 0) {
+      return "";
+    }
+    if (item.dataType === "boolean") {
+      return item.defaultValue === "true" ? "Ja" : "Nein";
+    }
+    return item.defaultValue;
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -413,6 +484,44 @@ _INTERACTION_SCRIPT = r"""
         dataTypeSelect.addEventListener("change", () => changeDataType(item.id, dataTypeSelect));
         card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
+
+        const defaultValueLabel = document.createElement("label");
+        defaultValueLabel.className = "default-value-label";
+        defaultValueLabel.id = "draft-default-value-label-" + item.id;
+        defaultValueLabel.textContent = "Standardwert";
+        card.appendChild(defaultValueLabel);
+
+        let defaultValueControl;
+        if (item.dataType === "boolean") {
+          defaultValueControl = document.createElement("select");
+          [
+            ["", "Leer"],
+            ["true", "Ja"],
+            ["false", "Nein"],
+          ].forEach(([value, labelText]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = labelText;
+            option.selected = item.defaultValue === value;
+            defaultValueControl.appendChild(option);
+          });
+        } else {
+          defaultValueControl = document.createElement("input");
+          defaultValueControl.type = "text";
+          defaultValueControl.value = item.defaultValue;
+          if (item.dataType === "number") {
+            defaultValueControl.inputMode = "decimal";
+          } else if (item.dataType === "date") {
+            defaultValueControl.placeholder = "JJJJ-MM-TT";
+          }
+        }
+        defaultValueControl.className = "default-value-control";
+        defaultValueControl.dataset.draftId = item.id;
+        defaultValueControl.id = "draft-default-value-" + item.id;
+        defaultValueLabel.htmlFor = defaultValueControl.id;
+        defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);
+        defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
+        card.appendChild(defaultValueControl);
       }
 
       const moveButton = document.createElement("button");
@@ -459,6 +568,7 @@ _INTERACTION_SCRIPT = r"""
         + (item.helpText.length === 0 ? "" : " · Hilfe: " + item.helpText)
         + (item.isRequired ? " · Pflichtfeld" : "")
         + (item.kind === "field" ? " · Datentyp: " + item.dataType : "")
+        + (defaultValuePreview(item).length === 0 ? "" : " · Standard: " + defaultValuePreview(item))
       );
       list.appendChild(row);
     });
@@ -538,6 +648,7 @@ _INTERACTION_SCRIPT = r"""
       helpText: "",
       isRequired: false,
       dataType: selectedKind === "field" ? "text" : null,
+      defaultValue: selectedKind === "field" ? "" : null,
     });
     renderDraft();
     setStatus(
@@ -630,7 +741,7 @@ def render_editor_shell() -> str:
 * {{ box-sizing:border-box; }} body {{ margin:0; min-height:100vh; }}
 header {{ padding:1.25rem 1.5rem; border-bottom:1px solid #34384a; }}
 header p {{ margin:.35rem 0 0; color:#b8bfd2; }}
-button:focus-visible, select:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
+button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .editor {{ display:grid; grid-template-columns:minmax(14rem,20rem) minmax(32rem,1fr) minmax(18rem,26rem); gap:1rem; padding:1rem; }}
 .panel {{ border:1px solid #34384a; border-radius:14px; background:#191c26; padding:1rem; min-width:0; }}
 .panel h2 {{ margin-top:0; font-size:1.05rem; }}
@@ -649,12 +760,13 @@ button:focus-visible, select:focus-visible {{ outline:3px solid #ffe66d; outline
 .label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
-.required-state, .datatype-label {{ color:#d7def5; font-weight:600; }}
+.required-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
+.default-value-control {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
