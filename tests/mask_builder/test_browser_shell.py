@@ -256,7 +256,7 @@ def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> No
     assert '(item.isRequired ? " · Pflichtfeld" : "")' in html
 
     start = html.index('function toggleRequired(id)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusVisibilityControl(id)')
     toggle_block = html[start:end]
     assert 'item.isRequired = !item.isRequired;' in toggle_block
     assert 'renderDraft();' in toggle_block
