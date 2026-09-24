@@ -129,7 +129,7 @@ def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
     assert 'focusLabelEditor(id);' in html
 
     start = html.index('function saveLabelEdit(id, input)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusHelpEditor(id)')
     save_block = html[start:end]
     assert 'const nextLabel = input.value.trim();' in save_block
     assert 'item.label = nextLabel;' in save_block
