@@ -28,7 +28,8 @@
     "main 8243f42f82d107212a129950056bf4226a4431b6",
     "I113 merged after targeted and foundation gates succeeded",
     "CP-03 and CP-06 remain frozen",
-    "browser draft remains non-persistent and GET-only"
+    "browser draft remains non-persistent and GET-only",
+    "I114 plan gate run 36038179180: success"
   ],
   "tests_required": [
     "Plan gate before README/TODO write",
@@ -68,5 +69,5 @@
     "next safe browser-local priorities are easier to identify"
   ],
   "screenshot_required": false,
-  "status": "PLAN_AWAITING_GATE"
+  "status": "DOCS_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
