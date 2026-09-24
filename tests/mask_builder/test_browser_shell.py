@@ -143,6 +143,36 @@ def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
     assert 'row.dataset.draftId = item.id;' in html
     assert 'row.textContent = (' in html
 
+
+def test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus() -> None:
+    html = render_editor_shell()
+    start = html.index('function cancelLabelEdit(id)')
+    end = html.index('function removeDraft(id)')
+    edit_block = html[start:end]
+    assert 'const nextLabel = input.value.trim();' in edit_block
+    assert 'if (nextLabel.length === 0) {' in edit_block
+    assert 'item.label = nextLabel;' in edit_block
+    assert edit_block.index('if (nextLabel.length === 0) {') < edit_block.index('item.label = nextLabel;')
+    assert 'input.focus();' in edit_block
+    assert 'function focusLabelEditControl(id)' in html
+    assert 'candidate.dataset.draftId === id' in html
+    assert 'focusLabelEditControl(id);' in edit_block
+    assert 'editButton.dataset.draftId = item.id;' in html
+    assert 'event.key === "Escape"' in html
+    assert 'cancelLabelEdit(item.id);' in html
+    assert 'Bearbeitung abgebrochen · Entwurf unverändert.' in html
+    assert 'item.id =' not in edit_block
+    assert 'item.kind =' not in edit_block
+    assert 'item.column =' not in edit_block
+    assert 'item.width =' not in edit_block
+
+
+def test_label_editor_remains_reachable_at_narrow_width() -> None:
+    html = render_editor_shell()
+    assert '.label-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
+    assert '.label-editor-input { max-width:none; width:100%; }' in html
+    assert '.edit-label, .save-label, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -235,6 +265,8 @@ def main() -> None:
     test_move_rejects_invalid_target_before_mutation_and_supports_cancel_focus()
     test_move_controls_remain_stacked_at_narrow_width()
     test_label_edit_is_keyboard_reachable_and_mutates_only_label()
+    test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus()
+    test_label_editor_remains_reachable_at_narrow_width()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -243,7 +275,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY LABEL EDIT I106 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY LABEL EDIT I106 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Beschriftung im Masken-Baukasten",
-    "summary": "Schritt 1 implementiert ausschliesslich den gueltigen temporaeren Label-Edit-Pfad: Beschriftung aendern oeffnet einen keyboard-erreichbaren Inline-Editor, Uebernehmen mutiert nur item.label und rendert die deterministische Vorschau neu. Draft-ID, kind, column und width bleiben unveraendert.",
+    "summary": "Schritt 2 haertet den temporaeren Label-Edit: leere oder nur aus Leerzeichen bestehende Beschriftungen werden vor Mutation abgewiesen; Escape bricht ohne Draft-Aenderung ab und gibt den Fokus an Beschriftung aendern zurueck; nach erfolgreichem Speichern wird derselbe Edit-Control fokussiert. Schmale Layouts stapeln Editor und Controls.",
     "target_doc": null
   },
   "write_files": [
@@ -31,7 +31,8 @@
     "I105 product roadmap/governance merged",
     "I104 plan superseded because the gate router selects the newest iteration manifest and I105 is already on main",
     "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
-    "I106 plan gate run 36001622358: success"
+    "I106 plan gate run 36001622358: success",
+    "I106 Step 1 gate run 36001977522: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -88,5 +89,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_REAL_CHROMIUM_EVIDENCE"
 }

@@ -104,6 +104,14 @@ _INTERACTION_SCRIPT = r"""
     }
   }
 
+  function focusLabelEditControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".edit-label"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
   function beginLabelEdit(id) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
@@ -115,15 +123,36 @@ _INTERACTION_SCRIPT = r"""
     focusLabelEditor(id);
   }
 
+  function cancelLabelEdit(id) {
+    if (editingDraftId !== id) {
+      return;
+    }
+    const item = draftElements.find((candidate) => candidate.id === id);
+    editingDraftId = null;
+    renderDraft();
+    setStatus(
+      (item === undefined ? "Beschriftung" : item.label)
+      + " · Bearbeitung abgebrochen · Entwurf unverändert."
+    );
+    focusLabelEditControl(id);
+  }
+
   function saveLabelEdit(id, input) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
       return;
     }
-    item.label = input.value;
+    const nextLabel = input.value.trim();
+    if (nextLabel.length === 0) {
+      setStatus("Nicht übernommen: Beschriftung darf nicht leer sein.");
+      input.focus();
+      return;
+    }
+    item.label = nextLabel;
     editingDraftId = null;
     renderDraft();
     setStatus(item.label + " · Beschriftung geändert · nur temporärer Browserentwurf.");
+    focusLabelEditControl(id);
   }
 
   function removeDraft(id) {
@@ -155,6 +184,7 @@ _INTERACTION_SCRIPT = r"""
       const editButton = document.createElement("button");
       editButton.type = "button";
       editButton.className = "edit-label";
+      editButton.dataset.draftId = item.id;
       editButton.textContent = "Beschriftung ändern";
       editButton.setAttribute("aria-label", item.label + " · Beschriftung ändern");
       editButton.addEventListener("click", () => beginLabelEdit(item.id));
@@ -170,6 +200,12 @@ _INTERACTION_SCRIPT = r"""
         input.dataset.draftId = item.id;
         input.value = item.label;
         input.setAttribute("aria-label", item.label + " · neue Beschriftung");
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            cancelLabelEdit(item.id);
+          }
+        });
         editor.appendChild(input);
 
         const saveButton = document.createElement("button");
@@ -415,7 +451,7 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input {{ max-width:none; width:100%; }} .edit-label, .save-label, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
