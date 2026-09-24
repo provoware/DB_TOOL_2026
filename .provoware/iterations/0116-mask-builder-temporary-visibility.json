@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "iteration": 116,
+  "agent": "mask-builder-temporary-visibility-agent-116",
+  "size": "M",
+  "goal": "Statische Sichtbarkeit in genau zwei abhaengigen Schritten ausschliesslich browserlokal ergaenzen. Schritt 1 fuegt jedem Draft-Element isVisible hinzu, einen sichtbaren Toggle und filtert ausgeblendete Elemente aus der Preview, ohne Editor-Karten oder andere Eigenschaften zu entfernen. Schritt 2 darf erst nach gruenem Zwischen-Gate Fokus-Rueckgabe und schmale Bedienbarkeit haerten. Keine Persistenz, kein Domain-/Store-Vertrag und kein Frozen-Core-Reopen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Statische Sichtbarkeit im temporären Maskenentwurf",
+    "summary": "Schritt 1 ergänzt einen rein browserlokalen Sichtbar/Ausgeblendet-Zustand. Die Editor-Karte bleibt immer erreichbar; nur die Vorschau blendet deaktivierte Komponenten aus. Persistenz bleibt geschlossen.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0116-mask-builder-temporary-visibility.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    ".provoware/iterations/0115-mask-builder-i113-runtime-repair.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/domain/models.py"
+  ],
+  "direct_dependencies": [
+    "main b8ad9e46879cff8e6ed8c4c380791318f98a5e26",
+    "I115 runtime repair merged with targeted and foundation gates green",
+    "persistent MaskFieldSpec and MaskElement have no visibility property and remain untouched",
+    "static visibility is therefore browser-local only",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile browser shell and focused browser regression",
+    "Step 1: every new draft element starts isVisible true",
+    "Step 1: visibility toggle mutates only isVisible",
+    "Step 1: editor card remains present while preview filters hidden elements",
+    "Step 1: all-hidden preview has deterministic explanatory state",
+    "Step 1: visibility has no persistence or domain dependency",
+    "Intermediate gate before Step 2",
+    "Step 2 only after green: visibility toggle restores focus after rerender",
+    "Step 2 only after green: visibility control remains keyboard reachable and narrow-layout safe",
+    "GET-only, loopback-only and no-persistence contracts remain unchanged",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because scope is limited to browser mask-builder visibility",
+    "database/repository tests because no persistent path changes",
+    "MaskTemplate store tests because visibility is not persisted"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "hidden preview state must not delete or mutate the draft element",
+    "editor controls must remain reachable for hidden elements",
+    "visibility must not be mistaken for a persisted MaskTemplate property",
+    "Step 2 focus must target the same draft identity after rerender"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no domain MaskFieldSpec, MaskElement, ApplicationFieldPlan or repository changes",
+    "no database, SQL, service or MaskTemplateStore changes",
+    "no POST endpoint or persistence",
+    "no defaultSelection",
+    "no width editing",
+    "no README or TODO mutation in I116",
+    "no dependency addition",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "all draft elements begin visible",
+    "visibility can be toggled without changing identity, layout or field properties",
+    "hidden elements remain editable but disappear from preview",
+    "reload still restores the default temporary state"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+}

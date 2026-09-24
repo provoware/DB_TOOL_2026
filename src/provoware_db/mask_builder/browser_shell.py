@@ -230,6 +230,20 @@ _INTERACTION_SCRIPT = r"""
     );
   }
 
+  function toggleVisibility(id) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    item.isVisible = !item.isVisible;
+    renderDraft();
+    setStatus(
+      item.label
+      + (item.isVisible ? " · in der Vorschau sichtbar" : " · in der Vorschau ausgeblendet")
+      + " · nur temporärer Browserentwurf."
+    );
+  }
+
   function focusDataTypeControl(id) {
     const select = Array.from(placedLayer.querySelectorAll(".datatype-select"))
       .find((candidate) => candidate.dataset.draftId === id);
@@ -742,6 +756,23 @@ _INTERACTION_SCRIPT = r"""
         }
       }
 
+      const visibilityState = document.createElement("span");
+      visibilityState.className = "visibility-state";
+      visibilityState.id = "draft-visibility-" + item.id;
+      visibilityState.textContent = item.isVisible ? "Sichtbar" : "Ausgeblendet";
+      card.appendChild(visibilityState);
+
+      const visibilityButton = document.createElement("button");
+      visibilityButton.type = "button";
+      visibilityButton.className = "toggle-visibility";
+      visibilityButton.dataset.draftId = item.id;
+      visibilityButton.textContent = item.isVisible ? "Sichtbar: Ja" : "Sichtbar: Nein";
+      visibilityButton.setAttribute("aria-pressed", String(item.isVisible));
+      visibilityButton.setAttribute("aria-describedby", visibilityState.id);
+      visibilityButton.setAttribute("aria-label", item.label + " · Sichtbarkeit umschalten");
+      visibilityButton.addEventListener("click", () => toggleVisibility(item.id));
+      card.appendChild(visibilityButton);
+
       const moveButton = document.createElement("button");
       moveButton.type = "button";
       moveButton.className = "move-draft";
@@ -771,8 +802,16 @@ _INTERACTION_SCRIPT = r"""
       return;
     }
 
+    const visibleDraftElements = draftElements.filter((item) => item.isVisible);
+    if (visibleDraftElements.length === 0) {
+      const text = document.createElement("p");
+      text.textContent = "Alle platzierten Komponenten sind aktuell ausgeblendet.";
+      preview.appendChild(text);
+      return;
+    }
+
     const list = document.createElement("ol");
-    draftElements.forEach((item) => {
+    visibleDraftElements.forEach((item) => {
       const row = document.createElement("li");
       const firstColumn = item.column + 1;
       const lastColumn = item.column + item.width;
@@ -874,6 +913,7 @@ _INTERACTION_SCRIPT = r"""
       width: selectedWidth,
       helpText: "",
       isRequired: false,
+      isVisible: true,
       dataType: selectedKind === "field" ? "text" : null,
       defaultValue: selectedKind === "field" ? "" : null,
       options: selectedKind === "field" ? [] : null,
@@ -984,7 +1024,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}

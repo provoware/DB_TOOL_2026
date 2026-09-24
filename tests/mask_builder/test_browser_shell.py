@@ -295,6 +295,42 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
 
 
 
+def test_visibility_toggle_is_browser_local_and_preview_filters_hidden() -> None:
+    html = render_editor_shell()
+    assert 'isVisible: true,' in html
+    assert 'function toggleVisibility(id)' in html
+    assert 'item.isVisible = !item.isVisible;' in html
+    assert 'visibilityState.className = "visibility-state";' in html
+    assert 'visibilityState.id = "draft-visibility-" + item.id;' in html
+    assert 'visibilityState.textContent = item.isVisible ? "Sichtbar" : "Ausgeblendet";' in html
+    assert 'visibilityButton.className = "toggle-visibility";' in html
+    assert 'visibilityButton.dataset.draftId = item.id;' in html
+    assert 'visibilityButton.setAttribute("aria-pressed", String(item.isVisible));' in html
+    assert 'visibilityButton.setAttribute("aria-describedby", visibilityState.id);' in html
+    assert 'visibilityButton.addEventListener("click", () => toggleVisibility(item.id));' in html
+    assert 'const visibleDraftElements = draftElements.filter((item) => item.isVisible);' in html
+    assert 'if (visibleDraftElements.length === 0) {' in html
+    assert '"Alle platzierten Komponenten sind aktuell ausgeblendet."' in html
+    assert 'visibleDraftElements.forEach((item) =>' in html
+
+    start = html.index('function toggleVisibility(id)')
+    end = html.index('function focusDataTypeControl(id)')
+    block = html[start:end]
+    assert 'item.isVisible = !item.isVisible;' in block
+    assert 'item.id =' not in block
+    assert 'item.kind =' not in block
+    assert 'item.label =' not in block
+    assert 'item.helpText =' not in block
+    assert 'item.isRequired =' not in block
+    assert 'item.dataType =' not in block
+    assert 'item.defaultValue =' not in block
+    assert 'item.column =' not in block
+    assert 'item.width =' not in block
+    assert 'draftElements.push(' not in block
+    assert 'draftElements.splice(' not in block
+    assert 'defaultSelection' not in html
+
+
 def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> None:
     html = render_editor_shell()
     assert 'dataType: selectedKind === "field" ? "text" : null,' in html
@@ -652,6 +688,7 @@ def main() -> None:
     test_help_text_accessibility_cancel_focus_and_narrow_layout()
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
+    test_visibility_toggle_is_browser_local_and_preview_filters_hidden()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
@@ -669,7 +706,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY CHOICE OPTIONS I113 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY VISIBILITY I116 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
