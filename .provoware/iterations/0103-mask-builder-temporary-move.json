@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaeres Verschieben im Masken-Baukasten",
-    "summary": "Schritt 2 haertet den temporaeren Move-Slice: ungueltige Ziele werden vor jeder Draft-Mutation abgewiesen, Escape bricht Move ohne Draft-Aenderung ab und gibt den Fokus an den zugehoerigen Verschieben-Button zurueck; nach gueltigem Move fokussiert die neue Zielspalte. Der reale 200-Prozent-Chromium-Nachweis steht noch aus.",
+    "summary": "Schritt 1 und Schritt 2 sind gruen. Der temporaere Move-Slice behaelt die Draft-ID, blockiert ungueltige rechte Randziele vor Mutation, Escape bricht ohne Draft-Aenderung ab und gibt den Fokus an Verschieben zurueck; nach gueltigem Move fokussiert die neue Zielspalte. Der reale Chromium-Lauf bei 200-Prozent-Zoom-Aequivalent bestaetigt Tastaturbedienbarkeit, 3-px-Fokus und fehlenden horizontalen Overflow.",
     "target_doc": null
   },
   "write_files": [
@@ -32,7 +32,9 @@
     "I102 real Chromium remove evidence",
     "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
     "I103 plan gate run 35997660831: success",
-    "I103 Step 1 gate run 35997975098: success"
+    "I103 Step 1 gate run 35997975098: success",
+    "I103 Step 2 code gate run 35998314499: success",
+    "I103 Step 2 real Chromium 200-percent-equivalent evidence GREEN on head 8500cd05637f4c23ba4e79a698acc06eed485d3c; screenshot sha256 55f4b7e55e3965c86b4bdff1cbcd2ea3360f2a3d25ed251a9016c202ece74021"
   ],
   "tests_required": [
     "Step 1: targeted browser-shell compile and regression tests",
@@ -90,5 +92,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "STEP2_IMPLEMENTED_AWAITING_REAL_CHROMIUM_EVIDENCE"
+  "status": "STEP2_EVIDENCE_GREEN_AWAITING_FINAL_GATE"
 }
