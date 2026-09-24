@@ -1,0 +1,99 @@
+{
+  "schema_version": 2,
+  "iteration": 122,
+  "agent": "control-plane-v2-shadow-inspection-planning-agent-122",
+  "size": "M",
+  "goal": "Control Plane V2 im Shadow Mode um die vordere, kollisionsfreie Kette erweitern. Schritt 1 modelliert REQUEST -> deterministische Triggerauswahl -> ausschliesslich read-only Inspector-Reports -> strukturiertes Finding-Bundle mit Root-Cause-Gruppierung. Keine Inspector-Rolle darf Produktcode schreiben oder Side Requests in die laufende Ausfuehrung ziehen. Schritt 2 darf erst nach gruenem Zwischen-Gate den Planner-Input und einen noch unversiegelten DRAFT_PLAN-Vertrag ergaenzen, der anschliessend ausschliesslich vom bestehenden I121-Controller versiegelt werden kann. Legacy-Governance bleibt autoritativ.",
+  "change_kind": "governance",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Control Plane V2 Shadow Inspector- und Planner-Kette",
+    "summary": "I122 fuegt im Shadow Mode eine deterministische Triggerauswahl fuer read-only Spezialpruefer hinzu. Alle Pruefer dokumentieren nur Findings; erst ein vollstaendiges Finding-Bundle darf den Planner ausloesen. Produktcode, bestehende Agentenregeln und Legacy-Gates bleiben unveraendert.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0122-control-plane-v2-shadow-inspection-planning.json",
+    ".provoware/control/inspection_contracts.json",
+    "scripts/control_plane_inspection.py",
+    "tests/governance/test_control_plane_inspection.py"
+  ],
+  "read_files": [
+    ".provoware/control/registry.json",
+    ".provoware/control/contracts.json",
+    "scripts/validate_control_plane.py",
+    "scripts/control_plane_shadow.py",
+    "tests/governance/test_control_plane_registry.py",
+    "tests/governance/test_control_plane_shadow.py",
+    ".provoware/iterations/0120-control-plane-v2-registry-foundation.json",
+    ".provoware/iterations/0121-control-plane-v2-shadow-plan-lease-validation.json",
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml"
+  ],
+  "direct_dependencies": [
+    "main acd892871093c0152b6581e32edadf05644ea3f0",
+    "I119 MASK_PROPERTIES_V1 accessibility baseline merged",
+    "I120 shadow control registry and lifecycle contracts merged",
+    "I121 sealed plan, global single-writer lease and read-only validation contracts merged",
+    "Control Plane V2 remains SHADOW and non-authoritative",
+    "Legacy governance remains authoritative",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile shadow inspection controller and focused governance test",
+    "Step 1: GENERAL inspector is always triggered and all specialist inspectors are signal-driven",
+    "Step 1: untriggered inspector reports are rejected",
+    "Step 1: inspector report schema exposes no product write surface",
+    "Step 1: side requests remain DEFER before planning",
+    "Step 1: finding bundle requires exactly every triggered inspector",
+    "Step 1: findings with a shared root_cause_key are grouped without losing individual evidence",
+    "Step 1: duplicate finding IDs fail closed",
+    "Intermediate deep gate before Step 2",
+    "Step 2 only after green: Planner input accepts only a complete FINDINGS_READY bundle",
+    "Step 2 only after green: Planner may emit DRAFT_PLAN but may not seal or execute it",
+    "Step 2 only after green: findings and side requests must remain traceable into the draft plan",
+    "deep governance and repository foundation gates"
+  ],
+  "tests_explicitly_not_run": [
+    "product browser tests because I122 changes no product code",
+    "database/repository tests because no persistent or frozen core path changes",
+    "full suite because this is isolated shadow governance"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/control_plane_inspection.py",
+      "tests/governance/test_control_plane_inspection.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_control_plane_inspection.py"
+    ]
+  },
+  "risks": [
+    "trigger selection must be deterministic and cheap",
+    "inspector artifacts must remain read-only by schema",
+    "missing triggered inspector evidence must block planning",
+    "root-cause grouping must not discard individual findings",
+    "side requests must not silently expand current scope",
+    "shadow artifacts must not be mistaken for active enforcement"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no existing registry authority switch",
+    "no existing agent or workflow replacement",
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, database or persistence changes",
+    "no real runtime agent launch yet",
+    "no Creator tool-permission enforcement yet",
+    "no README/TODO cleanup",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "request signals deterministically select only the necessary read-only inspectors",
+    "all triggered inspector results must be present before findings become planner-ready",
+    "same-root findings can be bundled for efficient planning without destroying evidence",
+    "side requests remain deferred until the Planner explicitly handles them"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+}

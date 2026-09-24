@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "mode": "SHADOW",
+  "inspector_role": "INSPECTOR",
+  "planner_role": "PLANNER",
+  "inspector_kinds": [
+    "GENERAL",
+    "ACCESSIBILITY",
+    "SECURITY",
+    "FROZEN_CORE",
+    "DOCS",
+    "ARCHITECTURE",
+    "MAINTAINABILITY",
+    "VISUAL",
+    "TEST_DESIGN"
+  ],
+  "allowed_signals": [
+    "PRODUCT",
+    "UI",
+    "DOM",
+    "CSS",
+    "FOCUS",
+    "KEYBOARD",
+    "ARIA",
+    "DEPENDENCY",
+    "WORKFLOW",
+    "NETWORK",
+    "FROZEN_CORE",
+    "SCHEMA",
+    "STORAGE",
+    "DOCS",
+    "ARCHITECTURE",
+    "MAINTAINABILITY",
+    "VISUAL",
+    "TESTS"
+  ],
+  "severity_order": [
+    "BLOCKER",
+    "HIGH",
+    "MEDIUM",
+    "LOW",
+    "INFO"
+  ],
+  "trigger_map": {
+    "ACCESSIBILITY": [
+      "UI",
+      "DOM",
+      "CSS",
+      "FOCUS",
+      "KEYBOARD",
+      "ARIA",
+      "VISUAL"
+    ],
+    "SECURITY": [
+      "DEPENDENCY",
+      "WORKFLOW",
+      "NETWORK"
+    ],
+    "FROZEN_CORE": [
+      "FROZEN_CORE",
+      "SCHEMA",
+      "STORAGE"
+    ],
+    "DOCS": [
+      "DOCS"
+    ],
+    "ARCHITECTURE": [
+      "ARCHITECTURE"
+    ],
+    "MAINTAINABILITY": [
+      "MAINTAINABILITY"
+    ],
+    "VISUAL": [
+      "VISUAL",
+      "CSS",
+      "DOM"
+    ],
+    "TEST_DESIGN": [
+      "TESTS"
+    ]
+  },
+  "request_required_fields": [
+    "schema_version",
+    "request_id",
+    "state",
+    "summary",
+    "candidate_files",
+    "signals",
+    "side_requests"
+  ],
+  "finding_required_fields": [
+    "finding_id",
+    "severity",
+    "category",
+    "root_cause_key",
+    "summary",
+    "evidence",
+    "affected_files"
+  ],
+  "inspection_report_required_fields": [
+    "schema_version",
+    "report_id",
+    "request_id",
+    "inspector_role",
+    "inspector_kind",
+    "state",
+    "files_read",
+    "findings"
+  ],
+  "finding_bundle_required_fields": [
+    "schema_version",
+    "bundle_id",
+    "request_id",
+    "state",
+    "required_inspectors",
+    "completed_inspectors",
+    "root_causes",
+    "findings",
+    "side_requests"
+  ]
+}
