@@ -371,6 +371,76 @@ _INTERACTION_SCRIPT = r"""
     focusOptionInput(id);
   }
 
+  function focusOptionControl(draftId, optionId, selector) {
+    const control = Array.from(placedLayer.querySelectorAll(selector))
+      .find(
+        (candidate) =>
+          candidate.dataset.draftId === draftId
+          && candidate.dataset.optionId === optionId
+      );
+    if (control !== undefined) {
+      control.focus();
+    }
+  }
+
+  function removeDraftOption(draftId, optionId) {
+    const item = draftElements.find((candidate) => candidate.id === draftId);
+    if (item === undefined || item.kind !== "field" || !isChoiceDataType(item.dataType)) {
+      return;
+    }
+    const index = item.options.findIndex((option) => option.id === optionId);
+    if (index < 0) {
+      return;
+    }
+    const removed = item.options[index];
+    item.options.splice(index, 1);
+    const focusOption = item.options[index] ?? item.options[index - 1] ?? null;
+    renderDraft();
+    setStatus(
+      item.label
+      + " · Auswahloption „"
+      + removed.label
+      + "“ entfernt · nur temporärer Browserentwurf."
+    );
+    if (focusOption === null) {
+      focusOptionInput(draftId);
+    } else {
+      focusOptionControl(draftId, focusOption.id, ".remove-option");
+    }
+  }
+
+  function moveDraftOption(draftId, optionId, direction) {
+    const item = draftElements.find((candidate) => candidate.id === draftId);
+    if (
+      item === undefined
+      || item.kind !== "field"
+      || !isChoiceDataType(item.dataType)
+      || ![-1, 1].includes(direction)
+    ) {
+      return;
+    }
+    const index = item.options.findIndex((option) => option.id === optionId);
+    const targetIndex = index + direction;
+    if (index < 0 || targetIndex < 0 || targetIndex >= item.options.length) {
+      return;
+    }
+    const [option] = item.options.splice(index, 1);
+    item.options.splice(targetIndex, 0, option);
+    renderDraft();
+    setStatus(
+      item.label
+      + " · Auswahloption „"
+      + option.label
+      + (direction < 0 ? "“ nach oben verschoben" : "“ nach unten verschoben")
+      + " · nur temporärer Browserentwurf."
+    );
+    focusOptionControl(
+      draftId,
+      option.id,
+      direction < 0 ? ".move-option-up" : ".move-option-down"
+    );
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -576,10 +646,48 @@ _INTERACTION_SCRIPT = r"""
           if (item.options.length > 0) {
             const optionList = document.createElement("ol");
             optionList.className = "choice-options-list";
-            item.options.forEach((option) => {
+            item.options.forEach((option, optionIndex) => {
               const optionRow = document.createElement("li");
+              optionRow.className = "choice-option-row";
               optionRow.dataset.optionId = option.id;
-              optionRow.textContent = option.label;
+
+              const optionText = document.createElement("span");
+              optionText.className = "choice-option-label";
+              optionText.textContent = option.label;
+              optionRow.appendChild(optionText);
+
+              const moveUpButton = document.createElement("button");
+              moveUpButton.type = "button";
+              moveUpButton.className = "move-option-up";
+              moveUpButton.dataset.draftId = item.id;
+              moveUpButton.dataset.optionId = option.id;
+              moveUpButton.textContent = "Hoch";
+              moveUpButton.disabled = optionIndex === 0;
+              moveUpButton.setAttribute("aria-label", item.label + " · " + option.label + " nach oben");
+              moveUpButton.addEventListener("click", () => moveDraftOption(item.id, option.id, -1));
+              optionRow.appendChild(moveUpButton);
+
+              const moveDownButton = document.createElement("button");
+              moveDownButton.type = "button";
+              moveDownButton.className = "move-option-down";
+              moveDownButton.dataset.draftId = item.id;
+              moveDownButton.dataset.optionId = option.id;
+              moveDownButton.textContent = "Runter";
+              moveDownButton.disabled = optionIndex === item.options.length - 1;
+              moveDownButton.setAttribute("aria-label", item.label + " · " + option.label + " nach unten");
+              moveDownButton.addEventListener("click", () => moveDraftOption(item.id, option.id, 1));
+              optionRow.appendChild(moveDownButton);
+
+              const removeOptionButton = document.createElement("button");
+              removeOptionButton.type = "button";
+              removeOptionButton.className = "remove-option";
+              removeOptionButton.dataset.draftId = item.id;
+              removeOptionButton.dataset.optionId = option.id;
+              removeOptionButton.textContent = "Option entfernen";
+              removeOptionButton.setAttribute("aria-label", item.label + " · " + option.label + " entfernen");
+              removeOptionButton.addEventListener("click", () => removeDraftOption(item.id, option.id));
+              optionRow.appendChild(removeOptionButton);
+
               optionList.appendChild(optionRow);
             });
             card.appendChild(optionList);
