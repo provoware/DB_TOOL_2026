@@ -1,0 +1,32 @@
+name: Package I117 Snapshot
+
+on:
+  push:
+    branches:
+      - package-i117-snapshot
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout packaging branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build exact main snapshot
+        shell: bash
+        run: |
+          mkdir -p snapshot
+          git archive --format=tar 5a5f8df9e68484675622458be2a44db186ac3210 | tar -x -C snapshot
+
+      - name: Upload complete project snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: PROVOWARE_DB_TOOL_2026_I117_complete
+          path: snapshot
+          include-hidden-files: true
+          retention-days: 7
