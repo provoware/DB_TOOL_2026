@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "iteration": 121,
+  "agent": "control-plane-v2-shadow-plan-lease-agent-121",
+  "size": "M",
+  "goal": "Den wichtigsten Kollisionsschutz des Development Control Plane V2 in zwei abhaengigen Governance-Schritten weiterhin nur im Shadow Mode modellieren und fail-closed pruefen. Schritt 1 definiert versiegelte Plaene und einen globalen Single-Writer-Lease: nur CREATOR darf den exakt im Plan freigegebenen Produkt-Scope schreiben; Frozen/Archive/unregistrierte Pfade, fehlende Capability-Erhaltung, unversiegelte Plaene, Side-Request-Scope-Creep und ein zweiter aktiver Writer werden vor Ausfuehrung blockiert. Schritt 2 darf erst nach gruenem Zwischen-Gate den deterministischen Soll/Ist-Validierungsvertrag fuer Execution Result und Validation Report hinzufuegen. Bestehende Legacy-Governance bleibt autoritativ.",
+  "change_kind": "governance",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Control Plane V2 Shadow Plan und Single-Writer-Lease",
+    "summary": "I121 bleibt ohne Produktwirkung und weiterhin Shadow. Nach gruenem Step-1-Gate vergleicht Schritt 2 ein Creator-Ergebnis deterministisch mit dem versiegelten Plan und dem exklusiven Lease. Der Validator erzeugt ausschliesslich PASS/FAIL + Findings fuer Scope, Akzeptanzkriterien, Tests, Capability-Erhaltung und Seiteneffekte; er repariert keinen Produktcode.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0121-control-plane-v2-shadow-plan-lease-validation.json",
+    ".provoware/control/contracts.json",
+    "scripts/control_plane_shadow.py",
+    "tests/governance/test_control_plane_shadow.py"
+  ],
+  "read_files": [
+    ".provoware/control/registry.json",
+    "scripts/validate_control_plane.py",
+    "tests/governance/test_control_plane_registry.py",
+    ".provoware/iterations/0120-control-plane-v2-registry-foundation.json",
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml"
+  ],
+  "direct_dependencies": [
+    "main dd2b84c81cd26729dcef2b1202a328216e65a44b",
+    "I120 shadow registry/lifecycle/trigger contracts merged after deep green gate",
+    "Control Plane remains SHADOW and non-authoritative",
+    "MASK_PROPERTIES_V1 remains STABLE and reopen-protected",
+    "CP-03 and CP-06 remain frozen",
+    "I121 Step-1 intermediate deep gate run 36056560574 on head 11308528dd0d9c6ead95b28671281b6dd1f8019c: targeted + governance + foundation success"
+  ],
+  "tests_required": [
+    "Step 1: compile shadow controller and governance test",
+    "Step 1: sealed plan validates only with CREATOR ownership",
+    "Step 1: deterministic write lease exactly mirrors sealed write scope",
+    "Step 1: a second ACTIVE global lease is blocked before creator execution",
+    "Step 1: FROZEN, ARCHIVE or unregistered write paths are blocked",
+    "Step 1: paths protecting MASK_PROPERTIES_V1 require explicit preserve_capabilities",
+    "Step 1: side requests may only DEFER and cannot silently expand current execution",
+    "Step 1: write_files may not intersect forbidden_files",
+    "Intermediate gate before Step 2",
+    "Step 2: execution result is compared deterministically against sealed scope, acceptance criteria, tests and preserved capabilities",
+    "Step 2: validator emits PASS/FAIL + findings as a read-only report contract",
+    "deep governance and repository foundation gates",
+    "Step 2: matching execution produces PASS with zero findings",
+    "Step 2: unplanned or forbidden changed files produce FAIL findings",
+    "Step 2: failed/missing acceptance criteria or tests produce FAIL findings",
+    "Step 2: stable capability regression or unexpected side effect produces FAIL",
+    "Step 2: execution identity must match sealed plan and active lease",
+    "Step 2: PASS report may never contain findings"
+  ],
+  "tests_explicitly_not_run": [
+    "product browser tests because I121 changes no product code",
+    "database/repository tests because no persistent or frozen core path changes",
+    "full suite because this is isolated shadow governance"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/control_plane_shadow.py",
+      "tests/governance/test_control_plane_shadow.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_control_plane_shadow.py"
+    ]
+  },
+  "risks": [
+    "shadow lease must not be mistaken for active enforcement before migration evidence exists",
+    "plan path matching must fail closed for unregistered write targets",
+    "side requests must not become implicit current-iteration work",
+    "stable capability preservation must remain explicit in sealed plans"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no existing registry authority switch",
+    "no existing agent or workflow replacement",
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, database or persistence changes",
+    "no real runtime write lease file yet",
+    "no Creator tool-permission enforcement yet",
+    "no README/TODO cleanup",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "sealed plans and global single-writer leases remain machine-validated shadow artifacts",
+    "two simultaneous product writers remain blocked before execution",
+    "execution results can now be deterministically compared with their exact sealed plan and lease",
+    "validator output is a read-only PASS/FAIL finding report suitable for returning failures to the Planner"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
