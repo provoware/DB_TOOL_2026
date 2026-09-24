@@ -230,6 +230,14 @@ _INTERACTION_SCRIPT = r"""
     );
   }
 
+  function focusVisibilityControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".toggle-visibility"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
   function toggleVisibility(id) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
@@ -242,6 +250,7 @@ _INTERACTION_SCRIPT = r"""
       + (item.isVisible ? " · in der Vorschau sichtbar" : " · in der Vorschau ausgeblendet")
       + " · nur temporärer Browserentwurf."
     );
+    focusVisibilityControl(id);
   }
 
   function focusDataTypeControl(id) {
@@ -1028,7 +1037,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
-.required-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
+.required-state, .visibility-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .option-editor-label {{ color:#d7def5; font-weight:600; }}
 .choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
@@ -1039,7 +1048,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

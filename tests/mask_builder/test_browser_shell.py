@@ -331,6 +331,29 @@ def test_visibility_toggle_is_browser_local_and_preview_filters_hidden() -> None
     assert 'defaultSelection' not in html
 
 
+def test_visibility_accessibility_focus_and_narrow_layout() -> None:
+    html = render_editor_shell()
+    assert 'function focusVisibilityControl(id)' in html
+    assert 'placedLayer.querySelectorAll(".toggle-visibility")' in html
+    assert 'candidate.dataset.draftId === id' in html
+    assert 'button.focus();' in html
+
+    start = html.index('function toggleVisibility(id)')
+    end = html.index('function focusDataTypeControl(id)')
+    block = html[start:end]
+    assert 'renderDraft();' in block
+    assert 'focusVisibilityControl(id);' in block
+    assert block.index('renderDraft();') < block.index('focusVisibilityControl(id);')
+
+    assert 'visibilityButton.type = "button";' in html
+    assert 'visibilityButton.setAttribute("aria-label", item.label + " · Sichtbarkeit umschalten");' in html
+    assert 'visibilityButton.setAttribute("aria-pressed", String(item.isVisible));' in html
+    assert '.required-state, .visibility-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
+    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.toggle-visibility, .datatype-select' in html
+    assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
+
+
 def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> None:
     html = render_editor_shell()
     assert 'dataType: selectedKind === "field" ? "text" : null,' in html
@@ -689,6 +712,7 @@ def main() -> None:
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_visibility_toggle_is_browser_local_and_preview_filters_hidden()
+    test_visibility_accessibility_focus_and_narrow_layout()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
@@ -706,7 +730,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY VISIBILITY I116 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY VISIBILITY I116 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

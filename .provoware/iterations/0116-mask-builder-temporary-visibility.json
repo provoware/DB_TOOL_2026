@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Statische Sichtbarkeit im temporären Maskenentwurf",
-    "summary": "Schritt 1 ergänzt einen rein browserlokalen Sichtbar/Ausgeblendet-Zustand. Die Editor-Karte bleibt immer erreichbar; nur die Vorschau blendet deaktivierte Komponenten aus. Persistenz bleibt geschlossen.",
+    "summary": "Statische Sichtbarkeit bleibt rein browserlokal: ausgeblendete Komponenten bleiben im Editor erreichbar und fehlen nur in der Vorschau. Nach gruenem Step-1-Gate stellt Schritt 2 Fokus-Rueckgabe auf denselben Toggle sowie schmale, tastaturfreundliche Bedienbarkeit sicher.",
     "target_doc": null
   },
   "write_files": [
@@ -32,7 +32,8 @@
     "I115 runtime repair merged with targeted and foundation gates green",
     "persistent MaskFieldSpec and MaskElement have no visibility property and remain untouched",
     "static visibility is therefore browser-local only",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I116 Step-1 intermediate gate run 36040063071 on repair head d52f8b89ee25dddeda864734b386c34ac674ddc2: success"
   ],
   "tests_required": [
     "Step 1: compile browser shell and focused browser regression",
@@ -42,8 +43,8 @@
     "Step 1: all-hidden preview has deterministic explanatory state",
     "Step 1: visibility has no persistence or domain dependency",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: visibility toggle restores focus after rerender",
-    "Step 2 only after green: visibility control remains keyboard reachable and narrow-layout safe",
+    "Step 2: visibility toggle restores focus to the same draft control after rerender",
+    "Step 2: visibility control remains keyboard reachable and narrow-layout safe",
     "GET-only, loopback-only and no-persistence contracts remain unchanged",
     "repository foundation gate"
   ],
@@ -84,8 +85,10 @@
     "all draft elements begin visible",
     "visibility can be toggled without changing identity, layout or field properties",
     "hidden elements remain editable but disappear from preview",
+    "focus returns to the same visibility control after rerender",
+    "visibility state and toggle remain readable and reachable in narrow layout",
     "reload still restores the default temporary state"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
