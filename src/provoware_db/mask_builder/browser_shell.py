@@ -229,6 +229,14 @@ _INTERACTION_SCRIPT = r"""
     );
   }
 
+  function focusDataTypeControl(id) {
+    const select = Array.from(placedLayer.querySelectorAll(".datatype-select"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (select !== undefined) {
+      select.focus();
+    }
+  }
+
   function changeDataType(id, select) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined || item.kind !== "field") {
@@ -242,6 +250,7 @@ _INTERACTION_SCRIPT = r"""
       + item.dataType
       + " · nur temporärer Browserentwurf."
     );
+    focusDataTypeControl(id);
   }
 
   function removeDraft(id) {
@@ -378,10 +387,15 @@ _INTERACTION_SCRIPT = r"""
         requiredButton.addEventListener("click", () => toggleRequired(item.id));
         card.appendChild(requiredButton);
 
+        const dataTypeLabel = document.createElement("label");
+        dataTypeLabel.className = "datatype-label";
+        dataTypeLabel.id = "draft-datatype-label-" + item.id;
+        dataTypeLabel.textContent = "Datentyp";
+
         const dataTypeSelect = document.createElement("select");
         dataTypeSelect.className = "datatype-select";
         dataTypeSelect.dataset.draftId = item.id;
-        dataTypeSelect.setAttribute("aria-label", item.label + " · Datentyp");
+        dataTypeSelect.setAttribute("aria-labelledby", dataTypeLabel.id);
         [
           ["text", "Text"],
           ["number", "Zahl"],
@@ -394,7 +408,10 @@ _INTERACTION_SCRIPT = r"""
           option.selected = item.dataType === value;
           dataTypeSelect.appendChild(option);
         });
+        dataTypeLabel.htmlFor = "draft-datatype-" + item.id;
+        dataTypeSelect.id = "draft-datatype-" + item.id;
         dataTypeSelect.addEventListener("change", () => changeDataType(item.id, dataTypeSelect));
+        card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
       }
 
@@ -613,7 +630,7 @@ def render_editor_shell() -> str:
 * {{ box-sizing:border-box; }} body {{ margin:0; min-height:100vh; }}
 header {{ padding:1.25rem 1.5rem; border-bottom:1px solid #34384a; }}
 header p {{ margin:.35rem 0 0; color:#b8bfd2; }}
-button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
+button:focus-visible, select:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .editor {{ display:grid; grid-template-columns:minmax(14rem,20rem) minmax(32rem,1fr) minmax(18rem,26rem); gap:1rem; padding:1rem; }}
 .panel {{ border:1px solid #34384a; border-radius:14px; background:#191c26; padding:1rem; min-width:0; }}
 .panel h2 {{ margin-top:0; font-size:1.05rem; }}
@@ -628,16 +645,16 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
-.required-state {{ color:#d7def5; font-weight:600; }}
+.required-state, .datatype-label {{ color:#d7def5; font-weight:600; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
