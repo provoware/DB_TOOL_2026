@@ -253,6 +253,14 @@ _INTERACTION_SCRIPT = r"""
     focusVisibilityControl(id);
   }
 
+  function focusWidthControl(id) {
+    const select = Array.from(placedLayer.querySelectorAll(".width-select"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (select !== undefined) {
+      select.focus();
+    }
+  }
+
   function changeDraftWidth(id, select) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
@@ -282,6 +290,7 @@ _INTERACTION_SCRIPT = r"""
       + String(item.width)
       + " Spalte(n) · nur temporärer Browserentwurf."
     );
+    focusWidthControl(id);
   }
 
   function focusDataTypeControl(id) {
@@ -1102,7 +1111,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

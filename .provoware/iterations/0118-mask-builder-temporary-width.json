@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Breite im temporären 12-Spalten-Maskenentwurf",
-    "summary": "Schritt 1 erlaubt Breiten von 1 bis 12 Spalten, aber nur wenn das Element an seiner aktuellen Startspalte vollständig im Raster bleibt. Ungültige Breiten werden vor der Draft-Mutation abgewiesen.",
+    "summary": "Breiten von 1 bis 12 Spalten bleiben rein browserlokal und werden vor Mutation gegen die aktuelle Startspalte validiert. Nach gruenem Step-1-Gate stellt Schritt 2 Fokus-Rueckgabe auf dasselbe Breiten-Control, schmale Bedienbarkeit sowie Preview-/Move-Konsistenz sicher.",
     "target_doc": null
   },
   "write_files": [
@@ -33,7 +33,8 @@
     "I117 documentation sync merged",
     "placementFitsGrid(column, width) is the existing browser-local 12-column boundary contract",
     "persistent LayoutBox width contract remains untouched",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I118 Step-1 intermediate gate run 36043500829 on head c5123f5538ddf9e4dd79368faab699d9eeb56f66: success"
   ],
   "tests_required": [
     "Step 1: compile browser shell and focused browser regression",
@@ -44,9 +45,9 @@
     "Step 1: valid width rerenders canvas and preview from the same item.width",
     "Step 1: width change has no persistence or domain dependency",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: successful width change restores focus to the same width control",
-    "Step 2 only after green: width label/control and status remain keyboard reachable and narrow-layout safe",
-    "Step 2 only after green: preview and move target availability remain consistent after resize",
+    "Step 2: successful width change restores focus to the same width control",
+    "Step 2: width label/control and status remain keyboard reachable and narrow-layout safe",
+    "Step 2: preview and move target availability remain consistent after resize",
     "GET-only, loopback-only and no-persistence contracts remain unchanged",
     "repository foundation gate"
   ],
@@ -87,8 +88,11 @@
     "draft element width can change between 1 and the remaining grid columns",
     "invalid widths are rejected before mutation",
     "canvas and preview update from the accepted width",
+    "move target availability is recalculated after resize",
+    "focus returns to the same width control after successful rerender",
+    "width label/control remain readable and reachable in narrow layout",
     "reload still discards temporary width changes"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
