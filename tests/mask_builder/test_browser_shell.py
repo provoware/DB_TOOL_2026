@@ -172,7 +172,7 @@ def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -239,7 +239,7 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
 
     assert '.label-editor, .help-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
@@ -290,8 +290,42 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert required_button > field_guard
     assert move_button > required_button
 
-    assert '.required-state { color:#d7def5; font-weight:600; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.required-state, .datatype-label { color:#d7def5; font-weight:600; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
+
+
+def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> None:
+    html = render_editor_shell()
+    assert 'dataType: selectedKind === "field" ? "text" : null,' in html
+    assert 'function changeDataType(id, select)' in html
+    assert 'item.kind !== "field"' in html
+    assert 'item.dataType = select.value;' in html
+    assert 'dataTypeSelect.className = "datatype-select";' in html
+    assert 'dataTypeSelect.dataset.draftId = item.id;' in html
+    assert 'dataTypeSelect.setAttribute("aria-labelledby", dataTypeLabel.id);' in html
+    assert '["text", "Text"]' in html
+    assert '["number", "Zahl"]' in html
+    assert '["date", "Datum"]' in html
+    assert '["boolean", "Ja/Nein"]' in html
+    assert 'dataTypeSelect.addEventListener("change", () => changeDataType(item.id, dataTypeSelect));' in html
+    assert '(item.kind === "field" ? " · Datentyp: " + item.dataType : "")' in html
+
+    start = html.index('function changeDataType(id, select)')
+    end = html.index('function removeDraft(id)')
+    datatype_block = html[start:end]
+    assert 'item.dataType = select.value;' in datatype_block
+    assert 'renderDraft();' in datatype_block
+    assert 'item.id =' not in datatype_block
+    assert 'item.kind =' not in datatype_block
+    assert 'item.label =' not in datatype_block
+    assert 'item.helpText =' not in datatype_block
+    assert 'item.isRequired =' not in datatype_block
+    assert 'item.column =' not in datatype_block
+    assert 'item.width =' not in datatype_block
+    assert 'draftElements.push(' not in datatype_block
+    assert 'draftElements.splice(' not in datatype_block
+    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
 
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
@@ -312,7 +346,7 @@ def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
     assert 'data-column="8"' in html
     assert '@media (max-width:1000px)' in html
     assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
-    assert '.placed-element > span { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .datatype-label { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
@@ -391,6 +425,7 @@ def main() -> None:
     test_help_text_accessibility_cancel_focus_and_narrow_layout()
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
+    test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -399,7 +434,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY REQUIRED I108 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY DATATYPE I109 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":

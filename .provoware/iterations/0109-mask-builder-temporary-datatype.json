@@ -1,0 +1,100 @@
+{
+  "schema_version": 2,
+  "iteration": 109,
+  "agent": "mask-builder-temporary-datatype-agent-109",
+  "size": "M",
+  "goal": "Den naechsten offenen P1-Slice als rein temporaere Datentyp-Eigenschaft im Browser-Draft umsetzen. Schritt 1 fuegt ausschliesslich fuer field-Drafts einen browserlokalen dataType mit sicherem Default text und nativer Auswahl hinzu; nur item.dataType darf mutieren. Schritt 2 haertet nach gruenem Zwischen-Gate Semantik, Fokus und schmale Bedienbarkeit. Kein Standardwert, keine Optionen, keine produktive Wertevalidierung und keine Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaere Datentyp-Eigenschaft im Masken-Baukasten",
+    "summary": "Schritt 2 bindet die field-only Datentyp-Auswahl an ein sichtbares deterministisches Label, stellt nach einer Auswahl den Fokus auf das neu gerenderte Select zurueck und haertet Fokusdarstellung sowie schmale Bedienbarkeit. Es bleibt reiner Browserzustand ohne Standardwerte, Optionen oder Persistenz.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0109-mask-builder-temporary-datatype.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i109_datatype_accessibility.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0108-mask-builder-temporary-required.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 65eb1672b3d31b63024b2bfb7a9d17fc6a42e427",
+    "I108 temporary required draft property merged",
+    "TODO A next open capability: Datentyp-Eigenschaft im Draft",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I109 plan gate run 36021090760: success",
+    "I109 Step 1 intermediate gate run 36021231480: success"
+  ],
+  "tests_required": [
+    "Plan gate before product write",
+    "Step 1: targeted browser-shell compile and regression tests",
+    "Step 1: newly placed field drafts start with dataType text",
+    "Step 1: native field-only datatype selection changes only item.dataType",
+    "Step 1: draft ID, kind, label, helpText, isRequired, column and width remain unchanged",
+    "Step 1: preview reflects datatype deterministically",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
+    "Step 2: field-only datatype control has deterministic visible label semantics",
+    "Step 2: native select retains keyboard focus after rerender",
+    "Step 2: select has visible focus treatment and full-width narrow layout",
+    "Step 2: non-field drafts remain without datatype controls",
+    "GET-only and loopback-only contracts remain unchanged",
+    "no persistence, productive value validation, network-write, database or store dependency",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because the slice is isolated to the browser mask-builder shell",
+    "database regressions because no database path changes",
+    "rule/default-value tests because productive value validation and defaults are explicitly out of scope",
+    "template-store tests because persistence remains out of scope"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i109_datatype_accessibility.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i109_datatype_accessibility.py"
+    ]
+  },
+  "risks": [
+    "datatype state must remain browser-local and must not imply productive validation",
+    "datatype change must not recreate the draft or allocate a new ID",
+    "non-field structural elements must not expose datatype controls",
+    "the slice must not grow into default values, options or rules"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no productive value validation",
+    "no default value, options, visibility or width editing",
+    "no general property editor",
+    "no drag-and-drop",
+    "no dependency addition",
+    "no TODO.md checkbox mutation",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "a field draft can change its temporary datatype without changing identity or layout",
+    "datatype selection remains visibly labelled and keyboard focused after rerender",
+    "non-field drafts remain without a datatype control",
+    "reloading the page still clears the draft"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
