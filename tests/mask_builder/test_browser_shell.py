@@ -361,14 +361,14 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert 'dataTypeSelect.setAttribute("aria-describedby", choiceState.id);' in html
     assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
     assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
-    assert 'item.options.length === 0' in change_block
-    assert '" · " + String(item.options.length) + " Auswahloption(en) konfiguriert"' in change_block
     assert '.choice-state { color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }' in html
     assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state { min-width:0; overflow-wrap:anywhere; }' in html
 
     start = html.index('function changeDataType(id, select)')
     end = html.index('function isChoiceDataType(dataType)')
     change_block = html[start:end]
+    assert 'item.options.length === 0' in change_block
+    assert '" · " + String(item.options.length) + " Auswahloption(en) konfiguriert"' in change_block
     assert 'renderDraft();' in change_block
     assert 'focusDataTypeControl(id);' in change_block
     assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
