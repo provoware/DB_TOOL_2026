@@ -314,7 +314,7 @@ def test_visibility_toggle_is_browser_local_and_preview_filters_hidden() -> None
     assert 'visibleDraftElements.forEach((item) =>' in html
 
     start = html.index('function toggleVisibility(id)')
-    end = html.index('function focusDataTypeControl(id)')
+    end = html.index('function changeDraftWidth(id, select)')
     block = html[start:end]
     assert 'item.isVisible = !item.isVisible;' in block
     assert 'item.id =' not in block
