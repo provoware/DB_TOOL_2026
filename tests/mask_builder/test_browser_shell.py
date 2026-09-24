@@ -369,6 +369,7 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     change_block = html[start:end]
     assert 'item.options.length === 0' in change_block
     assert '" · " + String(item.options.length) + " Auswahloption(en) konfiguriert"' in change_block
+    assert "\\n" not in change_block
     assert 'renderDraft();' in change_block
     assert 'focusDataTypeControl(id);' in change_block
     assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
@@ -449,6 +450,12 @@ def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable
     assert 'focusOptionControl(' in html
     assert '".move-option-up"' in html
     assert '".move-option-down"' in html
+    assert 'let focusSelector = direction < 0 ? ".move-option-up" : ".move-option-down";' in html
+    assert 'if (targetIndex === 0) {' in html
+    assert 'focusSelector = ".move-option-down";' in html
+    assert 'if (targetIndex === item.options.length - 1) {' in html
+    assert 'focusSelector = ".move-option-up";' in html
+    assert 'focusOptionControl(draftId, option.id, focusSelector);' in html
 
     assert 'moveUpButton.type = "button";' in html
     assert 'moveDownButton.type = "button";' in html
