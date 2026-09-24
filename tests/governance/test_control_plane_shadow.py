@@ -93,6 +93,7 @@ def test_second_active_global_writer_is_blocked() -> None:
 def test_frozen_or_unregistered_write_paths_are_blocked() -> None:
     plan = sample_plan()
     plan["write_files"] = ["src/provoware_db/domain/models.py"]
+    plan["forbidden_files"] = []
     expect_invalid(plan, "write blocked by path policy")
 
     plan = sample_plan()
