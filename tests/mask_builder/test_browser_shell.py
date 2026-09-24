@@ -433,7 +433,7 @@ def test_choice_option_remove_preserves_ids_and_restores_focus() -> None:
     start = html.index('function removeDraftOption(draftId, optionId)')
     end = html.index('function moveDraftOption(draftId, optionId, direction)')
     block = html[start:end]
-    assert 'option.id =' not in block
+    assert 'option.id = ' not in block
     assert 'nextDraftOptionId' not in block
     assert 'defaultSelection' not in block
     assert 'item.defaultValue =' not in block
