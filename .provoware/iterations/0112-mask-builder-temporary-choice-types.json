@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Auswahltypen im Masken-Baukasten",
-    "summary": "I112 fuehrt Einfach- und Mehrfachauswahl nur als browserlokale Datentypen ein. Ein vorhandener skalarer Standardwert wird beim Typwechsel nicht geloescht oder konvertiert, bleibt bei Auswahltypen aber inaktiv. Auswahloptionen selbst kommen erst in I113.",
+    "summary": "Schritt 1 ergaenzt single_choice und multi_choice als exakt benannte temporaere Browser-Datentypen. Der bestehende scalar defaultValue wird bei Typwechsel weder geloescht noch konvertiert, aber fuer Auswahltypen nicht als aktives Standardwert-Control oder Preview gerendert. Optionen bleiben vollstaendig ausserhalb des Scopes.",
     "target_doc": null
   },
   "write_files": [
@@ -32,7 +32,8 @@
     "I110 temporary validated default value merged",
     "read-only choice contract: browser choice IDs must be single_choice and multi_choice",
     "persistent FieldType already contains SINGLE_CHOICE and MULTI_CHOICE",
-    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
+    "I112 plan gate run 36028832801: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -98,5 +99,5 @@
     "reload still clears the browser draft"
   ],
   "screenshot_required": false,
-  "status": "PLANNED"
+  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
 }

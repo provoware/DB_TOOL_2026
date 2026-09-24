@@ -253,6 +253,10 @@ _INTERACTION_SCRIPT = r"""
     focusDataTypeControl(id);
   }
 
+  function isChoiceDataType(dataType) {
+    return dataType === "single_choice" || dataType === "multi_choice";
+  }
+
   function defaultValueCandidate(dataType, rawValue) {
     if (dataType === "text") {
       return { valid: true, value: rawValue };
@@ -315,7 +319,7 @@ _INTERACTION_SCRIPT = r"""
   }
 
   function defaultValuePreview(item) {
-    if (item.kind !== "field" || item.defaultValue.length === 0) {
+    if (item.kind !== "field" || isChoiceDataType(item.dataType) || item.defaultValue.length === 0) {
       return "";
     }
     if (item.dataType === "boolean") {
@@ -472,6 +476,8 @@ _INTERACTION_SCRIPT = r"""
           ["number", "Zahl"],
           ["date", "Datum"],
           ["boolean", "Ja/Nein"],
+          ["single_choice", "Einfachauswahl"],
+          ["multi_choice", "Mehrfachauswahl"],
         ].forEach(([value, labelText]) => {
           const option = document.createElement("option");
           option.value = value;
@@ -485,43 +491,45 @@ _INTERACTION_SCRIPT = r"""
         card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
 
-        const defaultValueLabel = document.createElement("label");
-        defaultValueLabel.className = "default-value-label";
-        defaultValueLabel.id = "draft-default-value-label-" + item.id;
-        defaultValueLabel.textContent = "Standardwert";
-        card.appendChild(defaultValueLabel);
+        if (!isChoiceDataType(item.dataType)) {
+          const defaultValueLabel = document.createElement("label");
+          defaultValueLabel.className = "default-value-label";
+          defaultValueLabel.id = "draft-default-value-label-" + item.id;
+          defaultValueLabel.textContent = "Standardwert";
+          card.appendChild(defaultValueLabel);
 
-        let defaultValueControl;
-        if (item.dataType === "boolean") {
-          defaultValueControl = document.createElement("select");
-          [
-            ["", "Leer"],
-            ["true", "Ja"],
-            ["false", "Nein"],
-          ].forEach(([value, labelText]) => {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = labelText;
-            option.selected = item.defaultValue === value;
-            defaultValueControl.appendChild(option);
-          });
-        } else {
-          defaultValueControl = document.createElement("input");
-          defaultValueControl.type = "text";
-          defaultValueControl.value = item.defaultValue;
-          if (item.dataType === "number") {
-            defaultValueControl.inputMode = "decimal";
-          } else if (item.dataType === "date") {
-            defaultValueControl.placeholder = "JJJJ-MM-TT";
+          let defaultValueControl;
+          if (item.dataType === "boolean") {
+            defaultValueControl = document.createElement("select");
+            [
+              ["", "Leer"],
+              ["true", "Ja"],
+              ["false", "Nein"],
+            ].forEach(([value, labelText]) => {
+              const option = document.createElement("option");
+              option.value = value;
+              option.textContent = labelText;
+              option.selected = item.defaultValue === value;
+              defaultValueControl.appendChild(option);
+            });
+          } else {
+            defaultValueControl = document.createElement("input");
+            defaultValueControl.type = "text";
+            defaultValueControl.value = item.defaultValue;
+            if (item.dataType === "number") {
+              defaultValueControl.inputMode = "decimal";
+            } else if (item.dataType === "date") {
+              defaultValueControl.placeholder = "JJJJ-MM-TT";
+            }
           }
+          defaultValueControl.className = "default-value-control";
+          defaultValueControl.dataset.draftId = item.id;
+          defaultValueControl.id = "draft-default-value-" + item.id;
+          defaultValueLabel.htmlFor = defaultValueControl.id;
+          defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);
+          defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
+          card.appendChild(defaultValueControl);
         }
-        defaultValueControl.className = "default-value-control";
-        defaultValueControl.dataset.draftId = item.id;
-        defaultValueControl.id = "draft-default-value-" + item.id;
-        defaultValueLabel.htmlFor = defaultValueControl.id;
-        defaultValueControl.setAttribute("aria-labelledby", defaultValueLabel.id);
-        defaultValueControl.addEventListener("change", () => updateDefaultValue(item.id, defaultValueControl));
-        card.appendChild(defaultValueControl);
       }
 
       const moveButton = document.createElement("button");

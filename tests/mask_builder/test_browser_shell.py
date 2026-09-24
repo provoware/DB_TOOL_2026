@@ -329,6 +329,29 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
 
 
 
+
+
+def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -> None:
+    html = render_editor_shell()
+    assert 'function isChoiceDataType(dataType)' in html
+    assert 'dataType === "single_choice" || dataType === "multi_choice"' in html
+    assert '["single_choice", "Einfachauswahl"]' in html
+    assert '["multi_choice", "Mehrfachauswahl"]' in html
+    assert 'if (!isChoiceDataType(item.dataType)) {' in html
+    assert 'item.kind !== "field" || isChoiceDataType(item.dataType) || item.defaultValue.length === 0' in html
+
+    start = html.index('function changeDataType(id, select)')
+    end = html.index('function isChoiceDataType(dataType)')
+    change_block = html[start:end]
+    assert 'item.dataType = select.value;' in change_block
+    assert 'item.defaultValue =' not in change_block
+    assert 'defaultValue = ' not in change_block
+
+    assert 'defaultSelection' not in html
+    assert 'draft-option-' not in html
+    assert 'option-editor' not in html
+
+
 def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
     html = render_editor_shell()
     assert 'defaultValue: selectedKind === "field" ? "" : null,' in html
@@ -493,6 +516,7 @@ def main() -> None:
     test_required_toggle_is_browser_only_and_mutates_only_required_state()
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
+    test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_default_value_is_field_only_browser_local_and_type_validated()
     test_default_value_semantics_focus_and_narrow_layout()
     test_remove_is_browser_only_and_restores_original_target_focus()
@@ -503,7 +527,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY DEFAULT VALUE I110 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY CHOICE TYPES I112 STEP 1: GRÜN")
 
 
 if __name__ == "__main__":
