@@ -129,7 +129,7 @@ def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
     assert 'focusLabelEditor(id);' in html
 
     start = html.index('function saveLabelEdit(id, input)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusHelpEditor(id)')
     save_block = html[start:end]
     assert 'const nextLabel = input.value.trim();' in save_block
     assert 'item.label = nextLabel;' in save_block
@@ -148,7 +148,7 @@ def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
 def test_label_edit_rejects_blank_cancels_with_escape_and_restores_focus() -> None:
     html = render_editor_shell()
     start = html.index('function cancelLabelEdit(id)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusHelpEditor(id)')
     edit_block = html[start:end]
     assert 'const nextLabel = input.value.trim();' in edit_block
     assert 'if (nextLabel.length === 0) {' in edit_block
@@ -172,7 +172,7 @@ def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
     assert '.label-editor, .help-editor, .option-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -191,7 +191,7 @@ def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> Non
     assert 'focusHelpEditor(id);' in html
 
     start = html.index('function saveHelpEdit(id, input)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function toggleRequired(id)')
     save_block = html[start:end]
     assert 'const nextHelpText = input.value.trim();' in save_block
     assert 'item.helpText = nextHelpText;' in save_block
@@ -239,7 +239,7 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
 
     assert '.label-editor, .help-editor, .option-editor { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
@@ -256,7 +256,7 @@ def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> No
     assert '(item.isRequired ? " · Pflichtfeld" : "")' in html
 
     start = html.index('function toggleRequired(id)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusVisibilityControl(id)')
     toggle_block = html[start:end]
     assert 'item.isRequired = !item.isRequired;' in toggle_block
     assert 'renderDraft();' in toggle_block
@@ -290,8 +290,8 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert required_button > field_guard
     assert move_button > required_button
 
-    assert '.required-state, .visibility-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 
@@ -314,7 +314,7 @@ def test_visibility_toggle_is_browser_local_and_preview_filters_hidden() -> None
     assert 'visibleDraftElements.forEach((item) =>' in html
 
     start = html.index('function toggleVisibility(id)')
-    end = html.index('function focusDataTypeControl(id)')
+    end = html.index('function changeDraftWidth(id, select)')
     block = html[start:end]
     assert 'item.isVisible = !item.isVisible;' in block
     assert 'item.id =' not in block
@@ -348,10 +348,78 @@ def test_visibility_accessibility_focus_and_narrow_layout() -> None:
     assert 'visibilityButton.type = "button";' in html
     assert 'visibilityButton.setAttribute("aria-label", item.label + " · Sichtbarkeit umschalten");' in html
     assert 'visibilityButton.setAttribute("aria-pressed", String(item.isVisible));' in html
-    assert '.required-state, .visibility-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
-    assert '.toggle-visibility, .datatype-select' in html
+    assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
+    assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.toggle-visibility, .width-select, .datatype-select' in html
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
+
+
+def test_width_change_is_browser_local_prevalidated_and_preview_driven() -> None:
+    html = render_editor_shell()
+    assert 'function changeDraftWidth(id, select)' in html
+    assert 'const nextWidth = Number(select.value);' in html
+    assert 'if (!placementFitsGrid(item.column, nextWidth)) {' in html
+    assert 'select.value = String(item.width);' in html
+    assert 'item.width = nextWidth;' in html
+    assert 'updateTargetAvailability();' in html
+    assert 'widthLabel.className = "width-label";' in html
+    assert 'widthLabel.id = "draft-width-label-" + item.id;' in html
+    assert 'widthSelect.className = "width-select";' in html
+    assert 'widthSelect.dataset.draftId = item.id;' in html
+    assert 'widthSelect.setAttribute("aria-labelledby", widthLabel.id);' in html
+    assert 'for (let width = 1; width <= gridColumns; width += 1) {' in html
+    assert 'option.selected = item.width === width;' in html
+    assert 'option.disabled = !placementFitsGrid(item.column, width);' in html
+    assert 'widthSelect.addEventListener("change", () => changeDraftWidth(item.id, widthSelect));' in html
+    assert 'const lastColumn = item.column + item.width;' in html
+
+    start = html.index('function changeDraftWidth(id, select)')
+    end = html.index('function focusDataTypeControl(id)')
+    block = html[start:end]
+    guard = block.index('if (!placementFitsGrid(item.column, nextWidth)) {')
+    mutation = block.index('item.width = nextWidth;')
+    assert guard >= 0
+    assert mutation > guard
+    assert 'return;' in block[guard:mutation]
+    assert 'item.id =' not in block
+    assert 'item.kind =' not in block
+    assert 'item.label =' not in block
+    assert 'item.helpText =' not in block
+    assert 'item.isRequired =' not in block
+    assert 'item.isVisible =' not in block
+    assert 'item.dataType =' not in block
+    assert 'item.defaultValue =' not in block
+    assert 'item.column =' not in block
+    assert 'draftElements.push(' not in block
+    assert 'draftElements.splice(' not in block
+    assert 'defaultSelection' not in html
+
+
+def test_width_focus_accessibility_narrow_and_consistency() -> None:
+    html = render_editor_shell()
+    assert 'function focusWidthControl(id)' in html
+    assert 'placedLayer.querySelectorAll(".width-select")' in html
+    assert 'candidate.dataset.draftId === id' in html
+    assert 'select.focus();' in html
+
+    start = html.index('function changeDraftWidth(id, select)')
+    end = html.index('function focusDataTypeControl(id)')
+    block = html[start:end]
+    assert 'renderDraft();' in block
+    assert 'updateTargetAvailability();' in block
+    assert 'focusWidthControl(id);' in block
+    assert block.index('renderDraft();') < block.index('updateTargetAvailability();')
+    assert block.index('updateTargetAvailability();') < block.index('focusWidthControl(id);')
+
+    assert 'widthLabel.htmlFor = widthSelect.id;' in html
+    assert 'widthSelect.setAttribute("aria-labelledby", widthLabel.id);' in html
+    assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
+    assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.toggle-visibility, .width-select, .datatype-select' in html
+
+    assert 'const activeWidth = moving === null ? selectedWidth : moving.width;' in html
+    assert 'const lastColumn = item.column + item.width;' in html
+    assert 'option.disabled = !placementFitsGrid(item.column, width);' in html
 
 
 def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> None:
@@ -421,7 +489,7 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert '" · Auswahloptionen: noch nicht konfiguriert"' in html
     assert '" · Auswahltyp unvollständig: noch keine Optionen konfiguriert"' in html
     assert '.choice-state { color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
 
     start = html.index('function changeDataType(id, select)')
     end = html.index('function isChoiceDataType(dataType)')
@@ -603,8 +671,8 @@ def test_default_value_semantics_focus_and_narrow_layout() -> None:
     assert 'aria-label", item.label + " · Standardwert"' not in html
 
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
     update_start = html.index('function updateDefaultValue(id, control)')
     update_end = html.index('function defaultValuePreview(item)')
@@ -632,7 +700,7 @@ def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
     assert 'data-column="8"' in html
     assert '@media (max-width:1000px)' in html
     assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
-    assert '.placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
@@ -713,6 +781,8 @@ def main() -> None:
     test_required_toggle_is_field_only_accessible_and_narrow_safe()
     test_visibility_toggle_is_browser_local_and_preview_filters_hidden()
     test_visibility_accessibility_focus_and_narrow_layout()
+    test_width_change_is_browser_local_prevalidated_and_preview_driven()
+    test_width_focus_accessibility_narrow_and_consistency()
     test_datatype_is_field_only_browser_local_and_mutates_only_datatype()
     test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive()
     test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics()
@@ -730,7 +800,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY VISIBILITY I116 STEP 2: GRÜN")
+    print("MASK BUILDER TEMPORARY WIDTH I118 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

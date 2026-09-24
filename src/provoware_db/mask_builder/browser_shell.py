@@ -253,6 +253,46 @@ _INTERACTION_SCRIPT = r"""
     focusVisibilityControl(id);
   }
 
+  function focusWidthControl(id) {
+    const select = Array.from(placedLayer.querySelectorAll(".width-select"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (select !== undefined) {
+      select.focus();
+    }
+  }
+
+  function changeDraftWidth(id, select) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined) {
+      return;
+    }
+    const nextWidth = Number(select.value);
+    if (!placementFitsGrid(item.column, nextWidth)) {
+      select.value = String(item.width);
+      setStatus(
+        "Nicht übernommen: "
+        + item.label
+        + " passt ab Spalte "
+        + String(item.column + 1)
+        + " nicht mit Breite "
+        + String(nextWidth)
+        + " ins 12-Spalten-Raster."
+      );
+      select.focus();
+      return;
+    }
+    item.width = nextWidth;
+    renderDraft();
+    updateTargetAvailability();
+    setStatus(
+      item.label
+      + " · Breite "
+      + String(item.width)
+      + " Spalte(n) · nur temporärer Browserentwurf."
+    );
+    focusWidthControl(id);
+  }
+
   function focusDataTypeControl(id) {
     const select = Array.from(placedLayer.querySelectorAll(".datatype-select"))
       .find((candidate) => candidate.dataset.draftId === id);
@@ -765,6 +805,29 @@ _INTERACTION_SCRIPT = r"""
         }
       }
 
+      const widthLabel = document.createElement("label");
+      widthLabel.className = "width-label";
+      widthLabel.id = "draft-width-label-" + item.id;
+      widthLabel.textContent = "Breite (Spalten)";
+
+      const widthSelect = document.createElement("select");
+      widthSelect.className = "width-select";
+      widthSelect.dataset.draftId = item.id;
+      widthSelect.id = "draft-width-" + item.id;
+      widthSelect.setAttribute("aria-labelledby", widthLabel.id);
+      widthLabel.htmlFor = widthSelect.id;
+      for (let width = 1; width <= gridColumns; width += 1) {
+        const option = document.createElement("option");
+        option.value = String(width);
+        option.textContent = String(width);
+        option.selected = item.width === width;
+        option.disabled = !placementFitsGrid(item.column, width);
+        widthSelect.appendChild(option);
+      }
+      widthSelect.addEventListener("change", () => changeDraftWidth(item.id, widthSelect));
+      card.appendChild(widthLabel);
+      card.appendChild(widthSelect);
+
       const visibilityState = document.createElement("span");
       visibilityState.className = "visibility-state";
       visibilityState.id = "draft-visibility-" + item.id;
@@ -1033,11 +1096,11 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
-.required-state, .visibility-state, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
+.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .option-editor-label {{ color:#d7def5; font-weight:600; }}
 .choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
@@ -1048,7 +1111,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .datatype-label, .default-value-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
