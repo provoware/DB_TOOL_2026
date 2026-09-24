@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "mode": "SHADOW",
+  "artifacts": {
+    "SEALED_PLAN": {
+      "state": "SEALED",
+      "planner_role": "PLANNER",
+      "executor_role": "CREATOR",
+      "required_fields": [
+        "plan_schema_version",
+        "plan_id",
+        "iteration",
+        "base_sha",
+        "state",
+        "goal",
+        "creator_role",
+        "write_files",
+        "read_files",
+        "forbidden_files",
+        "preserve_capabilities",
+        "acceptance_criteria",
+        "tests_required",
+        "side_requests"
+      ]
+    },
+    "WRITE_LEASE": {
+      "state": "ACTIVE",
+      "grantor_role": "CONTROLLER",
+      "holder_role": "CREATOR",
+      "cardinality": "GLOBAL_SINGLETON",
+      "required_fields": [
+        "schema_version",
+        "lease_id",
+        "plan_id",
+        "base_sha",
+        "holder",
+        "write_files",
+        "state"
+      ]
+    }
+  }
+}
