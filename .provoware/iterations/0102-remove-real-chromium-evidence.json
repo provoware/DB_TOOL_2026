@@ -3,34 +3,20 @@
   "iteration": 102,
   "agent": "remove-real-chromium-evidence-agent-102",
   "size": "M",
-  "goal": "Realen Chromium-Nachweis fuer den in I101 eingefuehrten Remove-Slice erbringen, ohne neuen Produkt-Scope oder Persistenz zu oeffnen.",
+  "goal": "Realen Chromium-Nachweis fuer den in I101 eingefuehrten Remove-Slice in zwei abhaengigen Schritten erbringen, ohne neuen Produkt-Scope oder Persistenz zu oeffnen: Schritt 1 prueft den normalen Remove-Workflow; Schritt 2 darf nur nach gruenem Step-1-Gate den rechten 4-Spalten-Randfall bei 200-Prozent-Zoom-Aequivalent pruefen. Bei einem reproduzierbaren Fehler wird ausschliesslich dessen konkrete Ursache minimal in den vorab freigegebenen Repair-Dateien behoben und erneut geprueft.",
   "change_kind": "ui",
   "gate_profile": "ui",
-  "steps": [
-    {
-      "step": 1,
-      "goal": "Remove-Workflow bei normaler Chromium-Ansicht real pruefen: Platzierung, Entfernen, Fokus-Rueckgabe, Leerzustand und monotone Draft-ID nach erneutem Platzieren.",
-      "intermediate_gate": "Nur bei gruenem Step-1-Evidence-/UI-Gate darf Schritt 2 beginnen; bei reproduzierbarem Fehler nur dessen konkrete Ursache minimal beheben und erneut pruefen."
-    },
-    {
-      "step": 2,
-      "goal": "Direkt abhaengige Accessibility-Haertung: rechten gueltigen 4-Spalten-Randfall bei 200-Prozent-Zoom-Aequivalent real in Chromium auf sichtbaren/erreichbaren Remove-Button, Tastaturfokus und fehlenden horizontalen Overflow pruefen.",
-      "start_condition": "Schritt 1 ist fuer seinen Scope GRUEN."
-    }
-  ],
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Realer Chromium-Nachweis fuer Entfernen im Masken-Baukasten",
-    "summary": "Diese Iteration prueft ausschliesslich die reale Bedienbarkeit des bereits vorhandenen temporaeren Remove-Slice; sie fuegt keine neue Funktion hinzu.",
+    "summary": "Schritt 1 prueft Platzierung, Entfernen, Fokus-Rueckgabe, Leerzustand und monotone Draft-ID bei normaler Ansicht. Nur nach gruenem Zwischen-Gate prueft Schritt 2 den rechten gueltigen 4-Spalten-Randfall bei 200-Prozent-Zoom-Aequivalent auf sichtbaren und bedienbaren Remove-Button, Tastaturfokus und fehlenden horizontalen Overflow. Produktcode darf nur bei reproduzierbarem Defekt minimal repariert werden.",
     "target_doc": "docs/development/screenshots/iteration-0102/README.md"
   },
   "write_files": [
     ".provoware/iterations/0102-remove-real-chromium-evidence.json",
     "docs/development/screenshots/iteration-0102/README.md",
     "docs/development/screenshots/iteration-0102/iteration-102-step1-evidence.json",
-    "docs/development/screenshots/iteration-0102/iteration-102-step2-evidence.json"
-  ],
-  "conditional_repair_files": [
+    "docs/development/screenshots/iteration-0102/iteration-102-step2-evidence.json",
     "src/provoware_db/mask_builder/browser_shell.py",
     "tests/mask_builder/test_browser_shell.py"
   ],
@@ -44,7 +30,8 @@
   "direct_dependencies": [
     "main fe62618745c2009139be93420f0898aada6cea1f",
     "I101 temporary browser-only remove",
-    "I100 real Chromium evidence pattern"
+    "I100 real Chromium evidence pattern",
+    "Step 2 is blocked until Step 1 evidence and UI gate are green"
   ],
   "tests_required": [
     "Step 1: real Chromium normal-view remove interaction",
@@ -52,6 +39,7 @@
     "Step 1: removing last item restores empty state",
     "Step 1: re-placement receives a higher non-reused draft ID",
     "Step 1: no browser console/page errors or horizontal overflow",
+    "Intermediate gate: Step 2 starts only when Step 1 is green",
     "Step 2: rightmost valid four-column field at 200-percent zoom-equivalent",
     "Step 2: remove control remains visible, focusable and operable",
     "Step 2: visible keyboard focus and no horizontal overflow",
@@ -70,7 +58,8 @@
   },
   "risks": [
     "static CSS regression does not alone prove real Chromium interaction at 200-percent zoom-equivalent",
-    "evidence must distinguish expected vertical scrolling from forbidden horizontal overflow"
+    "evidence must distinguish expected vertical scrolling from forbidden horizontal overflow",
+    "conditional product repair files are predeclared in write scope but must remain unchanged unless a reproducible I101 defect is found"
   ],
   "non_changes": [
     "no CP-03 or CP-06 reopen",
@@ -81,7 +70,8 @@
     "no persistence or network write",
     "no Edit/Move feature",
     "no dependency addition",
-    "no unrelated formatting"
+    "no unrelated formatting",
+    "no product-file change without a reproducible I101 defect"
   ],
   "expected_side_effects": [
     "auditable real-browser evidence for the I101 remove interaction",
