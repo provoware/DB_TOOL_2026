@@ -8,9 +8,13 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from scripts.control_plane_events import append_event, validate_event_log
 from scripts.control_plane_finalization import (
+    authorize_after_release,
+    finalize_success,
     release_write_lease,
     validate_lease_release,
+    validate_outcome,
 )
 from scripts.control_plane_shadow import (
     authorize_write_lease,
@@ -19,6 +23,7 @@ from scripts.control_plane_shadow import (
 
 
 BASE_SHA = "8a57a7555e249f20b05bd991ec6cc7d0b5e5e61f"
+REQUEST_ID = "REQ-I124-SHADOW"
 
 
 def plan() -> dict:
@@ -83,6 +88,37 @@ def pass_artifacts() -> tuple[dict, dict, dict]:
     return current_plan, lease, report
 
 
+def event_prefix_to_execution() -> list[dict]:
+    events: list[dict] = []
+    events = append_event(events, REQUEST_ID, "REQUEST_CREATED", "INSPECTOR", "request:I124")
+    events = append_event(events, REQUEST_ID, "AUDIT_COMPLETE", "INSPECTOR", "bundle:I124")
+    events = append_event(events, REQUEST_ID, "FINDINGS_READY", "PLANNER", "planner:I124")
+    events = append_event(events, REQUEST_ID, "PLAN_SUBMITTED", "PLANNER", "draft:I124")
+    events = append_event(events, REQUEST_ID, "PLAN_SEALED", "CONTROLLER", "seal:I124")
+    events = append_event(events, REQUEST_ID, "WRITE_LEASE_GRANTED", "CONTROLLER", "lease:I124")
+    state, stopped = validate_event_log(events, REQUEST_ID)
+    assert state == "EXECUTING"
+    assert stopped is False
+    return events
+
+
+def pass_event_log(report: dict) -> list[dict]:
+    events = event_prefix_to_execution()
+    events = append_event(events, REQUEST_ID, "EXECUTION_COMPLETE", "CREATOR", "result:I124")
+    events = append_event(events, REQUEST_ID, "VALIDATION_STARTED", "VALIDATOR", "validation:start")
+    events = append_event(
+        events,
+        REQUEST_ID,
+        "VALIDATION_PASSED",
+        "VALIDATOR",
+        f"validation:{report['report_id']}",
+    )
+    state, stopped = validate_event_log(events, REQUEST_ID)
+    assert state == "PASSED"
+    assert stopped is False
+    return events
+
+
 def test_finalizer_releases_only_matching_passed_lease() -> None:
     current_plan, lease, report = pass_artifacts()
     release = release_write_lease(current_plan, lease, report)
@@ -137,13 +173,106 @@ def test_only_finalizer_identity_is_accepted() -> None:
     )
 
 
+def test_pass_lifecycle_reaches_done_and_outcome_binds_final_event() -> None:
+    current_plan, lease, report = pass_artifacts()
+    events = pass_event_log(report)
+    events, release, outcome = finalize_success(
+        events,
+        REQUEST_ID,
+        current_plan,
+        lease,
+        report,
+    )
+    state, stopped = validate_event_log(events, REQUEST_ID)
+    assert state == "DONE"
+    assert stopped is False
+    assert events[-2]["event_type"] == "FINALIZATION_STARTED"
+    assert events[-1]["event_type"] == "ITERATION_FINALIZED"
+    assert outcome["state"] == "DONE"
+    assert outcome["final_event_sha256"] == events[-1]["event_sha256"]
+    assert events[-1]["payload_ref"] == f"outcome:{outcome['outcome_id']}"
+    validate_outcome(
+        outcome,
+        REQUEST_ID,
+        events,
+        current_plan,
+        lease,
+        report,
+        release,
+    )
+
+
+def test_validation_fail_returns_to_planner_and_cannot_finalize() -> None:
+    current_plan = plan()
+    lease = authorize_write_lease(current_plan)
+    result = passing_result(current_plan, lease)
+    result["test_results"][0]["status"] = "FAIL"
+    report = validate_execution_result(current_plan, lease, result)
+    assert report["verdict"] == "FAIL"
+
+    events = event_prefix_to_execution()
+    events = append_event(events, REQUEST_ID, "EXECUTION_COMPLETE", "CREATOR", "result:fail")
+    events = append_event(events, REQUEST_ID, "VALIDATION_STARTED", "VALIDATOR", "validation:start")
+    events = append_event(events, REQUEST_ID, "VALIDATION_FAILED", "VALIDATOR", "validation:fail")
+    state, _ = validate_event_log(events, REQUEST_ID)
+    assert state == "FAILED"
+    events = append_event(events, REQUEST_ID, "REPLAN_REQUESTED", "PLANNER", "replan:I124")
+    state, stopped = validate_event_log(events, REQUEST_ID)
+    assert state == "PLANNING"
+    assert stopped is False
+
+    expect_invalid(
+        lambda: release_write_lease(current_plan, lease, report),
+        "only Validator PASS may release",
+    )
+    expect_invalid(
+        lambda: finalize_success(events, REQUEST_ID, current_plan, lease, report),
+        "finalization requires PASSED lifecycle state",
+    )
+
+
+def test_next_creator_authorization_requires_valid_prior_release() -> None:
+    current_plan, lease, report = pass_artifacts()
+    release = release_write_lease(current_plan, lease, report)
+
+    next_plan = deepcopy(current_plan)
+    next_plan["plan_id"] = "PLAN-I125-SHADOW"
+    next_plan["iteration"] = 125
+    next_plan["goal"] = "Naechste unabhaengige Shadow-Ausfuehrung."
+    next_lease = authorize_after_release(
+        next_plan,
+        current_plan,
+        lease,
+        report,
+        release,
+    )
+    assert next_lease["plan_id"] == "PLAN-I125-SHADOW"
+    assert next_lease["state"] == "ACTIVE"
+
+    tampered_release = deepcopy(release)
+    tampered_release["sealed_plan_sha256"] = "0" * 64
+    expect_invalid(
+        lambda: authorize_after_release(
+            next_plan,
+            current_plan,
+            lease,
+            report,
+            tampered_release,
+        ),
+        "does not bind exact sealed plan",
+    )
+
+
 def main() -> None:
     test_finalizer_releases_only_matching_passed_lease()
     test_validator_fail_cannot_release_global_writer()
     test_mismatched_validation_identity_cannot_release()
     test_release_is_bound_to_exact_sealed_plan()
     test_only_finalizer_identity_is_accepted()
-    print("CONTROL PLANE V2 SHADOW FINALIZATION I124 STEP 1: GRÜN")
+    test_pass_lifecycle_reaches_done_and_outcome_binds_final_event()
+    test_validation_fail_returns_to_planner_and_cannot_finalize()
+    test_next_creator_authorization_requires_valid_prior_release()
+    print("CONTROL PLANE V2 SHADOW FINALIZATION/OUTCOME I124 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

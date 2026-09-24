@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "no_user_change",
     "topic": "Control Plane V2 Shadow Finalizer und Outcome",
-    "summary": "I124 schliesst den globalen Single-Writer-Lebenszyklus im Shadow Mode. Ein aktiver Creator-Lease darf nur nach echtem read-only Validator-PASS durch FINALIZER freigegeben werden; ein FAIL kann niemals die Writer-Sperre loesen.",
+    "summary": "I124 schliesst nach gruenem Step-1-Gate den Shadow-Lifecycle bis DONE. Nur ein Validator-PASS kann den Lease freigeben; FINALIZER fuehrt anschliessend FINALIZATION_STARTED und ITERATION_FINALIZED aus. Das immutable Outcome bindet Plan, Lease-Release, Validator-Report und den finalen Event-Hash. Ein Validator-FAIL geht ausschliesslich ueber REPLAN_REQUESTED zurueck zum PLANNER und kann weder freigeben noch finalisieren.",
     "target_doc": null
   },
   "write_files": [
@@ -39,7 +39,8 @@
     "I123 controller sealing and append-only event audit merged green",
     "Control Plane V2 remains SHADOW and non-authoritative",
     "Legacy governance remains authoritative",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I124 Step-1 intermediate deep gate run 36071830867 on head e0961a32b7b0e6b6099255be8d919834ec5928c3: targeted + governance + foundation success"
   ],
   "tests_required": [
     "Step 1: compile finalizer and focused finalization governance test",
@@ -49,10 +50,10 @@
     "Step 1: release receipt binds exact sealed plan by deterministic SHA-256",
     "Step 1: release artifact is owned only by FINALIZER",
     "Intermediate deep gate before Step 2",
-    "Step 2 only after green: complete event lifecycle can reach DONE only through validation PASS and finalization",
-    "Step 2 only after green: immutable outcome binds sealed plan, release receipt and final event hash",
-    "Step 2 only after green: validation FAIL returns to PLANNER through REPLAN_REQUESTED and cannot finalize",
-    "Step 2 only after green: released lease permits a subsequent independent Creator authorization only after prior release is validated",
+    "Step 2: complete event lifecycle reaches DONE only through validation PASS and finalization",
+    "Step 2: immutable outcome binds sealed plan, release receipt and final event hash",
+    "Step 2: validation FAIL returns to PLANNER through REPLAN_REQUESTED and cannot finalize",
+    "Step 2: released lease permits subsequent independent Creator authorization only after prior release validates",
     "deep governance and repository foundation gates"
   ],
   "tests_explicitly_not_run": [
@@ -92,8 +93,12 @@
     "global writer lease has a deterministic shadow release artifact",
     "only Validator PASS can authorize release",
     "release is cryptographically bound to the exact sealed plan",
-    "I121/I123 execution contracts remain unchanged"
+    "successful lifecycle reaches DONE only through FINALIZER",
+    "immutable outcome binds plan, release, validation report and final event hash",
+    "validation failure returns to PLANNER and cannot finalize",
+    "a subsequent Creator lease is eligible only after prior release validation",
+    "I121/I123 execution and event contracts remain reusable unchanged"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }
