@@ -85,6 +85,33 @@ def test_move_is_browser_only_preserves_identity_and_changes_column_only() -> No
     assert 'moving.label =' not in html
     assert 'moving.width =' not in html
 
+
+def test_move_rejects_invalid_target_before_mutation_and_supports_cancel_focus() -> None:
+    html = render_editor_shell()
+    invalid_guard = html.index('if (!placementFitsGrid(column, moving.width)) {')
+    column_mutation = html.index('moving.column = column;')
+    assert invalid_guard >= 0
+    assert column_mutation > invalid_guard
+    invalid_block = html[invalid_guard:column_mutation]
+    assert 'return;' in invalid_block
+
+    assert 'function cancelMove()' in html
+    assert 'const id = movingDraftId;' in html
+    assert 'movingDraftId = null;' in html
+    assert 'focusMoveControl(id);' in html
+    assert 'candidate.dataset.draftId === id' in html
+    assert 'moveButton.dataset.draftId = item.id;' in html
+    assert 'event.key === "Escape" && movingDraftId !== null' in html
+    assert 'cancelMove();' in html
+    assert 'targetButtons[column].focus();' in html
+    assert html.count('aria-keyshortcuts="Enter Space ArrowLeft ArrowRight Escape"') == GRID_COLUMNS
+
+
+def test_move_controls_remain_stacked_at_narrow_width() -> None:
+    html = render_editor_shell()
+    assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
+    assert '.move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+
 def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
     html = render_editor_shell()
     assert 'function removeDraft(id)' in html
@@ -109,7 +136,7 @@ def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
     html = render_editor_shell()
-    assert html.count('aria-keyshortcuts="Enter Space ArrowLeft ArrowRight"') == GRID_COLUMNS
+    assert html.count('aria-keyshortcuts="Enter Space ArrowLeft ArrowRight Escape"') == GRID_COLUMNS
     assert 'button.addEventListener("keydown", (event) =>' in html
     assert 'event.key === "ArrowLeft"' in html
     assert 'event.key === "ArrowRight"' in html
@@ -174,6 +201,8 @@ def main() -> None:
     test_grid_boundaries_are_blocked_before_draft_mutation()
     test_preview_and_draft_identifiers_are_deterministic_and_monotone()
     test_move_is_browser_only_preserves_identity_and_changes_column_only()
+    test_move_rejects_invalid_target_before_mutation_and_supports_cancel_focus()
+    test_move_controls_remain_stacked_at_narrow_width()
     test_remove_is_browser_only_and_restores_original_target_focus()
     test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
@@ -182,7 +211,7 @@ def main() -> None:
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY MOVE I103 STEP 1: GRÜN")
+    print("MASK BUILDER TEMPORARY MOVE I103 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":

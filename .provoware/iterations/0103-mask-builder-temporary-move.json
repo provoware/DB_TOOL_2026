@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaeres Verschieben im Masken-Baukasten",
-    "summary": "Schritt 1 implementiert ausschliesslich browserinternes, tastaturorientiertes Verschieben bereits platzierter Draft-Elemente zu gueltigen Zielspalten. Die bestehende Draft-ID, Komponentenart, Beschriftung und Breite bleiben stabil; nur die Spalte wird mutiert. Schritt 2 bleibt bis zum gruenen Zwischen-Gate gesperrt.",
+    "summary": "Schritt 2 haertet den temporaeren Move-Slice: ungueltige Ziele werden vor jeder Draft-Mutation abgewiesen, Escape bricht Move ohne Draft-Aenderung ab und gibt den Fokus an den zugehoerigen Verschieben-Button zurueck; nach gueltigem Move fokussiert die neue Zielspalte. Der reale 200-Prozent-Chromium-Nachweis steht noch aus.",
     "target_doc": null
   },
   "write_files": [
@@ -31,7 +31,8 @@
     "I101 temporary remove and monotone draft IDs",
     "I102 real Chromium remove evidence",
     "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
-    "I103 plan gate run 35997660831: success"
+    "I103 plan gate run 35997660831: success",
+    "I103 Step 1 gate run 35997975098: success"
   ],
   "tests_required": [
     "Step 1: targeted browser-shell compile and regression tests",
@@ -89,5 +90,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_REAL_CHROMIUM_EVIDENCE"
 }

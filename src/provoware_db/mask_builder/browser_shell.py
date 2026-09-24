@@ -67,8 +67,31 @@ _INTERACTION_SCRIPT = r"""
     }
     movingDraftId = id;
     updateTargetAvailability();
-    setStatus(item.label + " verschieben · Zielspalte wählen.");
+    setStatus(item.label + " verschieben · Zielspalte wählen. Escape bricht ab.");
     targetButtons[item.column].focus();
+  }
+
+  function focusMoveControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".move-draft"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
+  function cancelMove() {
+    if (movingDraftId === null) {
+      return;
+    }
+    const id = movingDraftId;
+    const item = draftElements.find((candidate) => candidate.id === id);
+    movingDraftId = null;
+    updateTargetAvailability();
+    setStatus(
+      (item === undefined ? "Verschieben" : item.label + " verschieben")
+      + " abgebrochen · Entwurf unverändert."
+    );
+    focusMoveControl(id);
   }
 
   function removeDraft(id) {
@@ -100,6 +123,7 @@ _INTERACTION_SCRIPT = r"""
       const moveButton = document.createElement("button");
       moveButton.type = "button";
       moveButton.className = "move-draft";
+      moveButton.dataset.draftId = item.id;
       moveButton.textContent = "Verschieben";
       moveButton.setAttribute("aria-label", item.label + " verschieben");
       moveButton.addEventListener("click", () => beginMove(item.id));
@@ -187,6 +211,7 @@ _INTERACTION_SCRIPT = r"""
         + String(column + 1)
         + " verschoben · nur temporärer Browserentwurf."
       );
+      targetButtons[column].focus();
       return;
     }
 
@@ -240,6 +265,9 @@ _INTERACTION_SCRIPT = r"""
       } else if (event.key === "ArrowRight") {
         event.preventDefault();
         focusSiblingTarget(index, 1);
+      } else if (event.key === "Escape" && movingDraftId !== null) {
+        event.preventDefault();
+        cancelMove();
       }
     });
   });
@@ -285,7 +313,7 @@ def render_editor_shell() -> str:
         (
             f'<button type="button" class="placement-target" data-column="{column}" '
             f'aria-label="In Spalte {column + 1} platzieren" '
-            f'aria-keyshortcuts="Enter Space ArrowLeft ArrowRight" aria-disabled="false">'
+            f'aria-keyshortcuts="Enter Space ArrowLeft ArrowRight Escape" aria-disabled="false">'
             f'{column + 1}</button>'
         )
         for column in range(GRID_COLUMNS)
@@ -321,7 +349,7 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
