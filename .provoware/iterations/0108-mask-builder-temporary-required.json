@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "explain_change",
     "topic": "Temporaere Pflichtfeld-Eigenschaft im Masken-Baukasten",
-    "summary": "Schritt 1 fuegt ausschliesslich browserinternes isRequired=false pro Draft und einen nativen Toggle hinzu. Der Toggle mutiert nur item.isRequired und aktualisiert die Vorschau deterministisch; Draft-Identitaet, Layout, Beschriftung und Hilfetext bleiben unveraendert.",
+    "summary": "Schritt 2 begrenzt den Pflichtfeld-Toggle auf field-Drafts. Ein deterministischer sichtbarer Zustand Pflichtfeld/Optional wird ueber draft-required-<draft-id> ausgegeben und per aria-describedby mit dem Toggle verknuepft. Nicht-field-Drafts erhalten keinen Pflichtfeld-Control; das schmale Layout behandelt den Toggle als Full-Width-Control.",
     "target_doc": null
   },
   "write_files": [
@@ -30,7 +30,8 @@
     "I107 temporary keyboard-first help text merged",
     "TODO A next open capability: Pflichtfeld-Eigenschaft im Draft",
     "Step 2 is blocked until Step 1 implementation and targeted UI gate are green",
-    "I108 plan gate run 36012400324: success"
+    "I108 plan gate run 36012400324: success",
+    "I108 Step 1 gate run 36012543249: success"
   ],
   "tests_required": [
     "Plan gate before product write",
@@ -91,5 +92,5 @@
     "reloading the page still clears the draft"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

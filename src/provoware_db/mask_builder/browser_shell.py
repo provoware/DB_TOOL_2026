@@ -345,15 +345,24 @@ _INTERACTION_SCRIPT = r"""
         card.appendChild(editor);
       }
 
-      const requiredButton = document.createElement("button");
-      requiredButton.type = "button";
-      requiredButton.className = "toggle-required";
-      requiredButton.dataset.draftId = item.id;
-      requiredButton.textContent = item.isRequired ? "Pflichtfeld: Ja" : "Pflichtfeld: Nein";
-      requiredButton.setAttribute("aria-pressed", String(item.isRequired));
-      requiredButton.setAttribute("aria-label", item.label + " · Pflichtfeld umschalten");
-      requiredButton.addEventListener("click", () => toggleRequired(item.id));
-      card.appendChild(requiredButton);
+      if (item.kind === "field") {
+        const requiredState = document.createElement("span");
+        requiredState.className = "required-state";
+        requiredState.id = "draft-required-" + item.id;
+        requiredState.textContent = item.isRequired ? "Pflichtfeld" : "Optional";
+        card.appendChild(requiredState);
+
+        const requiredButton = document.createElement("button");
+        requiredButton.type = "button";
+        requiredButton.className = "toggle-required";
+        requiredButton.dataset.draftId = item.id;
+        requiredButton.textContent = item.isRequired ? "Pflichtfeld: Ja" : "Pflichtfeld: Nein";
+        requiredButton.setAttribute("aria-pressed", String(item.isRequired));
+        requiredButton.setAttribute("aria-describedby", requiredState.id);
+        requiredButton.setAttribute("aria-label", item.label + " · Pflichtfeld umschalten");
+        requiredButton.addEventListener("click", () => toggleRequired(item.id));
+        card.appendChild(requiredButton);
+      }
 
       const moveButton = document.createElement("button");
       moveButton.type = "button";
@@ -587,11 +596,12 @@ button:focus-visible {{ outline:3px solid #ffe66d; outline-offset:2px; }}
 .label-editor, .help-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
+.required-state {{ color:#d7def5; font-weight:600; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input {{ max-width:none; width:100%; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
