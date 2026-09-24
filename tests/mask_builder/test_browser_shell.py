@@ -290,7 +290,7 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert required_button > field_guard
     assert move_button > required_button
 
-    assert '.required-state, .datatype-label { color:#d7def5; font-weight:600; }' in html
+    assert '.required-state, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
     assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .datatype-select, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
