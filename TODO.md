@@ -1,14 +1,14 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **nach I113 auf `main`**.
+Stand: **nach I116 auf `main`**.
 
-Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
+Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.\n\n**Fortschritt A–M:** **15 von 132 = 11,4 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.\n\n**Bestätigte Härtung:** I115 reparierte die Browser-JavaScript-Newline-Regressionsstelle und die Fokus-Rückgabe beim Choice-Reorder; Targeted + Foundation waren grün.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] statische Sichtbarkeit im Browser-Draft
-2. [ ] Breite im 12-Spalten-Raster ändern, Grenzen vor Mutation prüfen
-3. [ ] gemeinsame Eigenschaften-Vorschau und vollständige Accessibility-Abnahme
+1. [ ] Breite im 12-Spalten-Raster ändern, Grenzen vor Mutation prüfen
+2. [ ] vollständige 100/150/200-%-Evidence und gemeinsame Accessibility-Abnahme
+3. [ ] `defaultSelection`-Vertrag separat planen
 4. [ ] Persistenzgrenze für Masken separat planen
 
 Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen**.
@@ -30,7 +30,7 @@ Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen*
 - [x] Option-Controls: zugängliche Namen, Live-Status und Fokus-Rückgabe
 - [x] Option-Controls in schmaler Darstellung erreichbar halten
 - [ ] vollständige 100/150/200-%-Evidence für die gesamte Eigenschaftenbearbeitung
-- [ ] statische Sichtbarkeit
+- [x] statische Sichtbarkeit
 - [ ] Breite im 12-Spalten-Raster ändern
 - [ ] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
 - [ ] `defaultSelection`-Vertrag separat planen
