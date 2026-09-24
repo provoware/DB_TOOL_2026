@@ -59,9 +59,7 @@
     "Step 2: native buttons provide keyboard activation; controls have unique accessible names and live status",
     "Step 2: option rows and controls remain reachable in narrow layout",
     "Step 2: Remove/Reorder do not mutate draft identity, datatype, scalar defaultValue or layout",
-    "Step 2: no defaultSelection or persistence path exists",
-    "GET-only, loopback-only and no-persistence contracts remain unchanged",
-    "repository foundation gate"
+    "Step 2: no defaultSelection or persistence path exists"
   ],
   "tests_explicitly_not_run": [
     "full suite because only browser mask-builder option draft scope changes",
