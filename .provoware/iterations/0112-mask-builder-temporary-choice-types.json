@@ -1,0 +1,102 @@
+{
+  "schema_version": 2,
+  "iteration": 112,
+  "agent": "mask-builder-temporary-choice-types-agent-112",
+  "size": "M",
+  "goal": "Zwei abhaengige Browser-Schritte fuer Auswahltypen. Schritt 1 ergaenzt ausschliesslich single_choice und multi_choice als temporaere field-Datentypen. Es entstehen noch keine Optionen; bestehender scalar defaultValue bleibt bei Typwechsel unveraendert gespeichert, wird fuer Auswahltypen aber nicht als aktiver Standardwert gerendert oder in der Vorschau verwendet. Schritt 2 darf erst nach gruenem Zwischen-Gate Choice-Zustand, Fokus und Preview haerten und Auswahltypen ohne Optionen sichtbar als unvollstaendig kennzeichnen. Keine Persistenz, keine Domainaenderung und kein Optionseditor.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporaere Auswahltypen im Masken-Baukasten",
+    "summary": "I112 fuehrt Einfach- und Mehrfachauswahl nur als browserlokale Datentypen ein. Ein vorhandener skalarer Standardwert wird beim Typwechsel nicht geloescht oder konvertiert, bleibt bei Auswahltypen aber inaktiv. Auswahloptionen selbst kommen erst in I113.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0112-mask-builder-temporary-choice-types.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0110-mask-builder-temporary-default-value.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/mask_builder/model.py"
+  ],
+  "direct_dependencies": [
+    "main cd8e6eaeb634c60ba5ea31844dba926ba365db91",
+    "I110 temporary validated default value merged",
+    "read-only choice contract: browser choice IDs must be single_choice and multi_choice",
+    "persistent FieldType already contains SINGLE_CHOICE and MULTI_CHOICE",
+    "Step 2 is blocked until Step 1 implementation and targeted UI gate are green"
+  ],
+  "tests_required": [
+    "Plan gate before product write",
+    "Step 1: compile browser shell and focused browser-shell regression",
+    "Step 1: datatype selector exposes exactly the two additional choice IDs single_choice and multi_choice",
+    "Step 1: changeDataType continues to mutate only item.dataType",
+    "Step 1: existing scalar defaultValue survives scalar-to-choice and choice-to-scalar type changes because changeDataType does not rewrite it",
+    "Step 1: default-value control and scalar default preview are inactive for choice types",
+    "Step 1: no options/defaultSelection/option IDs/options editor are introduced",
+    "Intermediate gate before Step 2",
+    "Step 2: choice types without configured options expose deterministic visible and accessible incomplete-state semantics",
+    "Step 2: datatype focus remains deterministic after switching into or out of choice types",
+    "Step 2: preview reports choice configuration as incomplete without fabricating options",
+    "Step 2: narrow layout keeps choice-state text and datatype control reachable",
+    "GET-only, loopback-only and no-persistence contracts remain unchanged",
+    "repository foundation gate"
+  ],
+  "tests_explicitly_not_run": [
+    "full suite because only the browser mask-builder shell changes",
+    "database/repository tests because no persistent path changes",
+    "MaskTemplate store tests because no template persistence changes",
+    "choice write tests because I112 does not write choice values or options"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "choice types must not be treated as scalar default-value types",
+    "existing scalar defaultValue must not be silently cleared or converted on datatype change",
+    "the temporary Browser IDs must match the existing domain vocabulary exactly",
+    "choice incomplete-state must not imply persisted validity",
+    "scope must not expand into option creation or defaultSelection"
+  ],
+  "non_changes": [
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no domain FieldType changes",
+    "no MaskFieldSpec or ApplicationFieldPlan changes",
+    "no database, repository, CatalogService, writer or SQL access",
+    "no MaskTemplateStore save or load",
+    "no POST endpoint",
+    "no persistence or network write",
+    "no field option creation, removal, reorder or IDs",
+    "no defaultSelection",
+    "no scalar defaultValue conversion or deletion on datatype change",
+    "no visibility or width editing",
+    "no dependency addition",
+    "no TODO.md mutation",
+    "no repository cleanup",
+    "no unrelated formatting"
+  ],
+  "expected_side_effects": [
+    "field drafts can temporarily select single_choice or multi_choice",
+    "scalar defaultValue remains stored but inactive while a choice datatype is selected",
+    "after Step 2 choice drafts visibly report that options are not yet configured",
+    "reload still clears the browser draft"
+  ],
+  "screenshot_required": false,
+  "status": "PLANNED"
+}
