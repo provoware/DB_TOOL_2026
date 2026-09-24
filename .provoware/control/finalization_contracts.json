@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "mode": "SHADOW",
+  "finalizer_role": "FINALIZER",
+  "lease_release_state": "RELEASED",
+  "outcome_state": "DONE",
+  "lease_release_required_fields": [
+    "schema_version",
+    "release_id",
+    "lease_id",
+    "plan_id",
+    "base_sha",
+    "validation_report_id",
+    "finalizer_role",
+    "state",
+    "sealed_plan_sha256"
+  ],
+  "outcome_required_fields": [
+    "schema_version",
+    "outcome_id",
+    "request_id",
+    "iteration",
+    "plan_id",
+    "lease_id",
+    "release_id",
+    "validation_report_id",
+    "finalizer_role",
+    "state",
+    "base_sha",
+    "sealed_plan_sha256",
+    "final_event_sha256"
+  ]
+}

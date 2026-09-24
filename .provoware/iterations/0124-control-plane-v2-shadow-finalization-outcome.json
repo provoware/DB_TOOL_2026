@@ -1,0 +1,104 @@
+{
+  "schema_version": 2,
+  "iteration": 124,
+  "agent": "control-plane-v2-shadow-finalization-outcome-agent-124",
+  "size": "M",
+  "goal": "Control Plane V2 im Shadow Mode am Ende der Kette schliessen. Schritt 1 fuehrt eine deterministische Lease-Release-Quittung ein: ausschliesslich FINALIZER darf nach einem identitaetsgleichen Validator-PASS den globalen I121-Writer-Lease freigeben; FAIL, fremde Lease/Plan-Identitaet oder manipulierte Plan-Payload bleiben gesperrt. Schritt 2 darf erst nach gruenem Zwischen-Gate ein unveraenderliches Outcome an die vollstaendige I123-Eventkette bis DONE binden und Happy-Path sowie Failure->Replan end-to-end simulieren. Legacy-Governance bleibt autoritativ.",
+  "change_kind": "governance",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Control Plane V2 Shadow Finalizer und Outcome",
+    "summary": "I124 schliesst nach gruenem Step-1-Gate den Shadow-Lifecycle bis DONE. Nur ein Validator-PASS kann den Lease freigeben; FINALIZER fuehrt anschliessend FINALIZATION_STARTED und ITERATION_FINALIZED aus. Das immutable Outcome bindet Plan, Lease-Release, Validator-Report und den finalen Event-Hash. Ein Validator-FAIL geht ausschliesslich ueber REPLAN_REQUESTED zurueck zum PLANNER und kann weder freigeben noch finalisieren.",
+    "target_doc": null
+  },
+  "write_files": [
+    ".provoware/iterations/0124-control-plane-v2-shadow-finalization-outcome.json",
+    ".provoware/control/finalization_contracts.json",
+    "scripts/control_plane_finalization.py",
+    "tests/governance/test_control_plane_finalization.py"
+  ],
+  "read_files": [
+    ".provoware/control/registry.json",
+    ".provoware/control/contracts.json",
+    ".provoware/control/controller_contracts.json",
+    ".provoware/control/event_contracts.json",
+    "scripts/control_plane_shadow.py",
+    "scripts/control_plane_controller.py",
+    "scripts/control_plane_events.py",
+    "tests/governance/test_control_plane_shadow.py",
+    "tests/governance/test_control_plane_controller.py",
+    "tests/governance/test_control_plane_events.py",
+    ".provoware/iterations/0123-control-plane-v2-shadow-controller-events.json",
+    "AGENTS.md",
+    ".provoware/agents/rules.yaml"
+  ],
+  "direct_dependencies": [
+    "main 8a57a7555e249f20b05bd991ec6cc7d0b5e5e61f",
+    "I121 global single-writer lease and read-only Validator contracts remain active inside shadow model",
+    "I123 controller sealing and append-only event audit merged green",
+    "Control Plane V2 remains SHADOW and non-authoritative",
+    "Legacy governance remains authoritative",
+    "CP-03 and CP-06 remain frozen",
+    "I124 Step-1 intermediate deep gate run 36071830867 on head e0961a32b7b0e6b6099255be8d919834ec5928c3: targeted + governance + foundation success"
+  ],
+  "tests_required": [
+    "Step 1: compile finalizer and focused finalization governance test",
+    "Step 1: only a matching Validator PASS may produce RELEASED lease receipt",
+    "Step 1: Validator FAIL cannot release global writer",
+    "Step 1: plan/lease/report identity mismatch fails closed",
+    "Step 1: release receipt binds exact sealed plan by deterministic SHA-256",
+    "Step 1: release artifact is owned only by FINALIZER",
+    "Intermediate deep gate before Step 2",
+    "Step 2: complete event lifecycle reaches DONE only through validation PASS and finalization",
+    "Step 2: immutable outcome binds sealed plan, release receipt and final event hash",
+    "Step 2: validation FAIL returns to PLANNER through REPLAN_REQUESTED and cannot finalize",
+    "Step 2: released lease permits subsequent independent Creator authorization only after prior release validates",
+    "deep governance and repository foundation gates"
+  ],
+  "tests_explicitly_not_run": [
+    "product browser tests because I124 changes no product behavior",
+    "database/repository tests because no persistent or frozen core path changes",
+    "full suite because this is isolated shadow governance"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/control_plane_finalization.py",
+      "tests/governance/test_control_plane_finalization.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_control_plane_finalization.py"
+    ]
+  },
+  "risks": [
+    "a FAIL report must never release the single-writer guard",
+    "release identity must be bound to exact plan and lease",
+    "Finalizer must remain non-product-writing",
+    "Step 2 outcome must not claim DONE without a valid event chain",
+    "shadow finalization must not be mistaken for active runtime lease management"
+  ],
+  "non_changes": [
+    "no product code changes",
+    "no Control Plane authority switch",
+    "no existing agent/workflow replacement",
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, database or persistence changes",
+    "no real runtime lease file yet",
+    "no Creator tool-permission enforcement yet",
+    "no README/TODO cleanup",
+    "no dependency addition"
+  ],
+  "expected_side_effects": [
+    "global writer lease has a deterministic shadow release artifact",
+    "only Validator PASS can authorize release",
+    "release is cryptographically bound to the exact sealed plan",
+    "successful lifecycle reaches DONE only through FINALIZER",
+    "immutable outcome binds plan, release, validation report and final event hash",
+    "validation failure returns to PLANNER and cannot finalize",
+    "a subsequent Creator lease is eligible only after prior release validation",
+    "I121/I123 execution and event contracts remain reusable unchanged"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
+}
