@@ -254,12 +254,17 @@ def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> No
     assert 'requiredButton.addEventListener("click", () => toggleRequired(item.id));' in html
     assert 'item.isRequired ? "Pflichtfeld: Ja" : "Pflichtfeld: Nein"' in html
     assert '(item.isRequired ? " · Pflichtfeld" : "")' in html
+    assert 'function focusRequiredControl(id)' in html
+    assert 'placedLayer.querySelectorAll(".toggle-required")' in html
+    assert 'candidate.dataset.draftId === id' in html
 
     start = html.index('function toggleRequired(id)')
     end = html.index('function focusVisibilityControl(id)')
     toggle_block = html[start:end]
     assert 'item.isRequired = !item.isRequired;' in toggle_block
     assert 'renderDraft();' in toggle_block
+    assert 'focusRequiredControl(id);' in toggle_block
+    assert toggle_block.index('renderDraft();') < toggle_block.index('focusRequiredControl(id);')
     assert 'item.id =' not in toggle_block
     assert 'item.kind =' not in toggle_block
     assert 'item.label =' not in toggle_block
