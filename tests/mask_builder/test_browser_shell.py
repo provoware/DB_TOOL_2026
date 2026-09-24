@@ -34,7 +34,7 @@ def test_temporary_interaction_selects_palette_and_places_in_browser_state() -> 
     assert 'button.addEventListener("click", () => selectKind(button));' in html
     assert 'button.addEventListener("click", () => placeAt(Number(button.dataset.column)));' in html
     assert 'draftElements.push({' in html
-    assert 'id: "draft-" + String(draftElements.length + 1)' in html
+    assert 'id: "draft-" + String(nextDraftId++)' in html
     assert 'placedLayer.appendChild(card);' in html
     assert 'preview.appendChild(list);' in html
 
@@ -53,15 +53,39 @@ def test_grid_boundaries_are_blocked_before_draft_mutation() -> None:
     assert 'data-width="4"' in html
 
 
-def test_preview_and_draft_identifiers_are_deterministic() -> None:
+def test_preview_and_draft_identifiers_are_deterministic_and_monotone() -> None:
     html = render_editor_shell()
-    assert 'id: "draft-" + String(draftElements.length + 1)' in html
+    assert 'let nextDraftId = 1;' in html
+    assert 'id: "draft-" + String(nextDraftId++)' in html
+    assert 'draftElements.length + 1' not in html
     assert 'draftElements.forEach((item, index) =>' in html
     assert 'draftElements.forEach((item) =>' in html
     assert 'row.dataset.draftId = item.id;' in html
     forbidden = ("Math.random", "Date.now", "crypto.randomUUID", "performance.now")
     assert all(token not in html for token in forbidden)
 
+
+def test_remove_is_browser_only_and_restores_original_target_focus() -> None:
+    html = render_editor_shell()
+    assert 'function removeDraft(id)' in html
+    assert 'draftElements.findIndex((item) => item.id === id)' in html
+    assert 'draftElements.splice(index, 1);' in html
+    assert 'removeButton.textContent = "Entfernen";' in html
+    assert 'removeButton.addEventListener("click", () => removeDraft(item.id));' in html
+    assert 'targetButtons[removed.column].focus();' in html
+    assert 'emptyState.hidden = draftElements.length > 0;' in html
+    assert 'Noch keine Komponenten platziert.' in html
+
+
+
+def test_narrow_right_edge_field_keeps_remove_button_reachable() -> None:
+    html = render_editor_shell()
+    assert 'data-width="4"' in html
+    assert 'data-column="8"' in html
+    assert '@media (max-width:1000px)' in html
+    assert '.placed-element { align-items:stretch; flex-direction:column; }' in html
+    assert '.placed-element > span { min-width:0; overflow-wrap:anywhere; }' in html
+    assert '.remove-draft { align-self:stretch; width:100%; }' in html
 
 def test_keyboard_contract_uses_native_buttons_focus_and_live_status() -> None:
     html = render_editor_shell()
@@ -128,14 +152,16 @@ def main() -> None:
     test_shell_contains_palette_12_column_canvas_and_preview()
     test_temporary_interaction_selects_palette_and_places_in_browser_state()
     test_grid_boundaries_are_blocked_before_draft_mutation()
-    test_preview_and_draft_identifiers_are_deterministic()
+    test_preview_and_draft_identifiers_are_deterministic_and_monotone()
+    test_remove_is_browser_only_and_restores_original_target_focus()
+    test_narrow_right_edge_field_keeps_remove_button_reachable()
     test_keyboard_contract_uses_native_buttons_focus_and_live_status()
     test_empty_state_hidden_rule_wins_after_placement()
     test_temporary_interaction_has_no_persistence_or_network_write_path()
     test_root_is_get_only_and_unknown_paths_are_not_found()
     test_server_rejects_non_loopback_binding()
     test_browser_shell_has_no_database_or_store_dependency()
-    print("MASK BUILDER TEMPORARY INTERACTION I99: GRÜN")
+    print("MASK BUILDER TEMPORARY REMOVE I101: GRÜN")
 
 
 if __name__ == "__main__":
