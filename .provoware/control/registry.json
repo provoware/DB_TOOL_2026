@@ -86,5 +86,276 @@
       ],
       "reopen_required": true
     }
+  },
+  "roles": {
+    "INSPECTOR": {
+      "kind": "AGENT",
+      "product_write": false,
+      "plan_write": false,
+      "outcome_write": false,
+      "requires_write_lease": false,
+      "emits": [
+        "AUDIT_COMPLETE",
+        "FINDING_RECORDED"
+      ]
+    },
+    "PLANNER": {
+      "kind": "AGENT",
+      "product_write": false,
+      "plan_write": true,
+      "outcome_write": false,
+      "requires_write_lease": false,
+      "emits": [
+        "PLAN_SUBMITTED",
+        "REPLAN_REQUESTED"
+      ]
+    },
+    "CONTROLLER": {
+      "kind": "DETERMINISTIC",
+      "product_write": false,
+      "plan_write": false,
+      "outcome_write": false,
+      "requires_write_lease": false,
+      "emits": [
+        "PLAN_SEALED",
+        "WRITE_LEASE_GRANTED",
+        "HARD_STOP"
+      ]
+    },
+    "CREATOR": {
+      "kind": "AGENT",
+      "product_write": true,
+      "plan_write": false,
+      "outcome_write": false,
+      "requires_write_lease": true,
+      "emits": [
+        "EXECUTION_COMPLETE",
+        "BLOCKER_FOUND"
+      ]
+    },
+    "VALIDATOR": {
+      "kind": "AGENT",
+      "product_write": false,
+      "plan_write": false,
+      "outcome_write": false,
+      "requires_write_lease": false,
+      "emits": [
+        "VALIDATION_PASSED",
+        "VALIDATION_FAILED"
+      ]
+    },
+    "FINALIZER": {
+      "kind": "DETERMINISTIC",
+      "product_write": false,
+      "plan_write": false,
+      "outcome_write": true,
+      "requires_write_lease": false,
+      "emits": [
+        "ITERATION_FINALIZED"
+      ]
+    }
+  },
+  "lifecycle": {
+    "initial_state": "REQUESTED",
+    "terminal_states": [
+      "DONE"
+    ],
+    "states": [
+      "REQUESTED",
+      "INSPECTING",
+      "FINDINGS_READY",
+      "PLANNING",
+      "PLAN_SEALED",
+      "EXECUTING",
+      "BLOCKED",
+      "EXECUTION_COMPLETE",
+      "VALIDATING",
+      "FAILED",
+      "PASSED",
+      "FINALIZING",
+      "DONE"
+    ],
+    "transitions": [
+      [
+        "REQUESTED",
+        "INSPECTING"
+      ],
+      [
+        "INSPECTING",
+        "FINDINGS_READY"
+      ],
+      [
+        "FINDINGS_READY",
+        "PLANNING"
+      ],
+      [
+        "PLANNING",
+        "PLAN_SEALED"
+      ],
+      [
+        "PLAN_SEALED",
+        "EXECUTING"
+      ],
+      [
+        "EXECUTING",
+        "BLOCKED"
+      ],
+      [
+        "BLOCKED",
+        "PLANNING"
+      ],
+      [
+        "EXECUTING",
+        "EXECUTION_COMPLETE"
+      ],
+      [
+        "EXECUTION_COMPLETE",
+        "VALIDATING"
+      ],
+      [
+        "VALIDATING",
+        "FAILED"
+      ],
+      [
+        "FAILED",
+        "PLANNING"
+      ],
+      [
+        "VALIDATING",
+        "PASSED"
+      ],
+      [
+        "PASSED",
+        "FINALIZING"
+      ],
+      [
+        "FINALIZING",
+        "DONE"
+      ]
+    ]
+  },
+  "triggers": {
+    "REQUEST_CREATED": {
+      "required_role": "INSPECTOR",
+      "from_state": "REQUESTED",
+      "to_state": "INSPECTING",
+      "activates": [
+        "INSPECTOR"
+      ]
+    },
+    "AUDIT_COMPLETE": {
+      "required_role": "INSPECTOR",
+      "from_state": "INSPECTING",
+      "to_state": "FINDINGS_READY",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "FINDINGS_READY": {
+      "required_role": "PLANNER",
+      "from_state": "FINDINGS_READY",
+      "to_state": "PLANNING",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "PLAN_SEALED": {
+      "required_role": "CONTROLLER",
+      "from_state": "PLANNING",
+      "to_state": "PLAN_SEALED",
+      "activates": [
+        "CONTROLLER"
+      ]
+    },
+    "WRITE_LEASE_GRANTED": {
+      "required_role": "CONTROLLER",
+      "from_state": "PLAN_SEALED",
+      "to_state": "EXECUTING",
+      "activates": [
+        "CREATOR"
+      ]
+    },
+    "BLOCKER_FOUND": {
+      "required_role": "CREATOR",
+      "from_state": "EXECUTING",
+      "to_state": "BLOCKED",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "BLOCKER_ACCEPTED": {
+      "required_role": "PLANNER",
+      "from_state": "BLOCKED",
+      "to_state": "PLANNING",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "EXECUTION_COMPLETE": {
+      "required_role": "CREATOR",
+      "from_state": "EXECUTING",
+      "to_state": "EXECUTION_COMPLETE",
+      "activates": [
+        "VALIDATOR"
+      ]
+    },
+    "VALIDATION_STARTED": {
+      "required_role": "VALIDATOR",
+      "from_state": "EXECUTION_COMPLETE",
+      "to_state": "VALIDATING",
+      "activates": [
+        "VALIDATOR"
+      ]
+    },
+    "VALIDATION_FAILED": {
+      "required_role": "VALIDATOR",
+      "from_state": "VALIDATING",
+      "to_state": "FAILED",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "REPLAN_REQUESTED": {
+      "required_role": "PLANNER",
+      "from_state": "FAILED",
+      "to_state": "PLANNING",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "VALIDATION_PASSED": {
+      "required_role": "VALIDATOR",
+      "from_state": "VALIDATING",
+      "to_state": "PASSED",
+      "activates": [
+        "FINALIZER"
+      ]
+    },
+    "FINALIZATION_STARTED": {
+      "required_role": "FINALIZER",
+      "from_state": "PASSED",
+      "to_state": "FINALIZING",
+      "activates": [
+        "FINALIZER"
+      ]
+    },
+    "ITERATION_FINALIZED": {
+      "required_role": "FINALIZER",
+      "from_state": "FINALIZING",
+      "to_state": "DONE",
+      "activates": []
+    },
+    "SIDE_REQUEST_CREATED": {
+      "required_role": "PLANNER",
+      "action": "DEFER",
+      "activates": [
+        "PLANNER"
+      ]
+    },
+    "FROZEN_VIOLATION": {
+      "required_role": "CONTROLLER",
+      "action": "HARD_STOP",
+      "activates": []
+    }
   }
 }

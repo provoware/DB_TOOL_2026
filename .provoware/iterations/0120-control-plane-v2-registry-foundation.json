@@ -9,7 +9,7 @@
   "guide_delta": {
     "mode": "no_user_change",
     "topic": "Development Control Plane V2 Shadow Registry",
-    "summary": "I120 aendert keine Produktfunktion. Schritt 1 beschreibt und validiert den bestehenden sicheren Projektzustand erstmals zentral und maschinenlesbar: genau ein Produkt-Writer, read-only Pruefer/Planer/Validator, Frozen-Pfade sowie die I119-gepruefte MASK_PROPERTIES_V1-Baseline.",
+    "summary": "I120 bleibt ohne Produktwirkung und nicht autoritativ. Nach gruenem Step-1-Gate beschreibt und validiert Schritt 2 jetzt auch die Rollenrechte, die erlaubte Zustandsmaschine und die Triggerkette: Pruefen/Planen read-only, genau ein Creator mit Write-Lease, unabhaengige Validierung, Deferred Side Requests und HARD_STOP bei Frozen-Verletzung.",
     "target_doc": null
   },
   "write_files": [
@@ -32,7 +32,8 @@
     "I119 real Chromium property baseline merged green at 100/150/200 percent",
     "legacy iteration-gate protected paths remain authoritative during shadow mode",
     "existing .provoware/agents rules and roles remain authoritative during shadow mode",
-    "CP-03 and CP-06 remain frozen"
+    "CP-03 and CP-06 remain frozen",
+    "I120 Step-1 intermediate deep gate run 36055824794 on head 1e331e9272275889a6c73f3aa624084b2e7c7b71: targeted + governance + foundation success"
   ],
   "tests_required": [
     "Step 1: compile control-plane validator and governance test",
@@ -45,9 +46,15 @@
     "Step 1: fail closed if latest_product_iteration drifts from product manifests",
     "Step 1: fail closed if persistence opens or shadow mode becomes authoritative",
     "Intermediate gate before Step 2",
-    "Step 2 only after green: add role permissions, lifecycle state machine and trigger contracts in the same registry/validator/test scope",
-    "Step 2 only after green: remain SHADOW and non-authoritative; no writer routing yet",
-    "deep governance and repository foundation gates"
+    "Step 2: role permissions, lifecycle state machine and trigger contracts are present and validated",
+    "Step 2: registry remains SHADOW and non-authoritative; no writer routing is activated",
+    "deep governance and repository foundation gates",
+    "Step 2: CREATOR is the only product-writing role and requires a write lease",
+    "Step 2: VALIDATOR and INSPECTOR remain product-read-only",
+    "Step 2: EXECUTING cannot transition directly to DONE and validation cannot be skipped",
+    "Step 2: validation failure returns to PLANNER and validation pass activates FINALIZER",
+    "Step 2: side requests DEFER and frozen violations HARD_STOP",
+    "Step 2: only CONTROLLER grants the creator write lease and only FINALIZER owns outcome writes"
   ],
   "tests_explicitly_not_run": [
     "product browser tests because I120 Step 1 changes no product code",
@@ -85,9 +92,10 @@
   ],
   "expected_side_effects": [
     "a non-authoritative machine-readable control registry exists",
-    "legacy freeze boundaries and the I119 capability baseline are validated fail-closed",
-    "future Control Plane V2 steps can compare decisions against existing governance without changing product behavior"
+    "legacy freeze boundaries and MASK_PROPERTIES_V1 remain fail-closed",
+    "the shadow registry expresses one-writer ownership, read-only inspection/planning/validation, sealed execution lifecycle and deterministic trigger routing",
+    "future iterations can compare the shadow model against legacy governance before any authority switch"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED_AWAITING_INTERMEDIATE_GATE"
+  "status": "STEP2_IMPLEMENTED_AWAITING_FINAL_GATE"
 }

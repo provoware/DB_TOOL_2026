@@ -88,6 +88,64 @@ def test_shadow_foundation_cannot_become_authoritative_incidentally() -> None:
     expect_invalid(data, "must remain SHADOW and non-authoritative")
 
 
+
+def test_creator_is_the_only_product_writer_and_requires_lease() -> None:
+    data = deepcopy(load_registry())
+    data["roles"]["PLANNER"]["product_write"] = True
+    expect_invalid(data, "CREATOR must be the only product-writing role")
+
+    data = deepcopy(load_registry())
+    data["roles"]["CREATOR"]["requires_write_lease"] = False
+    expect_invalid(data, "CREATOR must require a write lease")
+
+
+def test_validator_cannot_gain_product_write_authority() -> None:
+    data = deepcopy(load_registry())
+    data["roles"]["VALIDATOR"]["product_write"] = True
+    expect_invalid(data, "CREATOR must be the only product-writing role")
+
+
+def test_lifecycle_cannot_skip_validation_or_finalize_from_execution() -> None:
+    data = deepcopy(load_registry())
+    data["lifecycle"]["transitions"].append(["EXECUTING", "DONE"])
+    expect_invalid(data, "lifecycle transitions do not match")
+
+    data = deepcopy(load_registry())
+    data["lifecycle"]["transitions"] = [
+        transition
+        for transition in data["lifecycle"]["transitions"]
+        if transition != ["EXECUTION_COMPLETE", "VALIDATING"]
+    ]
+    expect_invalid(data, "lifecycle transitions do not match")
+
+
+def test_validation_failure_returns_to_planner() -> None:
+    data = deepcopy(load_registry())
+    data["triggers"]["VALIDATION_FAILED"]["activates"] = ["CREATOR"]
+    expect_invalid(data, "wrong activated roles")
+
+
+def test_side_requests_defer_and_frozen_violations_hard_stop() -> None:
+    data = deepcopy(load_registry())
+    data["triggers"]["SIDE_REQUEST_CREATED"]["action"] = "EXECUTE"
+    expect_invalid(data, "action must be DEFER")
+
+    data = deepcopy(load_registry())
+    data["triggers"]["FROZEN_VIOLATION"]["action"] = "WARN"
+    expect_invalid(data, "action must be HARD_STOP")
+
+
+def test_only_controller_can_grant_creator_write_lease() -> None:
+    data = deepcopy(load_registry())
+    data["triggers"]["WRITE_LEASE_GRANTED"]["required_role"] = "PLANNER"
+    expect_invalid(data, "wrong required_role")
+
+
+def test_finalizer_is_the_only_outcome_writer() -> None:
+    data = deepcopy(load_registry())
+    data["roles"]["VALIDATOR"]["outcome_write"] = True
+    expect_invalid(data, "VALIDATOR may not write outcomes")
+
 def main() -> None:
     test_current_registry_is_green()
     test_single_product_writer_is_fail_closed()
@@ -98,7 +156,14 @@ def main() -> None:
     test_latest_product_iteration_cannot_be_stale()
     test_persistence_cannot_open_in_shadow_foundation()
     test_shadow_foundation_cannot_become_authoritative_incidentally()
-    print("CONTROL PLANE V2 REGISTRY I120 STEP 1: GRÜN")
+    test_creator_is_the_only_product_writer_and_requires_lease()
+    test_validator_cannot_gain_product_write_authority()
+    test_lifecycle_cannot_skip_validation_or_finalize_from_execution()
+    test_validation_failure_returns_to_planner()
+    test_side_requests_defer_and_frozen_violations_hard_stop()
+    test_only_controller_can_grant_creator_write_lease()
+    test_finalizer_is_the_only_outcome_writer()
+    print("CONTROL PLANE V2 REGISTRY I120 STEP 2: GRÜN")
 
 
 if __name__ == "__main__":
