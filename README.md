@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I142 auf diesem Branch; die vollständige Preview-Viewport-Matrix Desktop 1152 px / Tablet 768 px / Schmal 360 px wird gemeinsam in realem Chromium abgenommen  
+> **Bestätigter Produktstand:** I143 auf diesem Branch; ein deterministischer Raster-Assistent berechnet ausschließlich read-only Layout-Vorschläge aus dem browserlokalen Draft  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **28 / 132 = 21,2 %**
+> **Gesamtfortschritt Master-TODO A–M:** **29 / 132 = 22,0 %**
 
 ## Zielbild
 
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I142** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I143** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -83,6 +83,7 @@ Bis einschließlich **I142** besitzt der temporäre Browser-Draft:
 - browserlokale Breitenbearbeitung von 1–12 Spalten mit Prüfung vor Mutation
 - bestätigte 100/150/200-%-Evidence für die vollständige vorhandene Property-Matrix
 - deterministische Preview ohne produktiven Write
+- read-only Raster-Assistent: kompakter Layout-Vorschlag aus bestehender Reihenfolge und bestehenden Breiten, ohne Übernahme
 
 ### I115-Härtung
 
@@ -161,6 +162,12 @@ Die Abnahme kontrolliert Tastaturaktivierung und Fokus, genau einen aktiven `ari
 
 Der Master-TODO-Fortschritt bleibt deshalb bei **28 / 132 = 21,2 %**. Runtime-Code wird in I142 nur geändert, wenn die reale Evidence einen reproduzierbaren Defekt zeigt.
 
+## I143 – Raster-Assistent als read-only Vorschlag
+
+I143 ergänzt einen bewusst **nicht schreibenden Raster-Assistenten**. Er liest ausschließlich die aktuelle browserlokale `draftElements`-Reihenfolge und die vorhandenen Breiten. Daraus berechnet er deterministisch eine kompakte Platzierung von links nach rechts im 12-Spalten-Raster; passt das nächste Element nicht mehr in die aktuelle Zeile, beginnt eine neue Zeile.
+
+Der Vorschlag zeigt **Zeile, Startspalte und Breite** pro Draft-Element. Vor und nach der Berechnung wird ein Positions-/Breiten-Snapshot verglichen; eine Mutation des Drafts wird als Fehler behandelt. Es gibt in I143 ausdrücklich **keinen Anwenden-/Übernehmen-Button**, keine Änderung von `column` oder `width` und keine Persistenz.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -192,8 +199,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Nach grüner I142-Abnahme den nächsten offenen Strukturpunkt `Raster-Assistent als read-only Vorschlag` separat planen.
-2. Eine spätere Übernahme eines Rastervorschlags weiterhin getrennt mit Vorher/Nachher-Vertrag behandeln.
+1. Eine Übernahme eines Rastervorschlags ausschließlich als separaten Vorher/Nachher-Slice planen.
+2. Vor einer Übernahme Mutation, Fokus-Rückgabe und Undo-/Recovery-Grenze explizit gaten.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
@@ -235,7 +242,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **28 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **29 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
