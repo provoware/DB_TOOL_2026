@@ -67,9 +67,10 @@
     "no dependencies"
   ],
   "expected_side_effects": [
-    "a later implementation has deterministic defaultSelection invariants before code is written",
-    "the TODO planning point can be closed while implementation remains explicitly unopened"
+    "the defaultSelection planning contract is versioned without runtime implementation",
+    "the corresponding planning TODO is closed",
+    "A-M progress becomes 19 of 132 = 14.4 percent while persistence remains closed"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED"
+  "status": "STEP2_IMPLEMENTED"
 }

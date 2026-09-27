@@ -6,7 +6,7 @@ PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstruk
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **18 / 132 = 13,6 %**
+> **Gesamtfortschritt Master-TODO A–M:** **19 / 132 = 14,4 %**
 
 ## Zielbild
 
@@ -99,22 +99,26 @@ Wichtig: Diese Kette ist **shadow-only und nicht autoritativ**. Sie verändert k
 
 I127 bestätigt die bereits vorhandene gemeinsame Preview-Projektion mit einem eigenen Regressionsvertrag. Label, Breite, Hilfetext, Pflichtstatus, Datentyp, Choice-Optionen, skalarer Standardwert und Sichtbarkeit bleiben dadurch zusammen abgesichert. Es wurde keine neue Runtime-Funktion eingeführt; `defaultSelection` und Persistenz bleiben geschlossen.
 
+## I128 – `defaultSelection` nur als Vertrag
+
+I128 definiert den späteren browserlokalen Draft-Vertrag für Choice-Standardauswahlen. Referenzen laufen über stabile `draft-option-*`-IDs; stille Datenverluste bei Optionsentfernung oder Typverengung sind ausgeschlossen. Es existiert weiterhin **keine Runtime-Implementierung und keine Persistenz**.
+
 ## Was bewusst noch nicht freigegeben ist
 
 Der Browser-Maskenentwurf wird weiterhin **nicht gespeichert**. Ein Reload verwirft den Draft.
 
 Noch offen sind insbesondere:
 
-- `defaultSelection`-Vertrag für Choice-Felder
+- browserlokale Umsetzung des bereits geplanten `defaultSelection`-Vertrags
 - Save-/Load-Grenze für Masken
 - produktive Masken-Persistenz
 - größere Struktur-, Regel-, Import-/Export-, Recovery- und Dashboard-Funktionen
 
 ## Nächste sichere Reihenfolge
 
-1. **`defaultSelection`-Vertrag** separat als temporären Draft-Scope planen, ohne Persistenz vorwegzunehmen.
-2. **Persistenzgrenze für Masken** mit Preview-, Integritäts- und Recovery-Vertrag planen; noch keinen Write öffnen.
-3. Danach erst die nächste Struktur-Capability aus dem Master-TODO auswählen.
+1. **Persistenzgrenze für Masken** mit Preview-, Integritäts- und Recovery-Vertrag planen; noch keinen Write öffnen.
+2. Danach den geplanten `defaultSelection`-Vertrag in einer eigenen browserlokalen UI-Iteration umsetzen.
+3. Anschließend die nächste Struktur-Capability aus dem Master-TODO auswählen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -155,7 +159,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **13,6 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **18 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **14,4 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **19 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
