@@ -15,6 +15,7 @@
   "write_files": [
     ".provoware/iterations/0135-draft-reorder.json",
     "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
     "tests/mask_builder/test_i135_reorder.py",
     "README.md",
     "TODO.md"
@@ -82,5 +83,5 @@
     "A-M progress becomes 22 of 132 = 16.7 percent"
   ],
   "screenshot_required": false,
-  "status": "IMPLEMENTED_PENDING_GATE"
+  "status": "GATE_FIX_APPLIED_PENDING_RERUN"
 }
