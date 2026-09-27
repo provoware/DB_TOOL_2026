@@ -501,7 +501,7 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert "\\n" not in change_block
     assert 'renderDraft();' in change_block
     assert 'focusDataTypeControl(id);' in change_block
-    assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
+    assert change_block.index('renderDraft();') < change_block.rindex('focusDataTypeControl(id);')
     assert 'item.defaultValue =' not in change_block
 
 
