@@ -19,8 +19,8 @@ def main() -> None:
         'Vorher/Nachher-Vorschau des Rastervorschlags',
         'Zeile " + String(item.before.row) + " → " + String(item.after.row)',
         'Spalte " + String(item.before.column + 1) + " → " + String(item.after.column + 1)',
-        'Übernahme gesperrt: Der aktuelle Draft speichert keine eigene Rasterzeile.',
-        'Ein späterer Mutations-Slice muss Zeile und Spalte als temporären Layoutvertrag gemeinsam absichern.',
+        'Übernahme gesperrt: Zeile und Spalte besitzen jetzt einen getrennten temporären Browservertrag.',
+        'Erst ein späterer Mutations-Slice darf die vorgeschlagenen Positionen dort gezielt einsetzen.',
         'noch nichts übernommen.',
     )
     missing = [token for token in required if token not in html]
