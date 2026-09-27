@@ -30,9 +30,37 @@ _INTERACTION_SCRIPT = r"""
   let movingDraftId = null;
   let editingDraftId = null;
   let editingHelpDraftId = null;
+  const collapsedSectionIds = new Set();
 
   function setStatus(message) {
     status.textContent = message;
+  }
+
+  function focusPreviewSectionToggle(id) {
+    const button = Array.from(preview.querySelectorAll(".preview-section-toggle"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
+  function togglePreviewSection(id) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "section" || !item.isVisible) {
+      return;
+    }
+    if (collapsedSectionIds.has(id)) {
+      collapsedSectionIds.delete(id);
+    } else {
+      collapsedSectionIds.add(id);
+    }
+    renderDraft();
+    setStatus(
+      item.label
+      + (collapsedSectionIds.has(id) ? " · Abschnitt eingeklappt" : " · Abschnitt ausgeklappt")
+      + " · nur temporärer Browserzustand."
+    );
+    focusPreviewSectionToggle(id);
   }
 
   function nextDraftElementId() {
@@ -748,6 +776,7 @@ _INTERACTION_SCRIPT = r"""
     }
     const removed = draftElements[index];
     draftElements.splice(index, 1);
+    collapsedSectionIds.delete(id);
     renderDraft();
     setStatus(removed.label + " entfernt · nur temporärer Browserentwurf.");
     targetButtons[removed.column].focus();
@@ -1242,12 +1271,24 @@ _INTERACTION_SCRIPT = r"""
 
         const heading = document.createElement("h3");
         heading.id = "preview-section-" + item.id;
-        heading.textContent = item.label;
         section.setAttribute("aria-labelledby", heading.id);
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "preview-section-toggle";
+        toggle.dataset.draftId = item.id;
+        toggle.textContent = item.label;
+        toggle.setAttribute("aria-expanded", String(!collapsedSectionIds.has(item.id)));
+        const listId = "preview-section-items-" + item.id;
+        toggle.setAttribute("aria-controls", listId);
+        toggle.addEventListener("click", () => togglePreviewSection(item.id));
+        heading.appendChild(toggle);
         section.appendChild(heading);
 
         activeList = document.createElement("ol");
         activeList.className = "preview-section-items";
+        activeList.id = listId;
+        activeList.hidden = collapsedSectionIds.has(item.id);
         section.appendChild(activeList);
         preview.appendChild(section);
         return;
@@ -1465,6 +1506,8 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .preview-section {{ margin:0 0 1rem; padding:.75rem; border:1px solid #303548; border-radius:8px; }}
 .preview-section h3 {{ margin:.1rem 0 .65rem; font-size:1rem; }}
+.preview-section-toggle {{ width:100%; text-align:left; padding:.45rem .6rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; font-weight:700; }}
+.preview-section-toggle[aria-expanded="false"]::after {{ content:" · eingeklappt"; font-weight:400; }}
 .preview-section-items, .preview-unsectioned-items {{ margin:.35rem 0 .75rem; padding-left:1.5rem; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
 @media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
