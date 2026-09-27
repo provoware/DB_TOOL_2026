@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I141 auf diesem Branch; Desktop 1152 px, Tablet 768 px und Schmal 360 px bilden die vollständige browserlokale Preview-Viewport-Matrix  
+> **Bestätigter Produktstand:** I142 auf diesem Branch; die vollständige Preview-Viewport-Matrix Desktop 1152 px / Tablet 768 px / Schmal 360 px wird gemeinsam in realem Chromium abgenommen  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I141** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I142** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -65,6 +65,7 @@ Bis einschließlich **I141** besitzt der temporäre Browser-Draft:
 - feste Desktop-Vorschau mit 1152-px-Viewport in horizontal scrollbarem Rahmen
 - browserlokale Umschaltung auf eine Tablet-Vorschau mit 768 px, Desktop bleibt Standard
 - zusätzlicher schmaler Preview-Modus mit 360 px; alle drei Modi teilen dieselben Preview-Daten
+- gemeinsame reale Chromium-Abnahme der drei Viewports auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz
 - Blockierung ungültiger Rasterziele vor Mutation
 - Label- und Hilfetext-Bearbeitung
 - Pflichtfeld-Eigenschaft
@@ -152,6 +153,14 @@ I141 schließt die browserlokale Preview-Viewport-Matrix ab. Neben **Desktop 115
 
 Intern werden die drei Viewport-Verträge über eine kleine feste Modus-Tabelle beschrieben. Die Umschaltung verändert ausschließlich Breite, sichtbare Modusbezeichnung und Accessibility-Status; die Draft- und Preview-Daten bleiben identisch. Der Modus wird weiterhin nicht gespeichert.
 
+## I142 – gemeinsame Preview-Abnahme
+
+I142 ist eine **Evidence-/Härtungsiteration**, kein neuer Produktpunkt. Desktop **1152 px**, Tablet **768 px** und Schmal **360 px** werden gemeinsam in realem Chromium geprüft.
+
+Die Abnahme kontrolliert Tastaturaktivierung und Fokus, genau einen aktiven `aria-pressed`-Modus, sichtbare und semantische Breitenbeschriftung, identischen Preview-Inhalt über alle Viewports sowie die Overflow-Grenze: Die Seite selbst darf nicht horizontal überlaufen; breite Preview-Modi dürfen ausschließlich innerhalb ihres Preview-Rahmens scrollen.
+
+Der Master-TODO-Fortschritt bleibt deshalb bei **28 / 132 = 21,2 %**. Runtime-Code wird in I142 nur geändert, wenn die reale Evidence einen reproduzierbaren Defekt zeigt.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -183,8 +192,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Die drei Preview-Verträge Desktop/Tablet/Schmal gemeinsam auf Bedienbarkeit, Fokus und Konsistenz abnehmen.
-2. Danach den nächsten offenen Strukturpunkt `Raster-Assistent als read-only Vorschlag` separat planen.
+1. Nach grüner I142-Abnahme den nächsten offenen Strukturpunkt `Raster-Assistent als read-only Vorschlag` separat planen.
+2. Eine spätere Übernahme eines Rastervorschlags weiterhin getrennt mit Vorher/Nachher-Vertrag behandeln.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.

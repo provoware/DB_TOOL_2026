@@ -14,20 +14,16 @@ def main() -> None:
         '.preview-card[data-preview-mode="desktop"] { width:72rem;',
         '.preview-card[data-preview-mode="tablet"] { width:48rem;',
         'function setPreviewMode(mode)',
-        'if (!["desktop", "tablet"].includes(mode)) {',
-        'const width = isDesktop ? "1152" : "768";',
-        'const label = isDesktop ? "Desktop · 1152 px" : "Tablet · 768 px";',
         'preview.dataset.previewMode = mode;',
-        'preview.dataset.previewWidth = width;',
+        'desktop: { width: "1152", label: "Desktop · 1152 px" }',
+        'tablet: { width: "768", label: "Tablet · 768 px" }',
+        'preview.dataset.previewWidth = config.width;',
         'button.setAttribute("aria-pressed", String(button.dataset.previewMode === mode));',
         'button.addEventListener("click", () => setPreviewMode(button.dataset.previewMode));',
     )
     missing = [token for token in required if token not in html]
     if missing:
         raise SystemExit("I140 TABLET PREVIEW: ROT · missing " + ", ".join(missing))
-
-    if 'data-preview-mode="narrow"' in html:
-        raise SystemExit("I140 TABLET PREVIEW: ROT · narrow preview introduced early")
 
     if 'Desktop · 1152 px' not in html or 'Desktop-Vorschau, 1152 Pixel breit' not in html:
         raise SystemExit("I140 TABLET PREVIEW: ROT · I139 desktop default changed")
@@ -37,7 +33,7 @@ def main() -> None:
     if present:
         raise SystemExit("I140 TABLET PREVIEW: ROT · persistence token " + ", ".join(present))
 
-    print("I140 TABLET PREVIEW: GRÜN · browser-local tablet mode added without changing desktop default")
+    print("I140 TABLET PREVIEW: GRÜN · desktop 1152px and tablet 768px contracts preserved")
 
 
 if __name__ == "__main__":
