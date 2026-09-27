@@ -36,7 +36,8 @@ def test_temporary_interaction_selects_palette_and_places_in_browser_state() -> 
     assert 'draftElements.push({' in html
     assert 'id: nextDraftElementId(),' in html
     assert 'placedLayer.appendChild(card);' in html
-    assert 'preview.appendChild(list);' in html
+    assert 'preview.appendChild(activeList);' in html
+    assert 'preview.appendChild(section);' in html
 
 
 def test_grid_boundaries_are_blocked_before_draft_mutation() -> None:
