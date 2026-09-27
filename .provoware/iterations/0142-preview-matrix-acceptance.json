@@ -18,6 +18,7 @@
     "tests/mask_builder/test_i139_desktop_preview.py",
     "tests/mask_builder/test_i142_preview_matrix_evidence.py",
     "README.md",
+    "tests/mask_builder/test_i140_tablet_preview.py",
     "TODO.md"
   ],
   "read_files": [
