@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I119 auf `main`; gemeinsame Eigenschaften-/Preview-Abnahme I127 bestätigt  
+> **Bestätigter Produktstand:** I132 auf `main`; `defaultSelection` für Choice-Felder browserlokal umgesetzt und weiterhin ohne Persistenz  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I119** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I132** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -66,6 +66,8 @@ Bis einschließlich **I119** besitzt der temporäre Browser-Draft:
 - inaktive statt still umgeschriebene Standardwerte bei Choice-Typen
 - browserlokale Choice-Optionen
 - stabile monotone `draft-option-*`-IDs
+- browserlokale `defaultSelection` über stabile Option-IDs für Einfach- und Mehrfachauswahl
+- ausgewählte Default-Optionen gegen stilles Entfernen und ungültige Typverengung geschützt
 - Optionen hinzufügen, entfernen und deterministisch hoch/runter verschieben
 - Live-Status, Tastaturwege und deterministische Fokus-Rückgabe
 - schmale Darstellung für die bisher freigegebenen Property-Controls
@@ -88,6 +90,12 @@ Beide Reparaturen wurden über Targeted + Foundation gegatet.
 I118 ergänzt die browserlokale Breitenbearbeitung. Eine neue Breite wird nur übernommen, wenn das Element weiterhin vollständig in das 12-Spalten-Raster passt.
 
 I119 liefert reproduzierbare reale Chromium-Evidence für die vollständige vorhandene Property-Matrix bei **100/150/200 %**. Die Evidence deckte zugleich einen Fokusverlust am Pflichtfeld-Toggle auf; dieser konkrete Befund wurde in derselben Iteration repariert und gegatet.
+
+## I132 – browserlokale Standardauswahl
+
+I132 setzt den I128-Vertrag im flüchtigen Browser-Draft um. Einfachauswahl referenziert maximal eine stabile `draft-option-*`-ID; Mehrfachauswahl hält eine geordnete, duplikatfreie ID-Liste. Options-Reorder erhält die Auswahl, ausgewählte Optionen können nicht still entfernt werden und eine Verengung von Mehrfach- auf Einfachauswahl wird bei mehreren Defaults vor Mutation blockiert.
+
+Reale Chromium-Evidence prüft die neue Interaktion bei **100/150/200 %** inklusive Fokus-Rückgabe, Preview-Reihenfolge, Remove-Guard und horizontalem Overflow. Persistenz, Model, Store und Datenbank bleiben unverändert.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 

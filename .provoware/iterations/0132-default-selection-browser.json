@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "iteration": 132,
+  "agent": "default-selection-browser-agent-132",
+  "size": "M",
+  "goal": "Den I128-defaultSelection-Vertrag browserlokal implementieren: stabile Option-ID-Referenzen, single/multi-Auswahl, Preview, Remove-/Typwechsel-Guards und Fokussemantik. Keine Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Browserlokale Standardauswahl für Choice-Felder",
+    "summary": "Choice-Felder erhalten eine rein temporäre Standardauswahl. Einfachauswahl nutzt genau eine Option, Mehrfachauswahl mehrere stabile Option-IDs; ausgewählte Optionen können nicht still gelöscht werden.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0132-default-selection-browser.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i132_default_selection.py",
+    "tests/mask_builder/i132_chromium_evidence.mjs",
+    "tests/mask_builder/test_i132_accessibility_evidence.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/development/I128_DEFAULT_SELECTION_CONTRACT.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/i119_chromium_evidence.mjs",
+    "tests/mask_builder/test_i119_accessibility_evidence.py"
+  ],
+  "direct_dependencies": [
+    "main d8439d2d0ea0558166ca033af477971132a2e430",
+    "I128 defaultSelection contract is authoritative for this slice",
+    "I127 joint property-preview regression remains applicable",
+    "stable draft-option IDs already exist",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: compile browser_shell.py, test_browser_shell.py and test_i132_default_selection.py",
+    "Step 1: run test_browser_shell.py and test_i132_default_selection.py",
+    "Step 1: selected-option removal must be blocked before mutation",
+    "Step 1: multi-to-single with more than one default must be blocked before datatype mutation",
+    "Step 1: no persistence/network/store path",
+    "Step 2 after green: add focused real Chromium evidence at 100/150/200 percent for selection, reorder-preservation, remove guard, focus and overflow",
+    "Step 2: synchronize README/TODO without changing product denominator"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the change is browser-local and targeted"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i132_default_selection.py",
+      "tests/mask_builder/test_i132_accessibility_evidence.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i132_default_selection.py",
+      "tests/mask_builder/test_i132_accessibility_evidence.py"
+    ]
+  },
+  "risks": [
+    "default selections must use stable option IDs rather than mutable labels",
+    "reordering options must preserve semantic selection while changing preview order",
+    "selected options must not disappear through remove or type narrowing",
+    "new controls must remain keyboard/focus safe at narrow widths"
+  ],
+  "non_changes": [
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies"
+  ],
+  "expected_side_effects": [
+    "choice fields carry a temporary default selection in browser memory",
+    "preview displays active choice defaults by labels in current option order",
+    "selected options are protected from silent removal and invalid type narrowing",
+    "real Chromium evidence covers the new default-selection flow at 100/150/200 percent",
+    "product denominator remains 20 of 132 because I132 completes the already counted defaultSelection capability"
+  ],
+  "screenshot_required": true,
+  "status": "STEP2_IMPLEMENTED"
+}

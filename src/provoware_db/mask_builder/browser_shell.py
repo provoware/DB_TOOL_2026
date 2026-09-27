@@ -315,7 +315,18 @@ _INTERACTION_SCRIPT = r"""
     if (item === undefined || item.kind !== "field") {
       return;
     }
-    item.dataType = select.value;
+    const nextDataType = select.value;
+    const prepared = defaultSelectionForDataType(item, nextDataType);
+    if (!prepared.valid) {
+      select.value = item.dataType;
+      setStatus("Nicht übernommen: " + prepared.message);
+      focusDataTypeControl(id);
+      return;
+    }
+    item.dataType = nextDataType;
+    if (isChoiceDataType(nextDataType)) {
+      item.defaultSelection = prepared.value;
+    }
     renderDraft();
     setStatus(
       item.label
@@ -333,6 +344,109 @@ _INTERACTION_SCRIPT = r"""
 
   function isChoiceDataType(dataType) {
     return dataType === "single_choice" || dataType === "multi_choice";
+  }
+
+  function defaultSelectionIds(item) {
+    if (item.defaultSelection === null) {
+      return [];
+    }
+    return Array.isArray(item.defaultSelection)
+      ? item.defaultSelection.slice()
+      : [item.defaultSelection];
+  }
+
+  function defaultSelectionForDataType(item, nextDataType) {
+    const ids = defaultSelectionIds(item);
+    const known = new Set(item.options.map((option) => option.id));
+    if (ids.some((id) => !known.has(id))) {
+      return { valid: false, message: "Standardauswahl verweist auf eine nicht vorhandene Option." };
+    }
+    if (nextDataType === "single_choice") {
+      if (ids.length > 1) {
+        return {
+          valid: false,
+          message: "Mehrere Standardoptionen müssen vor dem Wechsel zur Einfachauswahl gelöst werden.",
+        };
+      }
+      return { valid: true, value: ids.length === 0 ? null : ids[0] };
+    }
+    if (nextDataType === "multi_choice") {
+      const selected = new Set(ids);
+      return {
+        valid: true,
+        value: item.options.filter((option) => selected.has(option.id)).map((option) => option.id),
+      };
+    }
+    return { valid: true, value: item.defaultSelection };
+  }
+
+  function focusDefaultSelectionControl(id, optionId = null) {
+    const controls = Array.from(placedLayer.querySelectorAll(".default-selection-control"));
+    const control = controls.find(
+      (candidate) =>
+        candidate.dataset.draftId === id
+        && (optionId === null || candidate.dataset.optionId === optionId)
+    );
+    if (control !== undefined) {
+      control.focus();
+    }
+  }
+
+  function updateSingleDefaultSelection(id, select) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field" || item.dataType !== "single_choice") {
+      return;
+    }
+    const optionId = select.value.length === 0 ? null : select.value;
+    if (optionId !== null && !item.options.some((option) => option.id === optionId)) {
+      setStatus("Nicht übernommen: Standardauswahl existiert nicht.");
+      focusDefaultSelectionControl(id);
+      return;
+    }
+    item.defaultSelection = optionId;
+    renderDraft();
+    setStatus(
+      item.label
+      + (optionId === null ? " · Standardauswahl gelöst" : " · Standardauswahl übernommen")
+      + " · nur temporärer Browserentwurf."
+    );
+    focusDefaultSelectionControl(id);
+  }
+
+  function updateMultiDefaultSelection(id, optionId, checked) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field" || item.dataType !== "multi_choice") {
+      return;
+    }
+    if (!item.options.some((option) => option.id === optionId)) {
+      setStatus("Nicht übernommen: Standardauswahl existiert nicht.");
+      return;
+    }
+    const selected = new Set(defaultSelectionIds(item));
+    if (checked) {
+      selected.add(optionId);
+    } else {
+      selected.delete(optionId);
+    }
+    item.defaultSelection = item.options
+      .filter((option) => selected.has(option.id))
+      .map((option) => option.id);
+    renderDraft();
+    setStatus(item.label + " · Standardauswahl aktualisiert · nur temporärer Browserentwurf.");
+    focusDefaultSelectionControl(id, optionId);
+  }
+
+  function choiceDefaultSelectionPreview(item) {
+    if (item.kind !== "field" || !isChoiceDataType(item.dataType)) {
+      return "";
+    }
+    const selected = new Set(defaultSelectionIds(item));
+    const labels = item.options
+      .filter((option) => selected.has(option.id))
+      .map((option) => option.label);
+    return labels.length === 0
+      ? "Standardauswahl: keine"
+      : "Standardauswahl: " + labels.join(" | ");
   }
 
   function defaultValueCandidate(dataType, rawValue) {
@@ -466,6 +580,15 @@ _INTERACTION_SCRIPT = r"""
     }
     const index = item.options.findIndex((option) => option.id === optionId);
     if (index < 0) {
+      return;
+    }
+    if (defaultSelectionIds(item).includes(optionId)) {
+      setStatus(
+        "Nicht entfernt: "
+        + item.options[index].label
+        + " ist als Standardauswahl aktiv. Zuerst Standardauswahl lösen."
+      );
+      focusDefaultSelectionControl(draftId, item.dataType === "multi_choice" ? optionId : null);
       return;
     }
     const removed = item.options[index];
@@ -771,6 +894,65 @@ _INTERACTION_SCRIPT = r"""
             });
             card.appendChild(optionList);
           }
+
+          const defaultSelectionLabel = document.createElement("label");
+          defaultSelectionLabel.className = "default-selection-label";
+          defaultSelectionLabel.textContent = "Standardauswahl";
+          card.appendChild(defaultSelectionLabel);
+
+          if (item.dataType === "single_choice") {
+            const defaultSelectionControl = document.createElement("select");
+            defaultSelectionControl.className = "default-selection-control";
+            defaultSelectionControl.dataset.draftId = item.id;
+            defaultSelectionControl.id = "draft-default-selection-" + item.id;
+            defaultSelectionLabel.id = "draft-default-selection-label-" + item.id;
+            defaultSelectionLabel.htmlFor = defaultSelectionControl.id;
+            defaultSelectionControl.setAttribute("aria-labelledby", defaultSelectionLabel.id);
+            const noneOption = document.createElement("option");
+            noneOption.value = "";
+            noneOption.textContent = "Keine";
+            noneOption.selected = item.defaultSelection === null;
+            defaultSelectionControl.appendChild(noneOption);
+            item.options.forEach((option) => {
+              const defaultOption = document.createElement("option");
+              defaultOption.value = option.id;
+              defaultOption.textContent = option.label;
+              defaultOption.selected = item.defaultSelection === option.id;
+              defaultSelectionControl.appendChild(defaultOption);
+            });
+            defaultSelectionControl.disabled = item.options.length === 0;
+            defaultSelectionControl.addEventListener(
+              "change",
+              () => updateSingleDefaultSelection(item.id, defaultSelectionControl)
+            );
+            card.appendChild(defaultSelectionControl);
+          } else {
+            const defaultSelectionGroup = document.createElement("fieldset");
+            defaultSelectionGroup.className = "default-selection-group";
+            defaultSelectionGroup.setAttribute("aria-label", item.label + " · Standardauswahl");
+            const selected = new Set(defaultSelectionIds(item));
+            item.options.forEach((option) => {
+              const defaultSelectionRow = document.createElement("label");
+              defaultSelectionRow.className = "default-selection-row";
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.className = "default-selection-control";
+              checkbox.dataset.draftId = item.id;
+              checkbox.dataset.optionId = option.id;
+              checkbox.checked = selected.has(option.id);
+              checkbox.setAttribute("aria-label", item.label + " · " + option.label + " als Standardauswahl");
+              checkbox.addEventListener(
+                "change",
+                () => updateMultiDefaultSelection(item.id, option.id, checkbox.checked)
+              );
+              defaultSelectionRow.appendChild(checkbox);
+              const checkboxText = document.createElement("span");
+              checkboxText.textContent = option.label;
+              defaultSelectionRow.appendChild(checkboxText);
+              defaultSelectionGroup.appendChild(defaultSelectionRow);
+            });
+            card.appendChild(defaultSelectionGroup);
+          }
         }
 
         if (!isChoiceDataType(item.dataType)) {
@@ -915,6 +1097,11 @@ _INTERACTION_SCRIPT = r"""
             )
             : ""
         )
+        + (
+          item.kind === "field" && isChoiceDataType(item.dataType)
+            ? " · " + choiceDefaultSelectionPreview(item)
+            : ""
+        )
         + (defaultValuePreview(item).length === 0 ? "" : " · Standard: " + defaultValuePreview(item))
       );
       list.appendChild(row);
@@ -998,6 +1185,7 @@ _INTERACTION_SCRIPT = r"""
       dataType: selectedKind === "field" ? "text" : null,
       defaultValue: selectedKind === "field" ? "" : null,
       options: selectedKind === "field" ? [] : null,
+      defaultSelection: null,
     });
     renderDraft();
     setStatus(
@@ -1109,18 +1297,21 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
-.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label {{ color:#d7def5; font-weight:600; }}
+.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label, .default-selection-label {{ color:#d7def5; font-weight:600; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .option-editor-label {{ color:#d7def5; font-weight:600; }}
 .choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
 .choice-option-row {{ display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin:.25rem 0; }}
 .choice-option-label {{ flex:1 1 12rem; min-width:0; overflow-wrap:anywhere; }}
+.default-selection-group {{ width:100%; margin:.2rem 0 .4rem; padding:.45rem; border:1px solid #4a526b; border-radius:8px; }}
+.default-selection-row {{ display:flex; align-items:center; gap:.45rem; margin:.25rem 0; overflow-wrap:anywhere; }}
+.default-selection-control {{ min-width:0; }}
 .default-value-control {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
