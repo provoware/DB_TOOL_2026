@@ -32,7 +32,9 @@ def test_temporary_interaction_selects_palette_and_places_in_browser_state() -> 
     assert html.count('class="placement-target"') == GRID_COLUMNS
     assert 'const draftElements = [];' in html
     assert 'button.addEventListener("click", () => selectKind(button));' in html
-    assert 'button.addEventListener("click", () => placeAt(Number(button.dataset.column)));' in html
+    assert 'button.addEventListener("focus", () => setTargetTabStop(index));' in html
+    assert 'setTargetTabStop(index);' in html
+    assert 'placeAt(Number(button.dataset.column));' in html
     assert 'draftElements.push({' in html
     assert 'id: nextDraftElementId(),' in html
     assert 'placedLayer.appendChild(card);' in html
