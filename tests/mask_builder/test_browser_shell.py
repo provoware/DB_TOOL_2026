@@ -430,7 +430,7 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert 'dataType: selectedKind === "field" ? "text" : null,' in html
     assert 'function changeDataType(id, select)' in html
     assert 'item.kind !== "field"' in html
-    assert 'item.dataType = select.value;' in html
+    assert 'item.dataType = nextDataType;' in html
     assert 'dataTypeSelect.className = "datatype-select";' in html
     assert 'dataTypeSelect.dataset.draftId = item.id;' in html
     assert 'dataTypeSelect.setAttribute("aria-labelledby", dataTypeLabel.id);' in html
@@ -444,7 +444,7 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     start = html.index('function changeDataType(id, select)')
     end = html.index('function removeDraft(id)')
     datatype_block = html[start:end]
-    assert 'item.dataType = select.value;' in datatype_block
+    assert 'item.dataType = nextDataType;' in datatype_block
     assert 'renderDraft();' in datatype_block
     assert 'item.id =' not in datatype_block
     assert 'item.kind =' not in datatype_block
@@ -473,7 +473,7 @@ def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -
     start = html.index('function changeDataType(id, select)')
     end = html.index('function isChoiceDataType(dataType)')
     change_block = html[start:end]
-    assert 'item.dataType = select.value;' in change_block
+    assert 'item.dataType = nextDataType;' in change_block
     assert 'item.defaultValue =' not in change_block
     assert 'defaultValue = ' not in change_block
 
