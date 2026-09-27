@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I143 auf diesem Branch; ein deterministischer Raster-Assistent berechnet ausschließlich read-only Layout-Vorschläge aus dem browserlokalen Draft  
+> **Bestätigter Produktstand:** I144 auf diesem Branch; Rastervorschlag und aktuelles Layout werden explizit als Vorher/Nachher-Vertrag verglichen, Übernahme bleibt gesperrt  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I143** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I144** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -84,6 +84,7 @@ Bis einschließlich **I143** besitzt der temporäre Browser-Draft:
 - bestätigte 100/150/200-%-Evidence für die vollständige vorhandene Property-Matrix
 - deterministische Preview ohne produktiven Write
 - read-only Raster-Assistent: kompakter Layout-Vorschlag aus bestehender Reihenfolge und bestehenden Breiten, ohne Übernahme
+- explizite Vorher/Nachher-Tabelle mit geplanter Zeilen-/Spaltenänderung pro Element; tatsächliche Übernahme weiterhin gesperrt
 
 ### I115-Härtung
 
@@ -168,6 +169,14 @@ I143 ergänzt einen bewusst **nicht schreibenden Raster-Assistenten**. Er liest 
 
 Der Vorschlag zeigt **Zeile, Startspalte und Breite** pro Draft-Element. Vor und nach der Berechnung wird ein Positions-/Breiten-Snapshot verglichen; eine Mutation des Drafts wird als Fehler behandelt. Es gibt in I143 ausdrücklich **keinen Anwenden-/Übernehmen-Button**, keine Änderung von `column` oder `width` und keine Persistenz.
 
+## I144 – Rastervorschlag Vorher/Nachher-Vertrag
+
+I144 erweitert den I143-Assistenten um eine explizite **Vorher/Nachher-Vorschau**, ohne den Draft zu verändern. Pro Element werden aktuelles Layout und vorgeschlagenes Layout gegenübergestellt: **Zeile, Startspalte und Breite**. Änderungen werden konkret als beispielsweise `Zeile 3 → 1` oder `Spalte 7 → 5` ausgewiesen.
+
+Dabei wurde eine wichtige Mutationsgrenze sichtbar: Die aktuelle Arbeitsfläche leitet die Rasterzeile aus der Draft-Reihenfolge ab; der Draft besitzt noch keine eigene Zeilenposition. Deshalb bleibt die Übernahme in I144 ausdrücklich gesperrt. Ein späterer Mutations-Slice muss **Zeile und Spalte gemeinsam** als temporären Layoutvertrag behandeln, bevor irgendeine Position tatsächlich verändert wird.
+
+I144 schließt den Master-TODO-Punkt „Übernahme eines Rastervorschlags mit Vorher/Nachher“ noch **nicht** ab. Der Produktfortschritt bleibt daher bei **29 / 132 = 22,0 %**.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -199,8 +208,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Eine Übernahme eines Rastervorschlags ausschließlich als separaten Vorher/Nachher-Slice planen.
-2. Vor einer Übernahme Mutation, Fokus-Rückgabe und Undo-/Recovery-Grenze explizit gaten.
+1. Als nächsten Slice einen rein browserlokalen temporären Layoutvertrag für Rasterzeile + Spalte definieren; noch keine Persistenz.
+2. Erst danach eine explizite Übernahme mit Vorher/Nachher-Abnahme, Fokus-Rückgabe und reproduzierbarer Mutation implementieren.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
