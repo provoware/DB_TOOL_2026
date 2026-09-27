@@ -59,11 +59,13 @@
     "compile": [
       "src/provoware_db/mask_builder/browser_shell.py",
       "tests/mask_builder/test_browser_shell.py",
-      "tests/mask_builder/test_i132_default_selection.py"
+      "tests/mask_builder/test_i132_default_selection.py",
+      "tests/mask_builder/test_i132_accessibility_evidence.py"
     ],
     "python_tests": [
       "tests/mask_builder/test_browser_shell.py",
-      "tests/mask_builder/test_i132_default_selection.py"
+      "tests/mask_builder/test_i132_default_selection.py",
+      "tests/mask_builder/test_i132_accessibility_evidence.py"
     ]
   },
   "risks": [
@@ -80,10 +82,12 @@
     "no dependencies"
   ],
   "expected_side_effects": [
-    "choice fields can carry a temporary default selection in browser memory",
+    "choice fields carry a temporary default selection in browser memory",
     "preview displays active choice defaults by labels in current option order",
-    "selected options are protected from silent removal"
+    "selected options are protected from silent removal and invalid type narrowing",
+    "real Chromium evidence covers the new default-selection flow at 100/150/200 percent",
+    "product denominator remains 20 of 132 because I132 completes the already counted defaultSelection capability"
   ],
   "screenshot_required": true,
-  "status": "STEP1_IMPLEMENTED"
+  "status": "STEP2_IMPLEMENTED"
 }

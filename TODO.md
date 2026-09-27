@@ -1,21 +1,21 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **nach I129 auf `main`**. Der letzte produktive Browser-Slice ist I119; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **nach I132 auf `main`**. Der letzte produktive Browser-Slice ist I132; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
 **Fortschritt A–M:** **20 von 132 = 15,2 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I118 ergänzte die browserlokale Breitenbearbeitung mit 12-Spalten-Vorabvalidierung. I119 bestätigte die vollständige vorhandene Property-Matrix bei 100/150/200 % und härtete den gefundenen Fokuspfad. I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance und zählen deshalb nicht als Produktfortschritt.
+**Bestätigter Produktstand:** I132 ergänzt browserlokale `defaultSelection` für Choice-Felder mit stabilen Option-IDs, Preview, Fokus- und Mutationsguards. I119 bleibt die Basis-Evidence der vorherigen Property-Matrix; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] browserlokalen `defaultSelection`-Vertrag umsetzen
-2. [ ] Element duplizieren bei neuer monotoner Draft-ID
-3. [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
-4. [ ] Abschnitte
+1. [ ] Element duplizieren bei neuer monotoner Draft-ID
+2. [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
+3. [ ] Abschnitte
+4. [ ] einklappbare Gruppen
 
-Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen**.
+Bis dahin bleiben **Persistenz, CP-03 und CP-06 geschlossen**. `defaultSelection` ist ausschließlich browserlokal und flüchtig.
 
 
 ## Bestätigter Governance-Stand
@@ -50,7 +50,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 - [x] statische Sichtbarkeit
 - [x] Breite im 12-Spalten-Raster ändern
 - [x] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
-- [x] `defaultSelection`-Vertrag separat planen
+- [x] `defaultSelection`-Vertrag planen und browserlokal umsetzen
 - [x] Persistenzgrenze für Masken separat planen
 
 ## B. Masken-Baukasten – Struktur
