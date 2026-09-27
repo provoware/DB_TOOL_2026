@@ -1,17 +1,17 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **I135 auf Feature-Branch, Basis I134 auf `main`**. Der letzte produktive Browser-Slice ist I135; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **I136 auf Feature-Branch, Basis I135 auf `main`**. Der letzte produktive Browser-Slice ist I136; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **22 von 132 = 16,7 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **23 von 132 = 17,4 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
+**Bestätigter Produktstand:** I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
 
 ## Nächste sichere Prioritäten
 
 1. [x] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
-2. [ ] Abschnitte
+2. [x] Abschnitte
 3. [ ] einklappbare Gruppen
 4. [ ] explizite Tab-Reihenfolge
 
@@ -57,7 +57,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 
 - [x] Element duplizieren bei neuer monotoner Draft-ID
 - [x] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
-- [ ] Abschnitte
+- [x] Abschnitte
 - [ ] einklappbare Gruppen
 - [ ] explizite Tab-Reihenfolge
 - [ ] Desktop-Vorschau
