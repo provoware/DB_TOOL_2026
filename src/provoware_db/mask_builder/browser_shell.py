@@ -19,6 +19,9 @@ _INTERACTION_SCRIPT = r"""
   const placedLayer = document.getElementById("placed-elements");
   const emptyState = document.querySelector(".canvas-empty");
   const preview = document.getElementById("preview");
+  const previewShell = document.querySelector(".preview-viewport-shell");
+  const previewModeLabel = document.getElementById("preview-mode-label");
+  const previewModeButtons = Array.from(document.querySelectorAll(".preview-mode-button"));
   const status = document.getElementById("interaction-status");
   const gridColumns = Number(canvas.dataset.gridColumns);
   const draftElements = [];
@@ -34,6 +37,23 @@ _INTERACTION_SCRIPT = r"""
 
   function setStatus(message) {
     status.textContent = message;
+  }
+
+  function setPreviewMode(mode) {
+    if (!["desktop", "tablet"].includes(mode)) {
+      return;
+    }
+    const isDesktop = mode === "desktop";
+    const width = isDesktop ? "1152" : "768";
+    const label = isDesktop ? "Desktop · 1152 px" : "Tablet · 768 px";
+    preview.dataset.previewMode = mode;
+    preview.dataset.previewWidth = width;
+    previewModeLabel.textContent = label;
+    previewShell.setAttribute("aria-label", label.replace(" · ", "-Vorschau, ").replace(" px", " Pixel breit"));
+    previewModeButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.previewMode === mode));
+    });
+    setStatus(label + " aktiviert · nur temporäre Vorschau.");
   }
 
   function focusPreviewSectionToggle(id) {
@@ -1404,6 +1424,10 @@ _INTERACTION_SCRIPT = r"""
     targetButtons[next].focus();
   }
 
+  previewModeButtons.forEach((button) => {
+    button.addEventListener("click", () => setPreviewMode(button.dataset.previewMode));
+  });
+
   paletteButtons.forEach((button) => {
     button.addEventListener("click", () => selectKind(button));
   });
@@ -1519,9 +1543,13 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-viewport-shell {{ max-width:100%; overflow-x:auto; padding:.25rem; border:1px solid #303548; border-radius:10px; background:#0f1118; }}
+.preview-mode-controls {{ display:flex; gap:.5rem; flex-wrap:wrap; margin:0 0 .6rem; }}
+.preview-mode-button {{ padding:.35rem .6rem; border:1px solid #6978a4; border-radius:999px; background:#191c26; color:inherit; font:inherit; }}
+.preview-mode-button[aria-pressed="true"] {{ border-color:#8ca5ff; box-shadow:0 0 0 2px #8ca5ff33; }}
 .preview-mode-label {{ display:inline-block; margin:0 0 .6rem; padding:.25rem .5rem; border:1px solid #4a526b; border-radius:999px; color:#d7def5; font-size:.9rem; font-weight:600; }}
-.preview-card {{ width:72rem; min-height:32rem; max-width:none; border:1px solid #303548; border-radius:10px; padding:1.25rem; background:#141720; }}
-.preview-card[data-preview-mode="desktop"] {{ box-shadow:inset 0 0 0 1px #242a3c; }}
+.preview-card {{ min-height:32rem; max-width:none; border:1px solid #303548; border-radius:10px; padding:1.25rem; background:#141720; }}
+.preview-card[data-preview-mode="desktop"] {{ width:72rem; box-shadow:inset 0 0 0 1px #242a3c; }}
+.preview-card[data-preview-mode="tablet"] {{ width:48rem; box-shadow:inset 0 0 0 1px #2d3448; }}
 .preview-section {{ margin:0 0 1rem; padding:.75rem; border:1px solid #303548; border-radius:8px; }}
 .preview-section h3 {{ margin:.1rem 0 .65rem; font-size:1rem; }}
 .preview-section-toggle {{ width:100%; text-align:left; padding:.45rem .6rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; font-weight:700; }}
@@ -1536,7 +1564,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 <main class="editor">
 <section class="panel" aria-labelledby="palette-title" data-focus-stage="1"><h2 id="palette-title">Komponenten</h2><div class="palette">{palette}</div></section>
 <section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
-<section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><p class="preview-mode-label" id="preview-mode-label">Desktop · 1152 px</p><div class="preview-viewport-shell" aria-label="Desktop-Vorschau, 1152 Pixel breit" aria-describedby="preview-mode-label"><div class="preview-card" id="preview" data-preview-mode="desktop" data-preview-width="1152"><p>Noch keine Komponenten platziert.</p></div></div></section>
+<section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><div class="preview-mode-controls" role="group" aria-label="Vorschaugröße"><button type="button" class="preview-mode-button" data-preview-mode="desktop" aria-pressed="true">Desktop</button><button type="button" class="preview-mode-button" data-preview-mode="tablet" aria-pressed="false">Tablet</button></div><p class="preview-mode-label" id="preview-mode-label">Desktop · 1152 px</p><div class="preview-viewport-shell" aria-label="Desktop-Vorschau, 1152 Pixel breit" aria-describedby="preview-mode-label"><div class="preview-card" id="preview" data-preview-mode="desktop" data-preview-width="1152"><p>Noch keine Komponenten platziert.</p></div></div></section>
 </main>
 {_INTERACTION_SCRIPT}
 </body>
