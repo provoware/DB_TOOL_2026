@@ -83,5 +83,5 @@
     "A-M progress becomes 22 of 132 = 16.7 percent"
   ],
   "screenshot_required": false,
-  "status": "SECOND_GATE_FIX_APPLIED_PENDING_RERUN"
+  "status": "GATE_GREEN"
 }
