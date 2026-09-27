@@ -35,7 +35,9 @@ def test_temporary_interaction_selects_palette_and_places_in_browser_state() -> 
     assert 'button.addEventListener("focus", () => setTargetTabStop(index));' in html
     assert 'setTargetTabStop(index);' in html
     assert 'placeAt(Number(button.dataset.column));' in html
-    assert 'draftElements.push({' in html
+    assert 'const created = {' in html
+    assert 'draftElements.push(created);' in html
+    assert 'setTemporaryGridPosition(created.id, draftElements.length, column, created.width);' in html
     assert 'id: nextDraftElementId(),' in html
     assert 'placedLayer.appendChild(card);' in html
     assert 'preview.appendChild(activeList);' in html
