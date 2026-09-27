@@ -93,5 +93,5 @@
     "A-M progress remains 28 of 132 = 21.2 percent"
   ],
   "screenshot_required": false,
-  "status": "GATE_FIX_APPLIED_PENDING_RERUN"
+  "status": "GATE_GREEN"
 }
