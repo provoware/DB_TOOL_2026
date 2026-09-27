@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "iteration": 135,
+  "agent": "draft-reorder-agent-135",
+  "size": "S",
+  "goal": "Kontrolliertes Neuordnen vorhandener Browser-Draft-Elemente ohne Drag-and-drop-Zwang implementieren. Reihenfolge nur schrittweise hoch/runter, browserlokal und ohne Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Element-Reihenfolge",
+    "summary": "Platzierten Draft-Elementen stehen deterministische Hoch-/Runter-Controls zur Verfügung. Randpositionen sind gesperrt und der Fokus bleibt nach dem Schritt am verschobenen Element.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0135-draft-reorder.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i135_reorder.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i133_duplicate.py"
+  ],
+  "direct_dependencies": [
+    "main e0fa6a96253280cf01b09b8e6a9d553308a6dbdc",
+    "I133 duplicate capability is confirmed on main",
+    "existing choice-option reorder pattern provides the interaction precedent",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and test_i135_reorder.py",
+    "run test_i135_reorder.py",
+    "run existing test_browser_shell.py as narrow browser-shell regression",
+    "first element cannot move up; last element cannot move down",
+    "one action changes order by exactly one position",
+    "rendered preview follows draftElements order",
+    "focus returns to an enabled order control of the moved element",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the change is browser-local and targeted",
+    "new screenshot evidence because this slice reuses existing button/layout patterns and is not a visual milestone"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i135_reorder.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i135_reorder.py"
+    ]
+  },
+  "risks": [
+    "reordering must not mutate draft or option identities",
+    "edge controls must not leave focus on a disabled button",
+    "preview order must remain derived from the same draftElements sequence",
+    "no drag-and-drop-only interaction may be introduced"
+  ],
+  "non_changes": [
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no drag-and-drop implementation"
+  ],
+  "expected_side_effects": [
+    "a draft element can move exactly one position up or down in browser memory",
+    "editor row order and preview order update together",
+    "boundary controls are disabled deterministically",
+    "focus stays with the moved element on an enabled reorder control",
+    "A-M progress becomes 22 of 132 = 16.7 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
