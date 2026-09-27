@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I119 auf `main`  
+> **Bestätigter Produktstand:** I119 auf `main`; gemeinsame Eigenschaften-/Preview-Abnahme I127 bestätigt  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **17 / 132 = 12,9 %**
+> **Gesamtfortschritt Master-TODO A–M:** **18 / 132 = 13,6 %**
 
 ## Zielbild
 
@@ -95,13 +95,16 @@ Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle 
 
 Wichtig: Diese Kette ist **shadow-only und nicht autoritativ**. Sie verändert keine Produktfunktion, keine Persistenz und keinen Frozen Core. Deshalb erhöht I120–I124 den Produktfortschritt A–M nicht.
 
+## I127 – gemeinsame Eigenschaften-/Preview-Abnahme
+
+I127 bestätigt die bereits vorhandene gemeinsame Preview-Projektion mit einem eigenen Regressionsvertrag. Label, Breite, Hilfetext, Pflichtstatus, Datentyp, Choice-Optionen, skalarer Standardwert und Sichtbarkeit bleiben dadurch zusammen abgesichert. Es wurde keine neue Runtime-Funktion eingeführt; `defaultSelection` und Persistenz bleiben geschlossen.
+
 ## Was bewusst noch nicht freigegeben ist
 
 Der Browser-Maskenentwurf wird weiterhin **nicht gespeichert**. Ein Reload verwirft den Draft.
 
 Noch offen sind insbesondere:
 
-- gemeinsame Eigenschaften-/Preview-Abnahme
 - `defaultSelection`-Vertrag für Choice-Felder
 - Save-/Load-Grenze für Masken
 - produktive Masken-Persistenz
@@ -109,10 +112,9 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. **Gemeinsame Eigenschaften-/Preview-Abnahme** als letzten offenen Browser-Draft-Abgleich schließen.
-2. **`defaultSelection`-Vertrag** separat planen, ohne Persistenz vorwegzunehmen.
-3. **Persistenzgrenze für Masken** separat planen; erst danach Save/Load bewerten.
-4. Danach erst die nächste Struktur-Capability aus dem Master-TODO auswählen.
+1. **`defaultSelection`-Vertrag** separat als temporären Draft-Scope planen, ohne Persistenz vorwegzunehmen.
+2. **Persistenzgrenze für Masken** mit Preview-, Integritäts- und Recovery-Vertrag planen; noch keinen Write öffnen.
+3. Danach erst die nächste Struktur-Capability aus dem Master-TODO auswählen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -153,7 +155,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **12,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **17 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **13,6 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **18 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

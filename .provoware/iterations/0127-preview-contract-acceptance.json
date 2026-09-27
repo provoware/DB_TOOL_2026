@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 127,
+  "agent": "preview-contract-acceptance-agent-127",
+  "size": "M",
+  "goal": "Die offene gemeinsame Eigenschaften-/Preview-Abnahme mit dem kleinsten fehlenden Abgleich schließen: einen expliziten gemeinsamen Regressionsvertrag ergänzen, der die bereits vorhandenen Preview-Projektionen zusammen absichert, ohne neue Produktfunktion oder Persistenz zu eröffnen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Gemeinsame Eigenschaften-/Preview-Abnahme",
+    "summary": "Die vorhandenen Eigenschaften werden nicht neu implementiert; ein gemeinsamer Regressionstest bindet Label, Breite, Hilfe, Pflichtstatus, Datentyp, Choice-Optionen, Standardwert und Sichtbarkeit an dieselbe Preview-Projektion.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0127-preview-contract-acceptance.json",
+    "tests/mask_builder/test_i127_preview_contract.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i119_accessibility_evidence.py",
+    "tests/mask_builder/i119_chromium_evidence.mjs"
+  ],
+  "direct_dependencies": [
+    "main f109b38a7d842b6b0be11587dd79734b8fee7c33",
+    "I119 real Chromium evidence already covers the existing property controls at 100/150/200 percent",
+    "browser preview already projects the existing property matrix",
+    "defaultSelection remains closed",
+    "persistence remains closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: run tests/mask_builder/test_i127_preview_contract.py and require GREEN",
+    "Step 1: verify the preview contract covers visibility filtering, label, width, help text, required state, datatype, choice options and scalar default value in one projection block",
+    "Step 1: verify defaultSelection and persistence/network paths remain absent",
+    "Step 2 after green: mark only the common properties-preview acceptance TODO complete and synchronize README/TODO progress",
+    "Step 2: verify A-M count becomes exactly 18 completed and 114 open = 132",
+    "Step 2: no runtime/product implementation file changes"
+  ],
+  "tests_explicitly_not_run": [
+    "new Chromium run because I127 changes only regression coverage and documentation while I119 real Chromium evidence remains applicable to unchanged browser runtime",
+    "database/repository tests because no persistent path changes",
+    "Control Plane behavior tests because governance implementation is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/mask_builder/test_i127_preview_contract.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_i127_preview_contract.py"
+    ]
+  },
+  "risks": [
+    "an overly broad test could duplicate prior evidence instead of closing only the missing joint contract",
+    "documentation must not claim a new product capability beyond the already implemented property matrix"
+  ],
+  "non_changes": [
+    "no browser runtime code",
+    "no defaultSelection",
+    "no persistence or network write path",
+    "no schema, migration, domain, repository or SQL changes",
+    "no CP-03 or CP-06 reopen",
+    "no dependency changes"
+  ],
+  "expected_side_effects": [
+    "the complete existing property-to-preview mapping has one explicit joint regression contract",
+    "the corresponding TODO acceptance point is closed",
+    "A-M progress becomes 18 of 132 = 13.6 percent without opening defaultSelection or persistence"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED"
+}

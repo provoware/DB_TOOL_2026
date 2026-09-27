@@ -1,19 +1,19 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **nach I124 auf `main`**. Der letzte Produkt-Slice ist I119; I120–I124 sind ausschließlich Control-Plane-V2-Shadow-Governance.
+Stand: **nach I127 auf `main`**. Der letzte produktive Browser-Slice ist I119; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **17 von 132 = 12,9 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **18 von 132 = 13,6 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
 **Bestätigter Produktstand:** I118 ergänzte die browserlokale Breitenbearbeitung mit 12-Spalten-Vorabvalidierung. I119 bestätigte die vollständige vorhandene Property-Matrix bei 100/150/200 % und härtete den gefundenen Fokuspfad. I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance und zählen deshalb nicht als Produktfortschritt.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
-2. [ ] `defaultSelection`-Vertrag separat planen
-3. [ ] Persistenzgrenze für Masken separat planen
-4. [ ] Element duplizieren bei neuer monotoner Draft-ID
+1. [ ] `defaultSelection`-Vertrag separat planen
+2. [ ] Persistenzgrenze für Masken separat planen
+3. [ ] Element duplizieren bei neuer monotoner Draft-ID
+4. [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
 
 Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen**.
 
@@ -49,7 +49,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 - [x] vollständige 100/150/200-%-Evidence für die gesamte Eigenschaftenbearbeitung
 - [x] statische Sichtbarkeit
 - [x] Breite im 12-Spalten-Raster ändern
-- [ ] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
+- [x] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
 - [ ] `defaultSelection`-Vertrag separat planen
 - [ ] Persistenzgrenze für Masken separat planen
 
