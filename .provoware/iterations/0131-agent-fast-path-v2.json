@@ -81,9 +81,11 @@
   ],
   "expected_side_effects": [
     "all PRs fail early on README/TODO progress drift before expensive routing work",
-    "agents can start from one compact context capsule instead of rereading several status documents",
-    "step 2 will reduce mandatory operational handoffs while keeping specialist checks trigger-based"
+    "agents start from one compact hashed context instead of rereading central status documents",
+    "the default operational path uses three core roles while specialist roles are trigger-based",
+    "screenshot cadence tracks UI-relevant iterations rather than unrelated docs/governance work",
+    "all prior single-writer, evidence, scope, freeze and deep-gate protections remain in force"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED"
+  "status": "STEP2_IMPLEMENTED"
 }

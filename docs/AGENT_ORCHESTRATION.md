@@ -1,167 +1,154 @@
-# PROVOWARE Agent-Orchestrierung V1
+# PROVOWARE Agent-Orchestrierung V2
 
 ## Ziel
 
-Mehrere spezialisierte Agenten arbeiten nacheinander oder parallel, ohne dieselbe Datei gleichzeitig zu verändern. Prüfagenten analysieren bevorzugt nur geänderte Dateien und deren direkte Abhängigkeiten.
+V2 reduziert Wartezeit, Kontextverbrauch und unnötige Agentenübergaben, ohne Scope-, Evidence-, Single-Writer-, Freeze- oder Recovery-Schutz abzuschwächen. Der Standardweg nutzt **drei Kernrollen**; Spezialisten werden ausschließlich durch fachliche Risiken ausgelöst.
 
-## Rollen
+Die Control-Plane-V2-Verträge I120–I124 bleiben **shadow-only und nicht autoritativ**. V2 ist eine operative Arbeitsweise innerhalb der weiterhin maßgeblichen Repository-Governance.
 
-### 1. Änderungsagent
-- setzt genau einen freigegebenen Patch um
-- darf nur Dateien anfassen, die ihm im Plan zugewiesen sind
-- schreibt anschließend ein Change-Manifest
+## 1. Fast Context
 
-### 2. Prüfagent
-- liest das Change-Manifest
-- prüft nur angefasste Dateien plus direkte Abhängigkeiten
-- erzeugt Findings, aber ändert keinen Produktivcode
-- schreibt Findings in die Review-Queue
+Jede Iteration startet mit:
 
-### 3. Analyseagent
-- nimmt Findings aus der Review-Queue
-- gruppiert, dedupliziert und bewertet sie
-- erzeugt daraus eine konkrete Patch-Empfehlung
-- schreibt diese in die Planning-Queue
+```bash
+python scripts/build_iteration_context.py --check
+```
 
-### 4. Planungsagent
-- baut aus Findings einen kleinen, sicheren Iterationsplan
-- nennt Ziel, Dateien, Risiken, Tests und bewusste Nicht-Änderungen
-- darf keinen Code verändern
+Der Fast Context bündelt:
+- neuesten Iterationsstand,
+- bestätigte Statuszeilen aus README,
+- A–M-Fortschritt aus tatsächlichen Checkboxen,
+- nächste Prioritäten,
+- Roadmap-Stand,
+- Hashes der zentralen Kontextquellen.
 
-### 5. Orchestrator
-- prüft vor Start jeder Iteration Dateikollisionen
-- vergibt Dateibesitz für die Iteration
-- entscheidet Reihenfolge und Parallelisierbarkeit
-- startet erst danach Änderungsagenten
-- prüft am Ende Vollständigkeit, Gate-Status und Queue-Reste
+Der PR-Router führt denselben Drift-Check aus, bevor Manifest und Scope geroutet werden. Dadurch werden widersprüchliche README-/TODO-Fortschrittsstände früh und billig gestoppt.
 
-### 6. Gate-Agent
-- führt nur relevante Tests aus
-- validiert Frozen-Core, Syntax, Regression und betroffene Schichten
-- erzeugt GRÜN/GELB/ROT und eine TXT-Auswertung
-- ändert keinen Produktivcode
+## 2. Drei Kernrollen
 
-### 7. Screenshot-Agent
-- alle 5 Iterationen
-- erzeugt definierte UI-Screenshots
-- schreibt Kurzfazit in die Entwicklerdokumentation
-- vergleicht gegen letzte freigegebene Referenz
+### A. Orchestrator/Planner · read-only
+- nimmt Fast Context als Startpunkt statt eines neuen Repo-Scans
+- klärt Ziel, Risikoklasse, Write-Set, Nicht-Scope und Tests
+- prüft Ausgangs-SHA, Dateikollisionen und Frozen-Core-Trigger
+- versiegelt beide Schritte der Iteration vor dem ersten Write
+- entscheidet, welche Spezialisten tatsächlich gebraucht werden
 
-## Ablauf
+### B. Executor · Single Writer
+- besitzt ausschließlich das freigegebene Write-Set
+- setzt pro Schritt genau den kleinsten notwendigen Patch um
+- sucht während des Writes nicht nach neuen Nebenoptimierungen
+- veröffentlicht pro abgeschlossenem Schritt genau einen atomaren Head
+- stoppt bei abweichendem SHA, Scope oder Invariant
+
+### C. Validator/Finalizer · read-only
+- prüft Diff gegen Manifest und Ausgangs-SHA
+- führt nur die risikobasiert notwendigen Gates aus
+- bestätigt oder verwirft Evidence-Reuse
+- klassifiziert Findings
+- gibt Merge nur bei reproduzierbarem GRÜN frei
+- finalisiert Recovery-Key, nächsten Schritt und Queue-Reste
+
+## 3. Spezialisten nur bei Trigger
+
+| Spezialist | Trigger |
+|---|---|
+| Deep/Frozen Inspector | Schema, Domain, Repository, Storage, CP-03/CP-06 |
+| Accessibility/Chromium | sichtbare UI, Keyboard, Fokus, responsive Darstellung |
+| Screenshot | visueller Trigger oder fünfte UI-relevante Iteration seit Referenz |
+| Recovery/Integrität | produktiver Write, Import, Massenaktion, Restore |
+| Dependency/Security | neue/geänderte Runtime- oder Build-Abhängigkeit |
+| Analyse/Root-Cause | reproduzierter Fehler, BLOCKER/HIGH oder unklare Ursache |
+
+Ohne Trigger wird die Rolle nicht gestartet.
+
+## 4. Fast-Path-Ablauf
 
 ```text
-Änderungsplan
-    ↓
-Kollisionsprüfung
-    ↓
-Dateibesitz reservieren
-    ↓
-Änderungsagent
-    ↓
-Change-Manifest
-    ↓
-Prüfagent
-    ↓
-Review-Queue
-    ↓
-Analyseagent
-    ↓
-Planning-Queue
-    ↓
-Planungsagent
-    ↓
-Orchestrator entscheidet Reihenfolge
-    ↓
-nächste Iteration
+Fast Context + Ausgangs-SHA
+        ↓
+Orchestrator/Planner
+        ↓
+Scope + Write-Set + 2 Schritte versiegelt
+        ↓
+Executor Schritt 1
+        ↓
+kleinstes Zwischen-Gate
+        ↓ grün
+Executor Schritt 2 oder NO_FIX_REQUIRED
+        ↓
+Validator/Finalizer
+        ↓
+relevante Gates + Evidence
+        ↓
+SHA-gebundener Merge
 ```
 
-## Grundregel: keine konkurrierenden Schreibzugriffe
-
-Eine Datei darf pro Iteration nur genau einem Änderungsagenten gehören.
-
-Beispiel:
-
-```yaml
-ownership:
-  src/provoware_db/web/routes.py: agent-web-01
-  src/provoware_db/application/catalog_service.py: agent-core-01
-```
-
-Wenn zwei Pläne dieselbe Datei beanspruchen, ist der Status ROT und beide Patches werden blockiert.
-
-## Change-Manifest
-
-Nach jedem Patch:
-
-```yaml
-iteration: 12
-agent: agent-web-01
-changed_files:
-  - src/provoware_db/web/routes.py
-  - tests/web/test_routes.py
-reason: "Neue Kategorieansicht"
-tests_required:
-  - tests/web/test_routes.py
-dependencies_read:
-  - src/provoware_db/application/catalog_service.py
-```
-
-Der Prüfagent liest primär diese Dateien.
-
-## Queue-Prinzip
+Bei Persistenz/Frozen-Core/Architektur-Unklarheit:
 
 ```text
-.provoware/queues/review/
-.provoware/queues/planning/
-.provoware/queues/blocked/
-.provoware/queues/done/
+Fast Path -> ESCALATE -> Deep/Recovery/Spezialist -> vollständiges Gate
 ```
 
-Datei vorhanden = Arbeit vorhanden.
+## 5. Kontext- und Leseökonomie
 
-Nach erfolgreicher Verarbeitung wird die Datei nach `done/` verschoben.
+Eine zentrale Quelle wird pro unverändertem Hash nur einmal vollständig gelesen. Danach arbeiten read-only Rollen mit dem Fast Context und gezielten Ausschnitten.
 
-## Screenshot-Regel
+Standardbudget:
+1. Fast Context
+2. geplante Write-Datei
+3. direkte Abhängigkeit
+4. betroffener Test
+5. nur bei Trigger Freeze-/Architekturquelle
 
-Alle fünf Iterationen:
+Ein Full-Repo-Scan ist weiterhin ausschließlich bei systemweitem oder unklarem Impact erlaubt.
 
-- gleiche Referenz-Viewportgrößen
-- gleiche Testdaten
-- aktives Theme dokumentieren
-- Screenshot speichern
-- Kurzfazit mit maximal 5 Punkten
-- Abweichungen markieren
+## 6. Evidence-Reuse
 
-Pfad:
+Grüne Evidence darf wiederverwendet werden, wenn ihre relevanten Quellen unverändert sind. Dafür dienen die Fast-Context-Hashes als schnelle Vorprüfung.
 
-```text
-docs/development/screenshots/iteration-0005/
-docs/development/screenshots/iteration-0010/
-...
-```
+Beispiel: Ein Dokumentations- oder Testvertrag, der den Browser-Runtime-Code nicht verändert, erzwingt keinen neuen Chromium-Lauf, wenn vorhandene reale Chromium-Evidence exakt denselben unveränderten Runtime-Pfad abdeckt.
 
-## Kosten-/Kontext-Regel
+Nicht wiederverwendbar bei:
+- geändertem relevanten Quellpfad,
+- neuem Fehlerbefund,
+- erweitertem Scope,
+- neuem Accessibility-/Layout-Risiko,
+- produktivem Write oder Recovery-Änderung.
 
-Prüfagenten dürfen standardmäßig nur lesen:
+## 7. Screenshot-Regel
 
-1. geänderte Dateien
-2. direkte Importe/Abhängigkeiten
-3. betroffene Tests
-4. relevante Manifest-/Freeze-Dateien
+Gezählt werden nur Iterationen, die sichtbares Rendering verändern oder UI-Evidence fachlich erweitern. Reine Docs-/Governance-/Scope-Iterationen verbrauchen keinen Slot.
 
-Ein Full-Repo-Scan ist nur erlaubt, wenn:
-- Architektur verändert wurde
-- Frozen-Core betroffen ist
-- Abhängigkeitsgraph unklar ist
-- Gate einen systemweiten Fehler meldet
+Spätestens jede fünfte UI-relevante Iteration erzeugt eine neue Referenz. Visuelle Kern-, Layout-, Fokus- oder Accessibility-Änderungen erzeugen unabhängig davon sofort Evidence.
 
-## Abschluss jeder Iteration
+## 8. Parallelität
 
-Der Orchestrator bestätigt:
+Parallel erlaubt:
+- unabhängige read-only Inspektionen,
+- bereits klar getrennte Recherche-/Evidence-Auswertungen.
 
-- keine offenen Dateisperren
-- keine Queue-Leichen
-- keine unbewerteten Findings
-- alle vorgesehenen Tests gelaufen
-- Änderungsvolumen dokumentiert
-- nächste Iteration kollisionsfrei planbar
+Nicht parallel:
+- zwei Writer im selben Scope,
+- Planänderung während eines laufenden Executor-Schritts,
+- Merge und nachgelagerte abhängige Mutation gleichzeitig.
+
+Damit steigt die Lesegeschwindigkeit, ohne Write-Kollisionen zu riskieren.
+
+## 9. Findings und Next Queue
+
+BLOCKER/HIGH stoppen den Fast Path. MEDIUM wird geplant. LOW/INFO wird gesammelt.
+
+Neue Anforderungen erweitern niemals den laufenden versiegelten Plan. Sie gehen mit Beziehung wie REQUIRES, BLOCKS, DUPLICATE, SUPERSEDES oder CONFLICTS in die nächste Queue.
+
+## 10. Abschluss
+
+Der Validator/Finalizer bestätigt:
+- Ausgangs-SHA und finalen Head,
+- geplante versus tatsächliche Dateien,
+- relevante Tests/Evidence,
+- offene Findings,
+- Frozen-Core-Status,
+- Recovery-Key,
+- nächsten erlaubten Schritt.
+
+**Leitsatz:** Einmal Kontext bauen, einmal schreiben, gezielt prüfen, nur bei Risiko eskalieren.
