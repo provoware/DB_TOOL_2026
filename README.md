@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I145 auf diesem Branch; Zeile und Spalte besitzen einen expliziten flüchtigen Browser-Layoutvertrag, Rastervorschlagsübernahme bleibt gesperrt  
+> **Bestätigter Produktstand:** I146 auf diesem Branch; ein bestätigter Rastervorschlag kann atomar browserlokal auf den flüchtigen Zeile+Spalte-Layoutvertrag angewendet werden  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **29 / 132 = 22,0 %**
+> **Gesamtfortschritt Master-TODO A–M:** **30 / 132 = 22,7 %**
 
 ## Zielbild
 
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I145** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I146** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -86,6 +86,7 @@ Bis einschließlich **I145** besitzt der temporäre Browser-Draft:
 - read-only Raster-Assistent: kompakter Layout-Vorschlag aus bestehender Reihenfolge und bestehenden Breiten, ohne Übernahme
 - explizite Vorher/Nachher-Tabelle mit geplanter Zeilen-/Spaltenänderung pro Element; tatsächliche Übernahme weiterhin gesperrt
 - separater flüchtiger Browser-Layoutvertrag `draft-id → {row, column}`; die Arbeitsfläche rendert daraus, ohne Persistenz
+- atomare browserlokale Übernahme eines bestätigten Rastervorschlags mit Stale-Schutz, Fokus-Rückgabe und echter Chromium-Vorher/Nachher-Evidence
 
 ### I115-Härtung
 
@@ -186,6 +187,16 @@ Die Arbeitsfläche rendert ihre CSS-Rasterposition aus diesem temporären Vertra
 
 Damit ist erstmals sauber definiert, **wo** ein später angenommener Rastervorschlag Zeile und Spalte atomar setzen darf. I145 enthält weiterhin keinen Übernehmen-/Anwenden-Button und keine Persistenz. Der offene Master-TODO-Punkt bleibt daher offen; der Fortschritt bleibt **29 / 132 = 22,0 %**.
 
+## I146 – tatsächliche browserlokale Rasterübernahme
+
+I146 schließt den zuvor vorbereiteten Raster-Assistenten vollständig browserlokal ab. Nach der Vorher/Nachher-Prüfung erscheint nur bei echten Änderungen der Button **„Rastervorschlag übernehmen“**. Die Übernahme schreibt ausschließlich in `temporaryGridLayout`.
+
+Vor dem Commit werden alle Zielpositionen gegen Breite und 12-Spalten-Raster validiert. Zusätzlich bindet ein Fingerprint den Apply-Schritt an genau den zuvor berechneten Zustand; ist der Vorschlag inzwischen veraltet, wird nichts mutiert und der Vergleich neu berechnet. Erst nach vollständiger Vorvalidierung wird eine neue Layout-Map vorbereitet und synchron übernommen.
+
+`draftElements`, Reihenfolge, Labels und Breiten bleiben unverändert. Canvas und textuelle Preview lesen danach dieselbe temporäre Spaltenposition. Der Fokus kehrt deterministisch zum Raster-Assistenten zurück. Eine reale Chromium-Evidence prüft den vollständigen Vorher/Nachher-Weg inklusive Tastaturauslösung.
+
+Persistenz, Store, SQLite sowie CP-03/CP-06 bleiben geschlossen.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -217,9 +228,9 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Als nächsten Slice die tatsächliche browserlokale Rasterübernahme atomar auf den temporären Zeile+Spalte-Vertrag begrenzen.
-2. Übernahme mit Vorher/Nachher-Abnahme, Fokus-Rückgabe und realer Chromium-Evidence gaten; weiterhin ohne Persistenz.
-3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
+1. Nach grüner I146-Abnahme den Masken-Baukasten-Strukturblock als abgeschlossen einfrieren.
+2. Danach den nächsten offenen Produktbereich außerhalb der Struktur-Funktionen auswählen und wieder klein gegatet beginnen.
+3. Produktive Persistenz weiterhin erst nach separaten Service-, Recovery- und Integritäts-Gates öffnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -260,7 +271,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **29 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **30 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
