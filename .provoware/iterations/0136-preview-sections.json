@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "iteration": 136,
+  "agent": "preview-sections-agent-136",
+  "size": "S",
+  "goal": "Den bereits vorhandenen section-Baustein als echte browserlokale Strukturgrenze in der Vorschau ausbauen. Ein Bereich beginnt einen semantischen Abschnitt; nachfolgende sichtbare Elemente gehören bis zum nächsten sichtbaren Bereich dazu. Kein Einklappen und keine Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Abschnitte",
+    "summary": "Bereich-Elemente werden in der Vorschau zu semantischen Abschnitten mit eigener Überschrift. Nachfolgende sichtbare Elemente werden bis zum nächsten Bereich innerhalb dieses Abschnitts dargestellt.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0136-preview-sections.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i136_sections.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i135_reorder.py"
+  ],
+  "direct_dependencies": [
+    "main 4505a49591387f98bb7f7c02c601ff6a6a150a3b",
+    "MaskElementKind.SECTION already exists in the palette",
+    "I135 order is browser-local and confirmed",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and test_i136_sections.py",
+    "run test_i136_sections.py",
+    "run existing test_browser_shell.py as narrow browser-shell regression",
+    "section item renders as semantic section heading rather than duplicate list row",
+    "following visible items render inside the active section until another visible section appears",
+    "items before the first visible section remain valid unsectioned preview items",
+    "no collapse behavior",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the change is browser-local and targeted",
+    "new Chromium screenshot evidence because this is a semantic structure slice, not the scheduled visual milestone"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i136_sections.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i136_sections.py"
+    ]
+  },
+  "risks": [
+    "section markers must not be duplicated as ordinary preview rows",
+    "hidden section markers must not create invisible labelled regions",
+    "reordering must continue to determine section membership solely from the current draftElements sequence",
+    "collapse state must not be introduced early"
+  ],
+  "non_changes": [
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no collapsible-group state or controls"
+  ],
+  "expected_side_effects": [
+    "visible Bereich elements create labelled preview regions",
+    "following visible items are grouped under the current visible Bereich",
+    "reordering a Bereich or item naturally changes preview membership without extra stored relationships",
+    "A-M progress becomes 23 of 132 = 17.4 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
