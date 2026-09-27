@@ -1200,8 +1200,7 @@ _INTERACTION_SCRIPT = r"""
       return;
     }
 
-    const list = document.createElement("ol");
-    visibleDraftElements.forEach((item) => {
+    function appendPreviewRow(list, item) {
       const row = document.createElement("li");
       const firstColumn = item.column + 1;
       const lastColumn = item.column + item.width;
@@ -1232,8 +1231,35 @@ _INTERACTION_SCRIPT = r"""
         + (defaultValuePreview(item).length === 0 ? "" : " · Standard: " + defaultValuePreview(item))
       );
       list.appendChild(row);
+    }
+
+    let activeList = null;
+    visibleDraftElements.forEach((item) => {
+      if (item.kind === "section") {
+        const section = document.createElement("section");
+        section.className = "preview-section";
+        section.dataset.draftId = item.id;
+
+        const heading = document.createElement("h3");
+        heading.id = "preview-section-" + item.id;
+        heading.textContent = item.label;
+        section.setAttribute("aria-labelledby", heading.id);
+        section.appendChild(heading);
+
+        activeList = document.createElement("ol");
+        activeList.className = "preview-section-items";
+        section.appendChild(activeList);
+        preview.appendChild(section);
+        return;
+      }
+
+      if (activeList === null) {
+        activeList = document.createElement("ol");
+        activeList.className = "preview-unsectioned-items";
+        preview.appendChild(activeList);
+      }
+      appendPreviewRow(activeList, item);
     });
-    preview.appendChild(list);
   }
 
   function selectKind(button) {
@@ -1437,6 +1463,9 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty {{ position:absolute; inset:4rem 0 0; display:grid; place-items:center; padding:2rem; text-align:center; color:#aeb6ca; pointer-events:none; }}
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
+.preview-section {{ margin:0 0 1rem; padding:.75rem; border:1px solid #303548; border-radius:8px; }}
+.preview-section h3 {{ margin:.1rem 0 .65rem; font-size:1rem; }}
+.preview-section-items, .preview-unsectioned-items {{ margin:.35rem 0 .75rem; padding-left:1.5rem; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
 @media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
