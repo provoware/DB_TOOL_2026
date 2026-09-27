@@ -110,16 +110,18 @@ function keyMeta(key) {
     Tab: { code: "Tab", vk: 9 },
     ArrowDown: { code: "ArrowDown", vk: 40 },
     End: { code: "End", vk: 35 },
+    Space: { code: "Space", vk: 32 },
   };
   return map[key] || { code: key, vk: 0 };
 }
 
 async function pressKey(cdp, key) {
   const meta = keyMeta(key);
-  const text = key === "Enter" ? "\r" : undefined;
+  const dispatchedKey = key === "Space" ? " " : key;
+  const text = key === "Enter" ? "\r" : (key === "Space" ? " " : undefined);
   await cdp.send("Input.dispatchKeyEvent", {
     type: "keyDown",
-    key,
+    key: dispatchedKey,
     code: meta.code,
     text,
     unmodifiedText: text,
@@ -128,7 +130,7 @@ async function pressKey(cdp, key) {
   });
   await cdp.send("Input.dispatchKeyEvent", {
     type: "keyUp",
-    key,
+    key: dispatchedKey,
     code: meta.code,
     windowsVirtualKeyCode: meta.vk,
     nativeVirtualKeyCode: meta.vk,
