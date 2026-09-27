@@ -34,7 +34,7 @@ def test_temporary_interaction_selects_palette_and_places_in_browser_state() -> 
     assert 'button.addEventListener("click", () => selectKind(button));' in html
     assert 'button.addEventListener("click", () => placeAt(Number(button.dataset.column)));' in html
     assert 'draftElements.push({' in html
-    assert 'id: "draft-" + String(nextDraftId++)' in html
+    assert 'id: nextDraftElementId(),' in html
     assert 'placedLayer.appendChild(card);' in html
     assert 'preview.appendChild(list);' in html
 
@@ -56,7 +56,7 @@ def test_grid_boundaries_are_blocked_before_draft_mutation() -> None:
 def test_preview_and_draft_identifiers_are_deterministic_and_monotone() -> None:
     html = render_editor_shell()
     assert 'let nextDraftId = 1;' in html
-    assert 'id: "draft-" + String(nextDraftId++)' in html
+    assert 'id: nextDraftElementId(),' in html
     assert 'draftElements.length + 1' not in html
     assert 'draftElements.forEach((item, index) =>' in html
     assert 'visibleDraftElements.forEach((item) =>' in html
@@ -79,7 +79,7 @@ def test_move_is_browser_only_preserves_identity_and_changes_column_only() -> No
     assert 'movingDraftId = null;' in html
     assert 'renderDraft();' in html
     assert 'updateTargetAvailability();' in html
-    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert html.count('return "draft-" + String(nextDraftId++);') == 1
     assert 'moving.id =' not in html
     assert 'moving.kind =' not in html
     assert 'moving.label =' not in html
@@ -140,7 +140,7 @@ def test_label_edit_is_keyboard_reachable_and_mutates_only_label() -> None:
     assert 'item.width =' not in save_block
     assert 'draftElements.push(' not in save_block
     assert 'draftElements.splice(' not in save_block
-    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert html.count('return "draft-" + String(nextDraftId++);') == 1
     assert 'row.dataset.draftId = item.id;' in html
     assert 'row.textContent = (' in html
 
@@ -172,7 +172,7 @@ def test_label_editor_remains_reachable_at_narrow_width() -> None:
     html = render_editor_shell()
     assert '.label-editor, .help-editor, .option-editor, .default-selection-group { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .duplicate-draft, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> None:
@@ -203,7 +203,7 @@ def test_help_text_edit_is_browser_only_optional_and_preserves_identity() -> Non
     assert 'item.width =' not in save_block
     assert 'draftElements.push(' not in save_block
     assert 'draftElements.splice(' not in save_block
-    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert html.count('return "draft-" + String(nextDraftId++);') == 1
 
     assert 'helpText.textContent = item.helpText;' in html
     assert 'helpText.hidden = item.helpText.length === 0;' in html
@@ -239,7 +239,7 @@ def test_help_text_accessibility_cancel_focus_and_narrow_layout() -> None:
 
     assert '.label-editor, .help-editor, .option-editor, .default-selection-group { align-items:stretch; flex-direction:column; width:100%; }' in html
     assert '.label-editor-input, .help-editor-input, .option-editor-input { max-width:none; width:100%; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .duplicate-draft, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> None:
@@ -273,7 +273,7 @@ def test_required_toggle_is_browser_only_and_mutates_only_required_state() -> No
     assert 'item.width =' not in toggle_block
     assert 'draftElements.push(' not in toggle_block
     assert 'draftElements.splice(' not in toggle_block
-    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert html.count('return "draft-" + String(nextDraftId++);') == 1
 
 
 def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
@@ -296,7 +296,7 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert move_button > required_button
 
     assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label, .default-selection-label { color:#d7def5; font-weight:600; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .duplicate-draft, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
 
@@ -442,7 +442,7 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert '(item.kind === "field" ? " · Datentyp: " + item.dataType : "")' in html
 
     start = html.index('function changeDataType(id, select)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function isChoiceDataType(dataType)', start)
     datatype_block = html[start:end]
     assert 'item.dataType = nextDataType;' in datatype_block
     assert 'renderDraft();' in datatype_block
@@ -455,7 +455,7 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert 'item.width =' not in datatype_block
     assert 'draftElements.push(' not in datatype_block
     assert 'draftElements.splice(' not in datatype_block
-    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert html.count('return "draft-" + String(nextDraftId++);') == 1
 
 
 
@@ -593,7 +593,7 @@ def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable
     assert 'moveDownButton.addEventListener("click", () => moveDraftOption(item.id, option.id, 1));' in html
 
     start = html.index('function moveDraftOption(draftId, optionId, direction)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusDuplicateControl(id)', start)
     block = html[start:end]
     assert 'option.id = ' not in block
     assert 'nextDraftOptionId' not in block
@@ -651,7 +651,7 @@ def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
     assert 'item.width =' not in update_block
     assert 'draftElements.push(' not in update_block
     assert 'draftElements.splice(' not in update_block
-    assert html.count('id: "draft-" + String(nextDraftId++)') == 1
+    assert html.count('return "draft-" + String(nextDraftId++);') == 1
 
 
 def test_default_value_semantics_focus_and_narrow_layout() -> None:
@@ -669,7 +669,7 @@ def test_default_value_semantics_focus_and_narrow_layout() -> None:
 
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
     assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
-    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
+    assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .duplicate-draft, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
     update_start = html.index('function updateDefaultValue(id, control)')
     update_end = html.index('function defaultValuePreview(item)')

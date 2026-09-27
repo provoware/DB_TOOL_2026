@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I132 auf `main`; `defaultSelection` für Choice-Felder browserlokal umgesetzt und weiterhin ohne Persistenz  
+> **Bestätigter Produktstand:** I133 auf `main`; Draft-Elemente können mit neuen monotonen Element- und Choice-Option-IDs browserlokal dupliziert werden  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **20 / 132 = 15,2 %**
+> **Gesamtfortschritt Master-TODO A–M:** **21 / 132 = 15,9 %**
 
 ## Zielbild
 
@@ -57,7 +57,7 @@ Bis einschließlich **I132** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
-- temporäres Platzieren, Verschieben und Entfernen
+- temporäres Platzieren, Verschieben, Entfernen und Duplizieren mit neuer monotoner Draft-ID
 - Blockierung ungültiger Rasterziele vor Mutation
 - Label- und Hilfetext-Bearbeitung
 - Pflichtfeld-Eigenschaft
@@ -96,6 +96,12 @@ I119 liefert reproduzierbare reale Chromium-Evidence für die vollständige vorh
 I132 setzt den I128-Vertrag im flüchtigen Browser-Draft um. Einfachauswahl referenziert maximal eine stabile `draft-option-*`-ID; Mehrfachauswahl hält eine geordnete, duplikatfreie ID-Liste. Options-Reorder erhält die Auswahl, ausgewählte Optionen können nicht still entfernt werden und eine Verengung von Mehrfach- auf Einfachauswahl wird bei mehreren Defaults vor Mutation blockiert.
 
 Reale Chromium-Evidence prüft die neue Interaktion bei **100/150/200 %** inklusive Fokus-Rückgabe, Preview-Reihenfolge, Remove-Guard und horizontalem Overflow. Persistenz, Model, Store und Datenbank bleiben unverändert.
+
+## I133 – browserlokales Duplizieren
+
+I133 ergänzt eine kleine Struktur-Capability: Ein bestehendes Draft-Element kann per Tastatur oder Klick dupliziert werden. Die Kopie erhält eine neue monotone `draft-*`-ID. Bei Choice-Feldern werden auch alle Optionen tief kopiert und mit neuen monotonen `draft-option-*`-IDs versehen; eine vorhandene `defaultSelection` wird auf die neuen IDs umgebunden.
+
+Reale Chromium-Evidence prüft die Identitätstrennung, Preview und Fokus-Rückgabe bei **100/150/200 %**. Die Duplizierung bleibt vollständig browserlokal und flüchtig.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
@@ -171,7 +177,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,2 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **20 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **21 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
