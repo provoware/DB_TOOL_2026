@@ -1,0 +1,92 @@
+{
+  "schema_version": 2,
+  "iteration": 144,
+  "agent": "grid-before-after-contract-agent-144",
+  "size": "S",
+  "goal": "Den I143-Rastervorschlag gegen das aktuelle browserlokale Layout explizit als Vorher/Nachher-Vertrag darstellen. Jede geplante Zeilen- und Spaltenänderung wird sichtbar; tatsächliche Übernahme und Mutation bleiben gesperrt.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Rastervorschlag Vorher/Nachher",
+    "summary": "I144 zeigt aktuelles Layout, vorgeschlagenes Layout und jede geplante Zeilen-/Spaltenänderung nebeneinander. Weil der Draft noch keine eigene Rasterzeile speichert, bleibt die Übernahme ausdrücklich gesperrt.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0144-grid-before-after-contract.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i143_grid_assistant.py",
+    "tests/mask_builder/test_i144_grid_before_after.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i143_grid_assistant.py"
+  ],
+  "direct_dependencies": [
+    "main c633c5a57345ba50685f4a191401b0b9366a06da",
+    "I143 read-only grid assistant is confirmed",
+    "existing renderDraft derives visual grid row from draft order",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py, test_i143_grid_assistant.py and test_i144_grid_before_after.py",
+    "run I143 read-only regression",
+    "run I144 before/after contract test",
+    "current layout exposes current derived row, column and width",
+    "proposal comparison exposes after row, column and width",
+    "planned row/column differences are explicit per draft element",
+    "draft order and widths remain unchanged",
+    "no apply/accept action exists",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because I144 is a browser-local comparison contract",
+    "real Chromium mutation evidence because no mutation path exists yet"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i143_grid_assistant.py",
+      "tests/mask_builder/test_i144_grid_before_after.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i143_grid_assistant.py",
+      "tests/mask_builder/test_i144_grid_before_after.py"
+    ]
+  },
+  "risks": [
+    "comparison could hide that row changes are currently not represented in the draft model",
+    "users could mistake a preview for an already applied layout",
+    "a future mutation path must not mutate only column while ignoring row",
+    "comparison logic must remain read-only and deterministic"
+  ],
+  "non_changes": [
+    "no grid proposal application",
+    "no draft row property yet",
+    "no column or width mutation from the assistant",
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no new A-M product point completed"
+  ],
+  "expected_side_effects": [
+    "the user sees current and proposed layout side by side",
+    "planned row/column differences are explicit",
+    "the missing row-state contract is surfaced before mutation",
+    "A-M progress remains 29 of 132 = 22.0 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN"
+}

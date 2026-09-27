@@ -9,7 +9,7 @@ def main() -> None:
     required = (
         'id="grid-assistant-button"',
         'id="grid-assistant-output"',
-        'Raster-Assistent · Vorschlag',
+        'Raster-Assistent · Vorher/Nachher',
         'function gridSuggestionSnapshot(items)',
         'function computeGridSuggestion(items)',
         'function showGridSuggestion()',
@@ -26,7 +26,7 @@ def main() -> None:
         'column,',
         'width: item.width,',
         'gridAssistantButton.addEventListener("click", showGridSuggestion);',
-        'nur gelesen, nichts übernommen.',
+        'noch nichts übernommen.',
     )
     missing = [token for token in required if token not in html]
     if missing:

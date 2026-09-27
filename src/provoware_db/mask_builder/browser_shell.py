@@ -69,9 +69,42 @@ _INTERACTION_SCRIPT = r"""
     });
   }
 
+  function currentGridLayout(items) {
+    return items.map((item, index) => ({
+      id: item.id,
+      label: item.label,
+      row: index + 1,
+      column: item.column,
+      width: item.width,
+    }));
+  }
+
+  function compareGridLayouts(current, suggestion) {
+    const currentById = new Map(current.map((item) => [item.id, item]));
+    return suggestion.map((next) => {
+      const previous = currentById.get(next.id);
+      if (previous === undefined) {
+        throw new Error("Rastervergleich enthält unbekannte Draft-ID.");
+      }
+      const rowChanged = previous.row !== next.row;
+      const columnChanged = previous.column !== next.column;
+      return {
+        id: next.id,
+        label: next.label,
+        before: previous,
+        after: next,
+        rowChanged,
+        columnChanged,
+        changed: rowChanged || columnChanged,
+      };
+    });
+  }
+
   function showGridSuggestion() {
     const before = JSON.stringify(gridSuggestionSnapshot(draftElements));
+    const current = currentGridLayout(draftElements);
     const suggestion = computeGridSuggestion(draftElements);
+    const comparison = compareGridLayouts(current, suggestion);
     const after = JSON.stringify(gridSuggestionSnapshot(draftElements));
     if (before !== after) {
       throw new Error("Raster-Assistent darf den Draft nicht verändern.");
@@ -86,23 +119,83 @@ _INTERACTION_SCRIPT = r"""
       return;
     }
 
-    const list = document.createElement("ol");
-    list.className = "grid-assistant-list";
-    suggestion.forEach((item) => {
-      const row = document.createElement("li");
-      row.dataset.draftId = item.id;
-      row.textContent =
-        item.label
-        + " · Zeile " + String(item.row)
-        + " · Spalte " + String(item.column + 1)
-        + " · Breite " + String(item.width);
-      list.appendChild(row);
+    const changedCount = comparison.filter((item) => item.changed).length;
+    const summary = document.createElement("p");
+    summary.className = "grid-assistant-summary";
+    summary.textContent =
+      String(changedCount)
+      + " von "
+      + String(comparison.length)
+      + " Position(en) würden sich ändern. Noch nichts übernommen.";
+    gridAssistantOutput.appendChild(summary);
+
+    const table = document.createElement("table");
+    table.className = "grid-assistant-comparison";
+    const caption = document.createElement("caption");
+    caption.textContent = "Vorher/Nachher-Vorschau des Rastervorschlags";
+    table.appendChild(caption);
+
+    const head = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    ["Element", "Vorher", "Nachher", "Geplante Änderung"].forEach((text) => {
+      const cell = document.createElement("th");
+      cell.scope = "col";
+      cell.textContent = text;
+      headRow.appendChild(cell);
     });
-    gridAssistantOutput.appendChild(list);
+    head.appendChild(headRow);
+    table.appendChild(head);
+
+    const body = document.createElement("tbody");
+    comparison.forEach((item) => {
+      const row = document.createElement("tr");
+      row.dataset.draftId = item.id;
+
+      const labelCell = document.createElement("th");
+      labelCell.scope = "row";
+      labelCell.textContent = item.label;
+      row.appendChild(labelCell);
+
+      const beforeCell = document.createElement("td");
+      beforeCell.textContent =
+        "Zeile " + String(item.before.row)
+        + " · Spalte " + String(item.before.column + 1)
+        + " · Breite " + String(item.before.width);
+      row.appendChild(beforeCell);
+
+      const afterCell = document.createElement("td");
+      afterCell.textContent =
+        "Zeile " + String(item.after.row)
+        + " · Spalte " + String(item.after.column + 1)
+        + " · Breite " + String(item.after.width);
+      row.appendChild(afterCell);
+
+      const changeCell = document.createElement("td");
+      const changes = [];
+      if (item.rowChanged) {
+        changes.push("Zeile " + String(item.before.row) + " → " + String(item.after.row));
+      }
+      if (item.columnChanged) {
+        changes.push("Spalte " + String(item.before.column + 1) + " → " + String(item.after.column + 1));
+      }
+      changeCell.textContent = changes.length === 0 ? "Keine" : changes.join(" · ");
+      row.appendChild(changeCell);
+      body.appendChild(row);
+    });
+    table.appendChild(body);
+    gridAssistantOutput.appendChild(table);
+
+    const note = document.createElement("p");
+    note.className = "grid-assistant-contract-note";
+    note.textContent =
+      "Übernahme gesperrt: Der aktuelle Draft speichert keine eigene Rasterzeile. "
+      + "Ein späterer Mutations-Slice muss Zeile und Spalte als temporären Layoutvertrag gemeinsam absichern.";
+    gridAssistantOutput.appendChild(note);
+
     setStatus(
-      "Raster-Assistent · "
-      + String(suggestion.length)
-      + " Position(en) vorgeschlagen · nur gelesen, nichts übernommen."
+      "Raster-Assistent · Vorher/Nachher geprüft · "
+      + String(changedCount)
+      + " Änderung(en) geplant · noch nichts übernommen."
     );
   }
 
@@ -1637,6 +1730,11 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .grid-assistant-button {{ padding:.45rem .7rem; border:1px solid #6978a4; border-radius:7px; background:#202536; color:inherit; font:inherit; }}
 .grid-assistant-list {{ margin:.65rem 0 0; padding-left:1.5rem; }}
 .grid-assistant-list li {{ margin:.25rem 0; overflow-wrap:anywhere; }}
+.grid-assistant-summary, .grid-assistant-contract-note {{ margin:.65rem 0; }}
+.grid-assistant-comparison {{ width:100%; border-collapse:collapse; margin-top:.65rem; font-size:.9rem; }}
+.grid-assistant-comparison caption {{ text-align:left; font-weight:700; margin-bottom:.45rem; }}
+.grid-assistant-comparison th, .grid-assistant-comparison td {{ padding:.45rem; border:1px solid #4a526b; text-align:left; vertical-align:top; overflow-wrap:anywhere; }}
+.grid-assistant-comparison th {{ background:#202536; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
 @media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
@@ -1645,7 +1743,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 <header><strong>PROVOWARE · Masken-Baukasten</strong><p>Entwurf ohne Speichern und ohne Datenbankzugriff.</p></header>
 <main class="editor">
 <section class="panel" aria-labelledby="palette-title" data-focus-stage="1"><h2 id="palette-title">Komponenten</h2><div class="palette">{palette}</div></section>
-<section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><aside class="grid-assistant" aria-labelledby="grid-assistant-title"><h3 id="grid-assistant-title">Raster-Assistent · Vorschlag</h3><p>Ordnet die vorhandenen Komponenten nur rechnerisch links nach rechts in Zeilen. Reihenfolge und Breiten bleiben unverändert. Es wird nichts übernommen.</p><button type="button" class="grid-assistant-button" id="grid-assistant-button" aria-describedby="grid-assistant-title">Vorschlag berechnen</button><div id="grid-assistant-output" aria-live="polite"><p>Noch kein Vorschlag berechnet.</p></div></aside><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
+<section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><aside class="grid-assistant" aria-labelledby="grid-assistant-title"><h3 id="grid-assistant-title">Raster-Assistent · Vorher/Nachher</h3><p>Vergleicht das aktuelle Layout mit dem berechneten Vorschlag und nennt jede geplante Zeilen-/Spaltenänderung. Reihenfolge und Breiten bleiben unverändert. Es wird nichts übernommen.</p><button type="button" class="grid-assistant-button" id="grid-assistant-button" aria-describedby="grid-assistant-title">Vorher/Nachher berechnen</button><div id="grid-assistant-output" aria-live="polite"><p>Noch kein Vergleich berechnet.</p></div></aside><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
 <section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><div class="preview-mode-controls" role="group" aria-label="Vorschaugröße"><button type="button" class="preview-mode-button" data-preview-mode="desktop" aria-pressed="true">Desktop</button><button type="button" class="preview-mode-button" data-preview-mode="tablet" aria-pressed="false">Tablet</button><button type="button" class="preview-mode-button" data-preview-mode="narrow" aria-pressed="false">Schmal</button></div><p class="preview-mode-label" id="preview-mode-label">Desktop · 1152 px</p><div class="preview-viewport-shell" aria-label="Desktop-Vorschau, 1152 Pixel breit" aria-describedby="preview-mode-label"><div class="preview-card" id="preview" data-preview-mode="desktop" data-preview-width="1152"><p>Noch keine Komponenten platziert.</p></div></div></section>
 </main>
 {_INTERACTION_SCRIPT}
