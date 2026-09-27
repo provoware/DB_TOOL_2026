@@ -593,7 +593,7 @@ def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable
     assert 'moveDownButton.addEventListener("click", () => moveDraftOption(item.id, option.id, 1));' in html
 
     start = html.index('function moveDraftOption(draftId, optionId, direction)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function focusDuplicateControl(id)', start)
     block = html[start:end]
     assert 'option.id = ' not in block
     assert 'nextDraftOptionId' not in block
