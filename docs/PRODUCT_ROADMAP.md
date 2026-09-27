@@ -1,6 +1,6 @@
 # PROVOWARE DB TOOL 2026 – Produkt-Roadmap
 
-Stand: nach I103 auf `main`.
+Stand: nach I129 auf `main`.
 
 Diese Roadmap bündelt den langfristigen Funktionspool. Sie ist **keine Freigabe, alle Punkte in einem Patch umzusetzen**. Jede Funktion erhält weiterhin eine kleine Iteration mit eigenem Scope, Zwischen-Gate und Freeze-Prüfung.
 
@@ -17,20 +17,22 @@ PROVOWARE soll sich für normale Anwender wie ein lokaler, sicherer No-Code-Date
 
 ## 2. Aktuelle belastbare Basis
 
-Auf `main` ist bis I103 bestätigt:
+Auf `main` ist aktuell bestätigt:
 
-- Komponentenpalette
-- 12-Spalten-Canvas
-- temporäre Platzierung
-- deterministische Draft-IDs
-- temporäres Entfernen
-- temporäres Verschieben bei stabiler Draft-ID
-- Blockierung ungültiger Rasterziele
-- Escape-/Fokus-Verträge für Move
-- deterministische Vorschau
-- GET-only-/Loopback-only-Browser-Shell
-- reale Chromium-Evidence bis 200-%-Zoom-Äquivalent
-- weiterhin keine Persistenz des Browser-Drafts
+- Komponentenpalette und festes 12-Spalten-Canvas
+- temporäre Platzierung, Verschiebung und Entfernung bei stabilen monotonen Draft-IDs
+- Blockierung ungültiger Rasterziele vor Mutation
+- Label- und Hilfetext-Bearbeitung
+- Pflichtfeld- und Datentyp-Eigenschaft
+- validierter skalarer Standardwert für Nicht-Choice-Typen
+- browserlokale `single_choice`-/`multi_choice`-Optionen mit stabilen `draft-option-*`-IDs
+- deterministisches Add/Remove/Reorder der Choice-Optionen
+- statische Sichtbarkeit und Breitenbearbeitung im Raster
+- gemeinsame Eigenschaften-/Preview-Projektion als I127-Regressionsvertrag
+- reale Chromium-Evidence der vorhandenen Property-Matrix bei 100/150/200 %
+- GET-only-/Loopback-only-Browser-Shell ohne Persistenz- oder Netzwerk-Write
+- I128: `defaultSelection` ist **nur geplant**, noch nicht implementiert
+- I129: Persistenzgrenze ist **nur als Preview-/Integritäts-/Recovery-Vertrag geplant**, produktiver Save bleibt geschlossen
 
 ## 3. Ausbauprinzip
 
@@ -79,7 +81,7 @@ Reihenfolge:
    - Rastergrenzen vor Mutation prüfen
    - Move-/Preview-Verträge wiederverwenden
 
-**Gate vor Persistenz:** Die temporären Eigenschaften müssen gemeinsam identitätsstabil, keyboard-first und bei 200 % bedienbar sein.
+**Gate vor Persistenz:** Die bis I119 implementierte Property-Matrix ist durch I127 gemeinsam regressionsgebunden und besitzt reale 100/150/200-%-Evidence. `defaultSelection` bleibt ein separater, noch nicht implementierter I128-Vertrag; der produktive Save bleibt hinter dem I129-Persistenzvertrag geschlossen.
 
 ### P2 – Masken-Struktur und Layout
 
