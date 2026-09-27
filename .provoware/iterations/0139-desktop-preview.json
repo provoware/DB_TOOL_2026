@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "iteration": 139,
+  "agent": "desktop-preview-agent-139",
+  "size": "S",
+  "goal": "Eine klar definierte browserlokale Desktop-Vorschau ergänzen. Die Vorschau erhält einen festen 1152-Pixel-Viewport innerhalb eines horizontal scrollbaren Rahmens; Tablet- und schmale Vorschau bleiben getrennte spätere Slices.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Desktop-Vorschau",
+    "summary": "Die Vorschau rendert in einem festen Desktop-Viewport mit 1152 px Breite. Ist das Bedienpanel schmaler, bleibt die Desktop-Geometrie erhalten und wird horizontal gescrollt statt responsiv zusammengepresst.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0139-desktop-preview.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i139_desktop_preview.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i138_tab_order.py"
+  ],
+  "direct_dependencies": [
+    "main 08cee022e6ea0cae868524e12c1fea4d3a9d333f",
+    "I136-I137 semantic/collapsible preview sections are confirmed",
+    "I138 focus order is confirmed",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and test_i139_desktop_preview.py",
+    "run test_i139_desktop_preview.py",
+    "run existing test_browser_shell.py as narrow browser-shell regression",
+    "desktop preview has a fixed 1152-pixel semantic viewport contract",
+    "outer preview shell permits horizontal scrolling when host panel is narrower",
+    "desktop mode is explicitly labelled and described",
+    "no tablet or narrow mode introduced",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the change is browser-local and targeted",
+    "new Chromium screenshot evidence because this iteration establishes the desktop viewport contract only"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i139_desktop_preview.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i139_desktop_preview.py"
+    ]
+  },
+  "risks": [
+    "desktop preview must not silently collapse to the narrow host panel width",
+    "horizontal scrolling must be confined to the preview shell",
+    "future tablet/narrow modes must remain separate contracts",
+    "preview mode must not leak into persistence"
+  ],
+  "non_changes": [
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no tablet preview",
+    "no narrow preview"
+  ],
+  "expected_side_effects": [
+    "desktop geometry remains stable inside the preview panel",
+    "the user can inspect the wide preview by horizontal scrolling",
+    "the active preview contract is visibly labelled Desktop 1152 px",
+    "A-M progress becomes 26 of 132 = 19.7 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN"
+}
