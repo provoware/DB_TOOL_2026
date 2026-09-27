@@ -120,6 +120,52 @@ Regeln:
 
 Der aktuelle langfristige Funktionspool steht in `docs/PRODUCT_ROADMAP.md`; die abhakbare Umsetzungsliste in `TODO.md`.
 
+## 1.8 Agent Fast Path V2
+
+Ab I131 gilt für normale Iterationen ein verdichteter operativer Ablauf. Die Sicherheitsregeln aus diesem Dokument und die Shadow-Control-Plane-Verträge bleiben unverändert.
+
+### Startkontext einmal erzeugen
+
+Vor der ersten fachlichen Planung wird genau einmal ausgeführt:
+
+```bash
+python scripts/build_iteration_context.py --check
+```
+
+Der erzeugte Fast Context ist die gemeinsame Ausgangsbasis für alle beteiligten read-only Rollen. Er enthält nur den aktuellen Status, A–M-Fortschritt, nächste Prioritäten, neuestes Manifest und Hashes der zentralen Steuerdateien.
+
+Regeln:
+- README, TODO, Roadmap und AGENTS nicht von jedem Subagenten erneut vollständig lesen, solange ihr Hash unverändert ist
+- bei Hash-Änderung nur die geänderte Quelle neu laden
+- bei ROT im Fast Context keine Produktmutation starten
+- Full-Repo-Scan bleibt weiterhin nur bei den bereits definierten Ausnahmegründen erlaubt
+
+### Drei Kernrollen
+
+1. **Orchestrator/Planner – read-only:** Fast Context prüfen, Ziel/Scope/Write-Set/Tests festlegen, Kollisionen und Frozen-Core-Impact entscheiden.
+2. **Executor – Single Writer:** exakt den versiegelten Write-Set umsetzen; keine Seitensuche nach zusätzlichen Verbesserungen.
+3. **Validator/Finalizer – read-only:** Diff, relevante Tests, Evidence, Scope und Abschlussstatus prüfen; Merge nur bei grünem Gate.
+
+Spezialrollen werden nicht standardmäßig durchlaufen, sondern nur durch Trigger aktiviert:
+- Deep/Frozen-Inspector bei Schema, Domain, Repository, Storage oder CP-03/CP-06
+- Accessibility-/Chromium-Agent bei geänderter sichtbarer UI, Fokus, Keyboard oder Layout
+- Screenshot-Agent nach der UI-bezogenen Screenshot-Regel
+- Recovery-/Integritäts-Agent bei produktiven Writes, Import, Massenänderung oder Restore
+- Dependency-/Security-Agent bei neuen oder geänderten Abhängigkeiten
+
+### Evidence-Reuse
+
+Ein bereits grüner Nachweis darf wiederverwendet werden, wenn:
+- alle für den Nachweis relevanten Quellpfade unverändert sind,
+- der zugehörige Kontext-Hash unverändert ist,
+- kein neuer Risikotrigger den Nachweis erweitert.
+
+Wiederverwendung ist ausdrücklich **kein PASS ohne Evidence**: der frühere Nachweis muss benannt und seine Anwendbarkeit über unveränderte Quellen begründet werden.
+
+### Eskalation statt Dauer-Overhead
+
+Fast Path ist Standard für lokale, klar abgegrenzte Änderungen. Sobald Scope, Architekturgrenze, Persistenz, Frozen Core oder Beweislage unklar sind, wird auf den bestehenden vollständigen/Deep-Pfad eskaliert. Ein Deep-Gate darf niemals aus Geschwindigkeitsgründen herabgestuft werden.
+
 ## 2. Dateibesitz und Kollisionsschutz
 
 Pro Iteration darf jede schreibbare Datei genau einem Änderungsagenten gehören.
@@ -233,18 +279,24 @@ Keine beiläufige Anpassung durch UI- oder Komfortarbeiten.
 
 ## 8. UI- und Screenshot-Regel
 
-Alle 5 Iterationen:
+Der feste Screenshot-Zähler bezieht sich ab I131 auf **UI-relevante Produktiterationen**, nicht auf reine Docs-, Scope- oder Governance-Iterationen. Diese können keine visuelle Regression erzeugen und verbrauchen deshalb keinen Screenshot-Slot.
+
+Spätestens nach 5 UI-relevanten Iterationen:
 - Screenshot erzeugen
 - feste Referenzgröße
 - Theme dokumentieren
 - Kurzfazit
 - visuelle Regression ja/nein
 
-Zwischen diesen Punkten nur dann Screenshot:
-- visuelle Kernänderung
-- Layoutfehler
-- Fokus-/Accessibility-Fehler
-- expliziter Review-Bedarf
+Unabhängig vom Zähler sofort Screenshot/Evidence bei:
+- visueller Kernänderung
+- Layoutänderung
+- Fokus-/Accessibility-Änderung
+- neuem responsiven Verhalten
+- reproduziertem visuellen Fehler
+- explizitem Review-Bedarf
+
+Eine UI-Iteration mit unverändertem Rendering darf vorhandene Screenshot-Evidence nur dann wiederverwenden, wenn die relevanten Quellpfade und ihr Kontext-Hash unverändert sind.
 
 ## 9. Kosten- und Kontextbudget
 

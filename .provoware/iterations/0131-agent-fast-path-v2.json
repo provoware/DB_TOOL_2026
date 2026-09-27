@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "iteration": 131,
+  "agent": "agent-fast-path-v2-agent-131",
+  "size": "L",
+  "goal": "Das bisherige Entwicklungsvorgehen auf Effizienz analysieren und einen schnelleren Agenten-Fast-Path einführen, ohne Scope-, Single-Writer-, Evidence-, Freeze- oder Gate-Qualität zu senken.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Agent-Orchestrierung und Entwicklungseffizienz",
+    "summary": "Ein kompakter maschinengeprüfter Startkontext verhindert wiederholtes Lesen und Statusdrift. Die operative Agentenführung wird anschließend auf drei Kernrollen mit triggerbasierten Spezialisten verdichtet.",
+    "target_doc": "docs/AGENT_ORCHESTRATION.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0131-agent-fast-path-v2.json",
+    "scripts/build_iteration_context.py",
+    "tests/governance/test_iteration_context.py",
+    ".github/workflows/iteration-gates.yml",
+    "AGENTS.md",
+    "docs/AGENT_ORCHESTRATION.md",
+    "docs/development/I131_DEVELOPMENT_EFFICIENCY_ANALYSIS.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/AGENT_ORCHESTRATION.md",
+    ".github/workflows/iteration-gates.yml",
+    ".github/workflows/agent-governance.yml",
+    "scripts/check_iteration_scope.py",
+    "scripts/validate_iteration_manifest.py",
+    "scripts/validate_agent_governance.py"
+  ],
+  "direct_dependencies": [
+    "main 8f3b9af2abed1416d0ff6713f60017ecc3a3db9d",
+    "manifest-driven targeted routing remains authoritative",
+    "two-step iteration and single-writer protections remain mandatory",
+    "Control Plane V2 stays shadow-only and non-authoritative",
+    "CP-03 and CP-06 remain frozen",
+    "README/TODO progress must remain 20 of 132 = 15.2 percent"
+  ],
+  "tests_required": [
+    "Step 1: compile scripts/build_iteration_context.py and tests/governance/test_iteration_context.py",
+    "Step 1: run tests/governance/test_iteration_context.py",
+    "Step 1: new fast-context gate must reject README/TODO progress drift and preserve compact source hashes/priorities",
+    "Step 1: Iteration Gate Router must execute the fast-context check before manifest routing",
+    "Step 1: governance gate must remain green",
+    "Step 2 after green: update AGENTS.md and AGENT_ORCHESTRATION.md to Fast Path V2 without weakening safety invariants",
+    "Step 2: document observed bottlenecks, retained safeguards, trigger matrix and expected efficiency gains",
+    "Step 2: rerun targeted fast-context regression and governance gate"
+  ],
+  "tests_explicitly_not_run": [
+    "browser/product tests because no product runtime changes",
+    "database tests because no persistence/schema changes",
+    "full product suite because the change is governance/tooling only"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/build_iteration_context.py",
+      "tests/governance/test_iteration_context.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_iteration_context.py"
+    ]
+  },
+  "risks": [
+    "a speed optimization must not bypass evidence or frozen-core gates",
+    "a context cache can become dangerous if stale state is treated as current",
+    "role consolidation must preserve read-only review independence and single-writer execution"
+  ],
+  "non_changes": [
+    "no product/runtime code",
+    "no database/schema/model/store changes",
+    "no product TODO count change",
+    "no CP-03 or CP-06 reopen",
+    "no Control Plane V2 authority promotion",
+    "no dependency changes"
+  ],
+  "expected_side_effects": [
+    "all PRs fail early on README/TODO progress drift before expensive routing work",
+    "agents start from one compact hashed context instead of rereading central status documents",
+    "the default operational path uses three core roles while specialist roles are trigger-based",
+    "screenshot cadence tracks UI-relevant iterations rather than unrelated docs/governance work",
+    "all prior single-writer, evidence, scope, freeze and deep-gate protections remain in force"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED"
+}
