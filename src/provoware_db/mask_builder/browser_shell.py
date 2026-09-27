@@ -103,6 +103,7 @@ _INTERACTION_SCRIPT = r"""
     movingDraftId = id;
     updateTargetAvailability();
     setStatus(item.label + " verschieben · Zielspalte wählen. Escape bricht ab.");
+    setTargetTabStop(item.column);
     targetButtons[item.column].focus();
   }
 
@@ -779,6 +780,7 @@ _INTERACTION_SCRIPT = r"""
     collapsedSectionIds.delete(id);
     renderDraft();
     setStatus(removed.label + " entfernt · nur temporärer Browserentwurf.");
+    setTargetTabStop(removed.column);
     targetButtons[removed.column].focus();
   }
 
@@ -1390,8 +1392,15 @@ _INTERACTION_SCRIPT = r"""
     );
   }
 
+  function setTargetTabStop(index) {
+    targetButtons.forEach((button, candidateIndex) => {
+      button.tabIndex = candidateIndex === index ? 0 : -1;
+    });
+  }
+
   function focusSiblingTarget(index, direction) {
     const next = (index + direction + targetButtons.length) % targetButtons.length;
+    setTargetTabStop(next);
     targetButtons[next].focus();
   }
 
@@ -1400,7 +1409,11 @@ _INTERACTION_SCRIPT = r"""
   });
 
   targetButtons.forEach((button, index) => {
-    button.addEventListener("click", () => placeAt(Number(button.dataset.column)));
+    button.addEventListener("focus", () => setTargetTabStop(index));
+    button.addEventListener("click", () => {
+      setTargetTabStop(index);
+      placeAt(Number(button.dataset.column));
+    });
     button.addEventListener("keydown", (event) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
@@ -1423,6 +1436,7 @@ _INTERACTION_SCRIPT = r"""
     throw new Error("Masken-Baukasten Raster-Selbstprüfung fehlgeschlagen.");
   }
 
+  setTargetTabStop(0);
   updateTargetAvailability();
 })();
 </script>
@@ -1456,7 +1470,8 @@ def render_editor_shell() -> str:
         (
             f'<button type="button" class="placement-target" data-column="{column}" '
             f'aria-label="In Spalte {column + 1} platzieren" '
-            f'aria-keyshortcuts="Enter Space ArrowLeft ArrowRight Escape" aria-disabled="false">'
+            f'aria-keyshortcuts="Enter Space ArrowLeft ArrowRight Escape" '
+            f'tabindex="{"0" if column == 0 else "-1"}" aria-disabled="false">'
             f'{column + 1}</button>'
         )
         for column in range(GRID_COLUMNS)
@@ -1516,9 +1531,9 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 <body>
 <header><strong>PROVOWARE · Masken-Baukasten</strong><p>Entwurf ohne Speichern und ohne Datenbankzugriff.</p></header>
 <main class="editor">
-<section class="panel" aria-labelledby="palette-title"><h2 id="palette-title">Komponenten</h2><div class="palette">{palette}</div></section>
-<section class="panel" aria-labelledby="canvas-title"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p>Komponente wählen, dann eine Zielspalte anklicken. Mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
-<section class="panel" aria-labelledby="preview-title"><h2 id="preview-title">Vorschau</h2><div class="preview-card" id="preview"><p>Noch keine Komponenten platziert.</p></div></section>
+<section class="panel" aria-labelledby="palette-title" data-focus-stage="1"><h2 id="palette-title">Komponenten</h2><div class="palette">{palette}</div></section>
+<section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
+<section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><div class="preview-card" id="preview"><p>Noch keine Komponenten platziert.</p></div></section>
 </main>
 {_INTERACTION_SCRIPT}
 </body>
