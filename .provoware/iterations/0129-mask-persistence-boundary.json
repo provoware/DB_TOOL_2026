@@ -70,8 +70,9 @@
   ],
   "expected_side_effects": [
     "future persistence work has explicit Preview -> Integrity -> Recovery -> Commit -> Read-back gates before implementation",
-    "the planning TODO can be closed while all productive writes remain blocked"
+    "the persistence-boundary planning TODO is closed without enabling any Save path",
+    "A-M progress becomes 20 of 132 = 15.2 percent"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED"
+  "status": "STEP2_IMPLEMENTED"
 }
