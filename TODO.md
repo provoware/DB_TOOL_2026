@@ -2,7 +2,9 @@
 
 Stand: **nach I124 auf `main`**. Der letzte Produkt-Slice ist I119; I120–I124 sind ausschließlich Control-Plane-V2-Shadow-Governance.
 
-Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.\n\n**Fortschritt A–M:** **17 von 132 = 12,9 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
+
+**Fortschritt A–M:** **17 von 132 = 12,9 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
 **Bestätigter Produktstand:** I118 ergänzte die browserlokale Breitenbearbeitung mit 12-Spalten-Vorabvalidierung. I119 bestätigte die vollständige vorhandene Property-Matrix bei 100/150/200 % und härtete den gefundenen Fokuspfad. I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance und zählen deshalb nicht als Produktfortschritt.
 
