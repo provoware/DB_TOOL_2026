@@ -35,6 +35,10 @@ _INTERACTION_SCRIPT = r"""
     status.textContent = message;
   }
 
+  function nextDraftElementId() {
+    return "draft-" + String(nextDraftId++);
+  }
+
   function placementFitsGrid(column, width) {
     return (
       Number.isInteger(column)
@@ -643,6 +647,64 @@ _INTERACTION_SCRIPT = r"""
     focusOptionControl(draftId, option.id, focusSelector);
   }
 
+  function focusDuplicateControl(id) {
+    const button = Array.from(placedLayer.querySelectorAll(".duplicate-draft"))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined) {
+      button.focus();
+    }
+  }
+
+  function duplicateDraft(id) {
+    const source = draftElements.find((item) => item.id === id);
+    if (source === undefined) {
+      return;
+    }
+
+    const optionIdMap = new Map();
+    const options = source.options === null
+      ? null
+      : source.options.map((option) => {
+          const nextId = "draft-option-" + String(nextDraftOptionId++);
+          optionIdMap.set(option.id, nextId);
+          return { id: nextId, label: option.label };
+        });
+
+    let defaultSelection = source.defaultSelection;
+    if (Array.isArray(source.defaultSelection)) {
+      defaultSelection = source.defaultSelection
+        .map((optionId) => optionIdMap.get(optionId))
+        .filter((optionId) => optionId !== undefined);
+    } else if (typeof source.defaultSelection === "string") {
+      defaultSelection = optionIdMap.get(source.defaultSelection) ?? null;
+    }
+
+    const duplicate = {
+      id: nextDraftElementId(),
+      kind: source.kind,
+      label: source.label,
+      column: source.column,
+      width: source.width,
+      helpText: source.helpText,
+      isRequired: source.isRequired,
+      isVisible: source.isVisible,
+      dataType: source.dataType,
+      defaultValue: source.defaultValue,
+      options,
+      defaultSelection,
+    };
+    draftElements.push(duplicate);
+    renderDraft();
+    updateTargetAvailability();
+    setStatus(
+      source.label
+      + " dupliziert als "
+      + duplicate.id
+      + " · nur temporärer Browserentwurf."
+    );
+    focusDuplicateControl(duplicate.id);
+  }
+
   function removeDraft(id) {
     const index = draftElements.findIndex((item) => item.id === id);
     if (index < 0) {
@@ -1036,6 +1098,15 @@ _INTERACTION_SCRIPT = r"""
       visibilityButton.addEventListener("click", () => toggleVisibility(item.id));
       card.appendChild(visibilityButton);
 
+      const duplicateButton = document.createElement("button");
+      duplicateButton.type = "button";
+      duplicateButton.className = "duplicate-draft";
+      duplicateButton.dataset.draftId = item.id;
+      duplicateButton.textContent = "Duplizieren";
+      duplicateButton.setAttribute("aria-label", item.label + " duplizieren");
+      duplicateButton.addEventListener("click", () => duplicateDraft(item.id));
+      card.appendChild(duplicateButton);
+
       const moveButton = document.createElement("button");
       moveButton.type = "button";
       moveButton.className = "move-draft";
@@ -1174,7 +1245,7 @@ _INTERACTION_SCRIPT = r"""
     }
 
     draftElements.push({
-      id: "draft-" + String(nextDraftId++),
+      id: nextDraftElementId(),
       kind: selectedKind,
       label: selectedLabel,
       column,
@@ -1311,7 +1382,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
