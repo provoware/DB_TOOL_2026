@@ -25,6 +25,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Build and validate fast planning context
+        shell: bash
+        run: |
+          python scripts/build_iteration_context.py --check --json | tee /tmp/provoware-iteration-context.json
+
       - name: Validate manifest, scope and gate profile
         id: route
         env:
