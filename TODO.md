@@ -1,12 +1,12 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **I142 auf Feature-Branch, Basis I141 auf `main`**. I142 ist eine gemeinsame Preview-Abnahme ohne neuen A–M-Produktpunkt; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **I143 auf Feature-Branch, Basis I142 auf `main`**. I143 ergänzt ausschließlich einen read-only Rastervorschlag; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **28 von 132 = 21,2 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **29 von 132 = 22,0 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I142 nimmt Desktop 1152 px, Tablet 768 px und Schmal 360 px gemeinsam in realem Chromium auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz ab. I141 ergänzt den dritten browserlokalen Preview-Modus Schmal mit 360 px und erhält Desktop 1152 px sowie Tablet 768 px unverändert. I140 ergänzt einen browserlokalen Tablet-Modus mit 768 px und erhält I139 Desktop 1152 px als Standard. I139 ergänzt eine feste browserlokale Desktop-Vorschau mit 1152-px-Viewport. I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
+**Bestätigter Produktstand:** I143 ergänzt einen deterministischen read-only Raster-Assistenten ohne Übernahmeweg oder Persistenz. I142 nimmt Desktop 1152 px, Tablet 768 px und Schmal 360 px gemeinsam in realem Chromium auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz ab. I141 ergänzt den dritten browserlokalen Preview-Modus Schmal mit 360 px und erhält Desktop 1152 px sowie Tablet 768 px unverändert. I140 ergänzt einen browserlokalen Tablet-Modus mit 768 px und erhält I139 Desktop 1152 px als Standard. I139 ergänzt eine feste browserlokale Desktop-Vorschau mit 1152-px-Viewport. I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
 
 ## Nächste sichere Prioritäten
 
@@ -63,7 +63,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 - [x] Desktop-Vorschau
 - [x] Tablet-Vorschau
 - [x] schmale Vorschau
-- [ ] Raster-Assistent als read-only Vorschlag
+- [x] Raster-Assistent als read-only Vorschlag
 - [ ] Übernahme eines Rastervorschlags mit Vorher/Nachher
 
 ## C. Datenarbeit
