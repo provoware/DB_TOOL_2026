@@ -70,9 +70,10 @@
     "no dependency changes"
   ],
   "expected_side_effects": [
-    "the complete existing property-to-preview mapping gains one explicit joint regression contract",
-    "the corresponding TODO acceptance point can be closed after green validation"
+    "the complete existing property-to-preview mapping has one explicit joint regression contract",
+    "the corresponding TODO acceptance point is closed",
+    "A-M progress becomes 18 of 132 = 13.6 percent without opening defaultSelection or persistence"
   ],
   "screenshot_required": false,
-  "status": "STEP1_IMPLEMENTED"
+  "status": "STEP2_IMPLEMENTED"
 }
