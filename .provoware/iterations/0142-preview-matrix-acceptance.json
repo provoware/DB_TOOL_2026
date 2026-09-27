@@ -15,6 +15,7 @@
   "write_files": [
     ".provoware/iterations/0142-preview-matrix-acceptance.json",
     "tests/mask_builder/i142_preview_matrix_evidence.mjs",
+    "tests/mask_builder/test_i139_desktop_preview.py",
     "tests/mask_builder/test_i142_preview_matrix_evidence.py",
     "README.md",
     "TODO.md"
