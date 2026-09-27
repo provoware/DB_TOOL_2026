@@ -295,7 +295,7 @@ def test_required_toggle_is_field_only_accessible_and_narrow_safe() -> None:
     assert required_button > field_guard
     assert move_button > required_button
 
-    assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
+    assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label, .default-selection-label { color:#d7def5; font-weight:600; }' in html
     assert '.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft, .remove-draft { align-self:stretch; width:100%; }' in html
 
 
@@ -352,7 +352,7 @@ def test_visibility_accessibility_focus_and_narrow_layout() -> None:
     assert 'visibilityButton.type = "button";' in html
     assert 'visibilityButton.setAttribute("aria-label", item.label + " · Sichtbarkeit umschalten");' in html
     assert 'visibilityButton.setAttribute("aria-pressed", String(item.isVisible));' in html
-    assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label { color:#d7def5; font-weight:600; }' in html
+    assert '.required-state, .visibility-state, .width-label, .datatype-label, .default-value-label, .default-selection-label { color:#d7def5; font-weight:600; }' in html
     assert '.placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state { min-width:0; overflow-wrap:anywhere; }' in html
     assert '.toggle-visibility, .width-select, .datatype-select' in html
     assert 'button:focus-visible, select:focus-visible, input:focus-visible' in html
