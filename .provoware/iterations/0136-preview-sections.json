@@ -15,6 +15,7 @@
   "write_files": [
     ".provoware/iterations/0136-preview-sections.json",
     "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
     "tests/mask_builder/test_i136_sections.py",
     "README.md",
     "TODO.md"
@@ -81,5 +82,5 @@
     "A-M progress becomes 23 of 132 = 17.4 percent"
   ],
   "screenshot_required": false,
-  "status": "IMPLEMENTED_PENDING_GATE"
+  "status": "GATE_FIX_APPLIED_PENDING_RERUN"
 }
