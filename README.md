@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I132** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I133** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -127,15 +127,15 @@ Der Browser-Maskenentwurf wird weiterhin **nicht gespeichert**. Ein Reload verwi
 
 Noch offen sind insbesondere:
 
-- browserlokale Umsetzung des bereits geplanten `defaultSelection`-Vertrags
+- kontrolliertes browserlokales Neuordnen ohne Drag-and-drop-Zwang
 - produktive Umsetzung der bereits geplanten Save-/Load-Grenze
 - produktive Masken-Persistenz
 - größere Struktur-, Regel-, Import-/Export-, Recovery- und Dashboard-Funktionen
 
 ## Nächste sichere Reihenfolge
 
-1. Den geplanten `defaultSelection`-Vertrag in einer eigenen browserlokalen UI-Iteration umsetzen.
-2. Danach eine kleine Struktur-Capability auswählen, ohne Persistenz zu öffnen.
+1. Kontrolliertes Neuordnen als kleine browserlokale Struktur-Capability umsetzen, ohne Drag-and-drop-Zwang.
+2. Danach Abschnitte und einklappbare Gruppen weiterhin als getrennte, kleine Struktur-Slices behandeln.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
