@@ -36,6 +36,7 @@ _INTERACTION_SCRIPT = r"""
   let movingDraftId = null;
   let editingDraftId = null;
   let editingHelpDraftId = null;
+  let pendingGridSuggestion = null;
   const collapsedSectionIds = new Set();
 
   function setStatus(message) {
@@ -142,6 +143,49 @@ _INTERACTION_SCRIPT = r"""
     });
   }
 
+  function applyPendingGridSuggestion() {
+    if (pendingGridSuggestion === null) {
+      setStatus("Raster-Assistent · kein bestätigter Vorschlag zur Übernahme vorhanden.");
+      gridAssistantButton.focus();
+      return;
+    }
+
+    const currentFingerprint = JSON.stringify(gridSuggestionSnapshot(draftElements));
+    if (currentFingerprint !== pendingGridSuggestion.sourceFingerprint) {
+      pendingGridSuggestion = null;
+      showGridSuggestion();
+      setStatus("Raster-Assistent · Vorschlag war veraltet und wurde neu berechnet · nichts übernommen.");
+      gridAssistantButton.focus();
+      return;
+    }
+
+    const draftBefore = JSON.stringify(draftElements);
+    const nextLayout = new Map(temporaryGridLayout);
+    pendingGridSuggestion.positions.forEach((position) => {
+      const item = draftElements.find((candidate) => candidate.id === position.id);
+      if (
+        item === undefined
+        || item.width !== position.width
+        || !validateTemporaryGridPosition(position.row, position.column, position.width)
+      ) {
+        throw new Error("Rastervorschlag kann nicht atomar übernommen werden.");
+      }
+      nextLayout.set(position.id, { row: position.row, column: position.column });
+    });
+
+    if (JSON.stringify(draftElements) !== draftBefore) {
+      throw new Error("Rasterübernahme darf Draftdaten nicht verändern.");
+    }
+
+    temporaryGridLayout.clear();
+    nextLayout.forEach((position, id) => temporaryGridLayout.set(id, position));
+    pendingGridSuggestion = null;
+    renderDraft();
+    showGridSuggestion();
+    setStatus("Raster-Assistent · Vorschlag browserlokal übernommen · Draftdaten und Breiten unverändert.");
+    gridAssistantButton.focus();
+  }
+
   function showGridSuggestion() {
     const before = JSON.stringify(gridSuggestionSnapshot(draftElements));
     const current = currentGridLayout(draftElements);
@@ -154,6 +198,7 @@ _INTERACTION_SCRIPT = r"""
 
     gridAssistantOutput.replaceChildren();
     if (suggestion.length === 0) {
+      pendingGridSuggestion = null;
       const empty = document.createElement("p");
       empty.textContent = "Noch keine Komponenten für einen Vorschlag vorhanden.";
       gridAssistantOutput.appendChild(empty);
@@ -162,6 +207,17 @@ _INTERACTION_SCRIPT = r"""
     }
 
     const changedCount = comparison.filter((item) => item.changed).length;
+    pendingGridSuggestion = changedCount === 0
+      ? null
+      : {
+          sourceFingerprint: before,
+          positions: suggestion.map((item) => ({
+            id: item.id,
+            row: item.row,
+            column: item.column,
+            width: item.width,
+          })),
+        };
     const summary = document.createElement("p");
     summary.className = "grid-assistant-summary";
     summary.textContent =
@@ -230,14 +286,25 @@ _INTERACTION_SCRIPT = r"""
     const note = document.createElement("p");
     note.className = "grid-assistant-contract-note";
     note.textContent =
-      "Übernahme gesperrt: Zeile und Spalte besitzen jetzt einen getrennten temporären Browservertrag. "
-      + "Erst ein späterer Mutations-Slice darf die vorgeschlagenen Positionen dort gezielt einsetzen.";
+      changedCount === 0
+        ? "Aktuelles Layout entspricht bereits dem Rastervorschlag."
+        : "Übernahme wirkt ausschließlich auf den flüchtigen Zeile+Spalte-Layoutvertrag. Draftdaten, Breiten und Reihenfolge bleiben unverändert.";
     gridAssistantOutput.appendChild(note);
+
+    if (changedCount > 0) {
+      const applyButton = document.createElement("button");
+      applyButton.type = "button";
+      applyButton.className = "grid-assistant-apply";
+      applyButton.textContent = "Rastervorschlag übernehmen";
+      applyButton.setAttribute("aria-describedby", "grid-assistant-title");
+      applyButton.addEventListener("click", applyPendingGridSuggestion);
+      gridAssistantOutput.appendChild(applyButton);
+    }
 
     setStatus(
       "Raster-Assistent · Vorher/Nachher geprüft · "
       + String(changedCount)
-      + " Änderung(en) geplant · noch nichts übernommen."
+      + (changedCount === 0 ? " Änderung(en) offen." : " Änderung(en) bereit zur browserlokalen Übernahme.")
     );
   }
 
@@ -1468,8 +1535,10 @@ _INTERACTION_SCRIPT = r"""
 
     function appendPreviewRow(list, item) {
       const row = document.createElement("li");
-      const firstColumn = item.column + 1;
-      const lastColumn = item.column + item.width;
+      const itemIndex = draftElements.findIndex((candidate) => candidate.id === item.id);
+      const position = temporaryGridPosition(item, itemIndex + 1);
+      const firstColumn = position.column + 1;
+      const lastColumn = position.column + item.width;
       row.dataset.draftId = item.id;
       row.textContent = (
         item.label
@@ -1781,7 +1850,8 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .grid-assistant {{ margin-top:1rem; padding:.85rem; border:1px solid #4a526b; border-radius:10px; background:#151925; }}
 .grid-assistant h3 {{ margin:.1rem 0 .45rem; font-size:1rem; }}
 .grid-assistant p {{ margin:.35rem 0; color:#b8bfd2; }}
-.grid-assistant-button {{ padding:.45rem .7rem; border:1px solid #6978a4; border-radius:7px; background:#202536; color:inherit; font:inherit; }}
+.grid-assistant-button, .grid-assistant-apply {{ padding:.45rem .7rem; border:1px solid #6978a4; border-radius:7px; background:#202536; color:inherit; font:inherit; }}
+.grid-assistant-apply {{ margin-top:.65rem; }}
 .grid-assistant-list {{ margin:.65rem 0 0; padding-left:1.5rem; }}
 .grid-assistant-list li {{ margin:.25rem 0; overflow-wrap:anywhere; }}
 .grid-assistant-summary, .grid-assistant-contract-note {{ margin:.65rem 0; }}
