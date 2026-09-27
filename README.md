@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I137 auf diesem Branch; Vorschau-Abschnitte sind browserlokal ein- und ausklappbar  
+> **Bestätigter Produktstand:** I138 auf diesem Branch; Tastaturreihenfolge ist explizit und ohne positive tabindex-Werte gegliedert  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **24 / 132 = 18,2 %**
+> **Gesamtfortschritt Master-TODO A–M:** **25 / 132 = 18,9 %**
 
 ## Zielbild
 
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I137** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I138** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -61,6 +61,7 @@ Bis einschließlich **I137** besitzt der temporäre Browser-Draft:
 - kontrolliertes Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls ohne Drag-and-drop-Zwang
 - semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein
 - browserlokales Ein-/Ausklappen dieser Abschnitte mit zugänglichem Toggle
+- explizite natürliche Tab-Reihenfolge mit roving Tabstop für die 12 Zielspalten
 - Blockierung ungültiger Rasterziele vor Mutation
 - Label- und Hilfetext-Bearbeitung
 - Pflichtfeld-Eigenschaft
@@ -124,6 +125,12 @@ I137 baut direkt auf I136 auf: Jeder sichtbare Bereich erhält in der Vorschau e
 
 Der Einklapp-Zustand lebt bewusst **außerhalb des Draft-Datenobjekts** in einem flüchtigen Browser-`Set`. Dadurch bleibt er rein UI-lokal, wird nicht dupliziert oder gespeichert und verschwindet bei einem Seitenreload. Nach jedem Toggle wird der Fokus deterministisch an denselben Abschnitt zurückgegeben.
 
+## I138 – explizite Tab-Reihenfolge
+
+I138 macht den Tastaturpfad des Masken-Baukastens explizit, ohne fragile positive `tabindex`-Werte einzuführen. Die Hauptbereiche bleiben in natürlicher DOM-Reihenfolge **Komponenten → Arbeitsfläche → Vorschau**.
+
+Das 12-Spalten-Raster verwendet einen **roving Tabstop**: Nur eine Zielspalte liegt gleichzeitig im normalen Tabpfad. Mit ←/→ wird der aktive Tabstop verschoben; Fokus, Klick, Move-Start und Remove-Rückgabe halten diesen Zustand synchron. Dadurch bleiben die zwölf Zielspalten vollständig tastaturbedienbar, ohne zwölf zusätzliche Tab-Schritte zu erzwingen.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -148,15 +155,15 @@ Der Browser-Maskenentwurf wird weiterhin **nicht gespeichert**. Ein Reload verwi
 
 Noch offen sind insbesondere:
 
-- explizite Tab-Reihenfolge
+
 - produktive Umsetzung der bereits geplanten Save-/Load-Grenze
 - produktive Masken-Persistenz
 - größere Struktur-, Regel-, Import-/Export-, Recovery- und Dashboard-Funktionen
 
 ## Nächste sichere Reihenfolge
 
-1. Explizite Tab-Reihenfolge als nächsten kleinen browserlokalen Struktur-Slice planen.
-2. Danach Desktop-/Tablet-/schmale Vorschau weiterhin getrennt behandeln.
+1. Desktop-Vorschau als nächsten kleinen browserlokalen Preview-Slice planen.
+2. Danach Tablet- und schmale Vorschau getrennt behandeln.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
@@ -198,7 +205,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **24 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **25 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

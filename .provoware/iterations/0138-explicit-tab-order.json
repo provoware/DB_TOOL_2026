@@ -1,0 +1,87 @@
+{
+  "schema_version": 2,
+  "iteration": 138,
+  "agent": "explicit-tab-order-agent-138",
+  "size": "S",
+  "goal": "Die Tastaturreihenfolge des Browser-Masken-Baukastens explizit und robust machen: Palette, ein roving Zielspalten-Tabstop, Controls der platzierten Elemente und danach Preview-Toggles. Keine positiven tabindex-Werte und keine Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Explizite Tab-Reihenfolge",
+    "summary": "Die Hauptbereiche sind als Fokus-Stufen dokumentiert. Im 12-Spalten-Raster liegt nur eine Zielspalte im normalen Tabpfad; Pfeiltasten verschieben diesen Tabstop. Positive tabindex-Werte werden vermieden.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0138-explicit-tab-order.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i138_tab_order.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i137_collapsible_sections.py"
+  ],
+  "direct_dependencies": [
+    "main 9a1a0b06c68da30c5c473e1f170572750240d2c0",
+    "I137 preview toggles are confirmed",
+    "placement targets already support ArrowLeft and ArrowRight",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and test_i138_tab_order.py",
+    "run test_i138_tab_order.py",
+    "run existing test_browser_shell.py as narrow browser-shell regression",
+    "palette precedes canvas and canvas precedes preview in DOM",
+    "only one placement target is in the normal tab sequence",
+    "ArrowLeft/ArrowRight moves the roving target tab stop",
+    "focus/click on a placement target makes it the current tab stop",
+    "no positive tabindex values",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the change is browser-local and targeted",
+    "new Chromium screenshot evidence because this is an accessibility-order slice, not the scheduled visual milestone"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i138_tab_order.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i138_tab_order.py"
+    ]
+  },
+  "risks": [
+    "positive tabindex values would create a fragile global order",
+    "all twelve placement targets in the tab sequence would create noisy keyboard navigation",
+    "programmatic focus changes must keep the roving tab stop synchronized",
+    "preview toggles must remain after editor controls in natural DOM order"
+  ],
+  "non_changes": [
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no persisted focus order"
+  ],
+  "expected_side_effects": [
+    "Tab traverses the main editor in a stable documented stage order",
+    "the placement grid contributes one tab stop instead of twelve",
+    "arrow navigation selects the target that Tab will later revisit",
+    "A-M progress becomes 25 of 132 = 18.9 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN"
+}
