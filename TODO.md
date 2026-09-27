@@ -1,12 +1,12 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **I138 auf Feature-Branch, Basis I137 auf `main`**. Der letzte produktive Browser-Slice ist I138; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **I139 auf Feature-Branch, Basis I138 auf `main`**. Der letzte produktive Browser-Slice ist I139; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **25 von 132 = 18,9 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **26 von 132 = 19,7 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
+**Bestätigter Produktstand:** I139 ergänzt eine feste browserlokale Desktop-Vorschau mit 1152-px-Viewport. I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
 
 ## Nächste sichere Prioritäten
 
@@ -60,7 +60,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 - [x] Abschnitte
 - [x] einklappbare Gruppen
 - [x] explizite Tab-Reihenfolge
-- [ ] Desktop-Vorschau
+- [x] Desktop-Vorschau
 - [ ] Tablet-Vorschau
 - [ ] schmale Vorschau
 - [ ] Raster-Assistent als read-only Vorschlag
