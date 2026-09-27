@@ -76,13 +76,5 @@
     "shadow governance I120-I124 is visible without overstating product capability"
   ],
   "screenshot_required": false,
-  "intermediate_gate": {
-    "base_sha": "90d326d93eeecdbdf0342a190eb72e71c361aa19",
-    "step_1_sha": "fb21082e26374ac93d6cbaf09185492425564c7e",
-    "ahead_by": 1,
-    "behind_by": 0,
-    "changed_files": [".provoware/iterations/0125-doc-status-sync.json"],
-    "result": "GREEN"
-  },
   "status": "DOCS_IMPLEMENTED"
 }
