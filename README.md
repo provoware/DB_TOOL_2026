@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I140 auf diesem Branch; Desktop 1152 px bleibt Standard, Tablet 768 px ist als browserlokaler Preview-Modus ergänzt  
+> **Bestätigter Produktstand:** I141 auf diesem Branch; Desktop 1152 px, Tablet 768 px und Schmal 360 px bilden die vollständige browserlokale Preview-Viewport-Matrix  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **27 / 132 = 20,5 %**
+> **Gesamtfortschritt Master-TODO A–M:** **28 / 132 = 21,2 %**
 
 ## Zielbild
 
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I140** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I141** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -64,6 +64,7 @@ Bis einschließlich **I140** besitzt der temporäre Browser-Draft:
 - explizite natürliche Tab-Reihenfolge mit roving Tabstop für die 12 Zielspalten
 - feste Desktop-Vorschau mit 1152-px-Viewport in horizontal scrollbarem Rahmen
 - browserlokale Umschaltung auf eine Tablet-Vorschau mit 768 px, Desktop bleibt Standard
+- zusätzlicher schmaler Preview-Modus mit 360 px; alle drei Modi teilen dieselben Preview-Daten
 - Blockierung ungültiger Rasterziele vor Mutation
 - Label- und Hilfetext-Bearbeitung
 - Pflichtfeld-Eigenschaft
@@ -145,6 +146,12 @@ I140 erweitert den bestätigten I139-Desktop-Vertrag um einen separaten **Tablet
 
 Die beiden Modus-Buttons verwenden `aria-pressed`, die sichtbare Modusbezeichnung und die semantische Breitenbeschreibung werden synchron aktualisiert. Eine schmale Vorschau wird noch nicht eingeführt. Der Modus bleibt vollständig browserlokal und wird nicht gespeichert.
 
+## I141 – schmale Vorschau
+
+I141 schließt die browserlokale Preview-Viewport-Matrix ab. Neben **Desktop 1152 px** und **Tablet 768 px** steht nun ein dritter Modus **Schmal 360 px** bereit. Desktop bleibt weiterhin der initiale Standard.
+
+Intern werden die drei Viewport-Verträge über eine kleine feste Modus-Tabelle beschrieben. Die Umschaltung verändert ausschließlich Breite, sichtbare Modusbezeichnung und Accessibility-Status; die Draft- und Preview-Daten bleiben identisch. Der Modus wird weiterhin nicht gespeichert.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -176,8 +183,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Schmale Vorschau als nächsten kleinen browserlokalen Preview-Slice planen.
-2. Danach die drei Preview-Verträge gemeinsam auf Bedienbarkeit und Konsistenz abnehmen.
+1. Die drei Preview-Verträge Desktop/Tablet/Schmal gemeinsam auf Bedienbarkeit, Fokus und Konsistenz abnehmen.
+2. Danach den nächsten offenen Strukturpunkt `Raster-Assistent als read-only Vorschlag` separat planen.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
@@ -219,7 +226,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **27 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **28 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
