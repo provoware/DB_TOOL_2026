@@ -1,19 +1,19 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **nach I132 auf `main`**. Der letzte produktive Browser-Slice ist I132; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **nach I133 auf `main`**. Der letzte produktive Browser-Slice ist I133; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **20 von 132 = 15,2 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **21 von 132 = 15,9 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I132 ergänzt browserlokale `defaultSelection` für Choice-Felder mit stabilen Option-IDs, Preview, Fokus- und Mutationsguards. I119 bleibt die Basis-Evidence der vorherigen Property-Matrix; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
+**Bestätigter Produktstand:** I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] Element duplizieren bei neuer monotoner Draft-ID
-2. [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
-3. [ ] Abschnitte
-4. [ ] einklappbare Gruppen
+1. [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
+2. [ ] Abschnitte
+3. [ ] einklappbare Gruppen
+4. [ ] explizite Tab-Reihenfolge
 
 Bis dahin bleiben **Persistenz, CP-03 und CP-06 geschlossen**. `defaultSelection` ist ausschließlich browserlokal und flüchtig.
 
@@ -55,7 +55,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 
 ## B. Masken-Baukasten – Struktur
 
-- [ ] Element duplizieren bei neuer monotoner Draft-ID
+- [x] Element duplizieren bei neuer monotoner Draft-ID
 - [ ] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
 - [ ] Abschnitte
 - [ ] einklappbare Gruppen

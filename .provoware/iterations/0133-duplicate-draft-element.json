@@ -58,11 +58,13 @@
     "compile": [
       "src/provoware_db/mask_builder/browser_shell.py",
       "tests/mask_builder/test_browser_shell.py",
-      "tests/mask_builder/test_i133_duplicate.py"
+      "tests/mask_builder/test_i133_duplicate.py",
+      "tests/mask_builder/test_i133_accessibility_evidence.py"
     ],
     "python_tests": [
       "tests/mask_builder/test_browser_shell.py",
-      "tests/mask_builder/test_i133_duplicate.py"
+      "tests/mask_builder/test_i133_duplicate.py",
+      "tests/mask_builder/test_i133_accessibility_evidence.py"
     ]
   },
   "risks": [
@@ -80,9 +82,11 @@
   ],
   "expected_side_effects": [
     "a draft element can be duplicated in browser memory",
-    "the duplicate preserves user-visible properties while receiving independent identities",
-    "preview contains both source and duplicate"
+    "the duplicate preserves user-visible properties while receiving independent draft and option identities",
+    "defaultSelection is rebound to cloned choice-option IDs",
+    "real Chromium evidence covers duplicate identity separation, preview, focus and overflow at 100/150/200 percent",
+    "A-M progress becomes 21 of 132 = 15.9 percent"
   ],
   "screenshot_required": true,
-  "status": "STEP1_IMPLEMENTED"
+  "status": "STEP2_IMPLEMENTED"
 }
