@@ -1,0 +1,88 @@
+{
+  "schema_version": 2,
+  "iteration": 140,
+  "agent": "tablet-preview-agent-140",
+  "size": "S",
+  "goal": "Den bestätigten I139-Desktop-Vertrag unverändert als Standard erhalten und einen separaten browserlokalen Tablet-Vorschau-Modus mit 768 Pixeln ergänzen. Schmale Vorschau und Persistenz bleiben geschlossen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Tablet-Vorschau",
+    "summary": "Die Vorschau erhält eine flüchtige Umschaltung zwischen Desktop 1152 px und Tablet 768 px. Desktop bleibt Standard; Tablet verändert ausschließlich den Viewport-Vertrag.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0140-tablet-preview.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i140_tablet_preview.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i139_desktop_preview.py"
+  ],
+  "direct_dependencies": [
+    "main 34c394e1b791ead6554d1c4a6edf4ff550d008c5",
+    "I139 desktop preview contract is confirmed",
+    "I138 focus order remains confirmed",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and test_i140_tablet_preview.py",
+    "run test_i140_tablet_preview.py",
+    "run existing test_browser_shell.py as narrow browser-shell regression",
+    "desktop remains the initial 1152-pixel mode",
+    "tablet mode is exactly 768 pixels",
+    "preview mode buttons expose aria-pressed state",
+    "mode switch updates width/label/aria contract without mutating draft data",
+    "no narrow mode",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the change is browser-local and targeted",
+    "new Chromium screenshot evidence because this iteration establishes the tablet viewport contract only"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i140_tablet_preview.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i140_tablet_preview.py"
+    ]
+  },
+  "risks": [
+    "desktop mode must remain the initial default and keep 1152 px",
+    "tablet mode must not alter preview data semantics",
+    "aria state and visible mode label must remain synchronized",
+    "narrow preview must not be introduced early",
+    "preview mode must not leak into persistence"
+  ],
+  "non_changes": [
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no narrow preview",
+    "no persisted preview mode"
+  ],
+  "expected_side_effects": [
+    "desktop remains the initial preview at 1152 px",
+    "tablet preview can be selected at 768 px",
+    "the active mode is visible and announced via aria state",
+    "A-M progress becomes 27 of 132 = 20.5 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN"
+}
