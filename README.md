@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I144 auf diesem Branch; Rastervorschlag und aktuelles Layout werden explizit als Vorher/Nachher-Vertrag verglichen, Übernahme bleibt gesperrt  
+> **Bestätigter Produktstand:** I145 auf diesem Branch; Zeile und Spalte besitzen einen expliziten flüchtigen Browser-Layoutvertrag, Rastervorschlagsübernahme bleibt gesperrt  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I144** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I145** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -85,6 +85,7 @@ Bis einschließlich **I144** besitzt der temporäre Browser-Draft:
 - deterministische Preview ohne produktiven Write
 - read-only Raster-Assistent: kompakter Layout-Vorschlag aus bestehender Reihenfolge und bestehenden Breiten, ohne Übernahme
 - explizite Vorher/Nachher-Tabelle mit geplanter Zeilen-/Spaltenänderung pro Element; tatsächliche Übernahme weiterhin gesperrt
+- separater flüchtiger Browser-Layoutvertrag `draft-id → {row, column}`; die Arbeitsfläche rendert daraus, ohne Persistenz
 
 ### I115-Härtung
 
@@ -177,6 +178,14 @@ Dabei wurde eine wichtige Mutationsgrenze sichtbar: Die aktuelle Arbeitsfläche 
 
 I144 schließt den Master-TODO-Punkt „Übernahme eines Rastervorschlags mit Vorher/Nachher“ noch **nicht** ab. Der Produktfortschritt bleibt daher bei **29 / 132 = 22,0 %**.
 
+## I145 – temporärer Raster-Layoutvertrag für Zeile + Spalte
+
+I145 schließt die in I144 sichtbar gewordene Zustandslücke, ohne die Rastervorschlagsübernahme bereits freizugeben. Zeile und Spalte werden jetzt in einer **separaten flüchtigen Browser-Map** pro Draft-ID gehalten. Der persistierbare Draft selbst erhält bewusst noch kein neues Feld.
+
+Die Arbeitsfläche rendert ihre CSS-Rasterposition aus diesem temporären Vertrag. Bestehende Interaktionen bleiben synchron: neues Platzieren legt eine temporäre Position an, Verschieben aktualisiert die Spalte, Duplizieren erhält eine neue Zeile, Entfernen räumt den Layoutzustand auf und Neuordnen normalisiert die Zeilen entsprechend der aktuellen Draft-Reihenfolge.
+
+Damit ist erstmals sauber definiert, **wo** ein später angenommener Rastervorschlag Zeile und Spalte atomar setzen darf. I145 enthält weiterhin keinen Übernehmen-/Anwenden-Button und keine Persistenz. Der offene Master-TODO-Punkt bleibt daher offen; der Fortschritt bleibt **29 / 132 = 22,0 %**.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -208,8 +217,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Als nächsten Slice einen rein browserlokalen temporären Layoutvertrag für Rasterzeile + Spalte definieren; noch keine Persistenz.
-2. Erst danach eine explizite Übernahme mit Vorher/Nachher-Abnahme, Fokus-Rückgabe und reproduzierbarer Mutation implementieren.
+1. Als nächsten Slice die tatsächliche browserlokale Rasterübernahme atomar auf den temporären Zeile+Spalte-Vertrag begrenzen.
+2. Übernahme mit Vorher/Nachher-Abnahme, Fokus-Rückgabe und realer Chromium-Evidence gaten; weiterhin ohne Persistenz.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
