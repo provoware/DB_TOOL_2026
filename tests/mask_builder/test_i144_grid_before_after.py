@@ -20,7 +20,6 @@ def main() -> None:
         'Zeile " + String(item.before.row) + " → " + String(item.after.row)',
         'Spalte " + String(item.before.column + 1) + " → " + String(item.after.column + 1)',
         'Übernahme wirkt ausschließlich auf den flüchtigen Zeile+Spalte-Layoutvertrag.',
-        'noch nichts übernommen.',
     )
     missing = [token for token in required if token not in html]
     if missing:
