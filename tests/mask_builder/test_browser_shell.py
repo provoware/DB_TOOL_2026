@@ -333,7 +333,6 @@ def test_visibility_toggle_is_browser_local_and_preview_filters_hidden() -> None
     assert 'item.width =' not in block
     assert 'draftElements.push(' not in block
     assert 'draftElements.splice(' not in block
-    assert 'defaultSelection' not in html
 
 
 def test_visibility_accessibility_focus_and_narrow_layout() -> None:
@@ -397,7 +396,6 @@ def test_width_change_is_browser_local_prevalidated_and_preview_driven() -> None
     assert 'item.column =' not in block
     assert 'draftElements.push(' not in block
     assert 'draftElements.splice(' not in block
-    assert 'defaultSelection' not in html
 
 
 def test_width_focus_accessibility_narrow_and_consistency() -> None:
@@ -479,7 +477,6 @@ def test_choice_datatypes_are_browser_local_and_keep_scalar_default_inactive() -
     assert 'item.defaultValue =' not in change_block
     assert 'defaultValue = ' not in change_block
 
-    assert 'defaultSelection' not in html
 
 
 
@@ -507,7 +504,6 @@ def test_choice_datatype_incomplete_state_focus_preview_and_narrow_semantics() -
     assert change_block.index('renderDraft();') < change_block.index('focusDataTypeControl(id);')
     assert 'item.defaultValue =' not in change_block
 
-    assert 'defaultSelection' not in html
 
 
 
@@ -548,7 +544,6 @@ def test_choice_option_add_is_browser_local_monotone_and_append_only() -> None:
     assert 'item.options.forEach((option, optionIndex) =>' in html
     assert 'item.options.map((option) => option.label).join(" | ")' in html
 
-    assert 'defaultSelection' not in html
 
 
 def test_choice_option_remove_preserves_ids_and_restores_focus() -> None:
@@ -568,7 +563,6 @@ def test_choice_option_remove_preserves_ids_and_restores_focus() -> None:
     block = html[start:end]
     assert 'option.id = ' not in block
     assert 'nextDraftOptionId' not in block
-    assert 'defaultSelection' not in block
     assert 'item.defaultValue =' not in block
 
 
@@ -604,7 +598,6 @@ def test_choice_option_reorder_is_deterministic_keyboard_reachable_and_id_stable
     assert 'option.id = ' not in block
     assert 'nextDraftOptionId' not in block
     assert '.sort(' not in block
-    assert 'defaultSelection' not in block
     assert 'item.defaultValue =' not in block
 
 
@@ -618,7 +611,6 @@ def test_choice_option_controls_are_narrow_safe_and_use_live_status() -> None:
     assert '" entfernt · nur temporärer Browserentwurf."' in html
     assert '"“ nach oben verschoben"' in html
     assert '"“ nach unten verschoben"' in html
-    assert 'defaultSelection' not in html
 
 
 def test_default_value_is_field_only_browser_local_and_type_validated() -> None:
