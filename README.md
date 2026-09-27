@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I133 auf `main`; Draft-Elemente können mit neuen monotonen Element- und Choice-Option-IDs browserlokal dupliziert werden  
+> **Bestätigter Produktstand:** I135 auf diesem Branch; Draft-Elemente können browserlokal kontrolliert hoch/runter neu geordnet werden  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **21 / 132 = 15,9 %**
+> **Gesamtfortschritt Master-TODO A–M:** **22 / 132 = 16,7 %**
 
 ## Zielbild
 
@@ -58,6 +58,7 @@ Bis einschließlich **I133** besitzt der temporäre Browser-Draft:
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
 - temporäres Platzieren, Verschieben, Entfernen und Duplizieren mit neuer monotoner Draft-ID
+- kontrolliertes Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls ohne Drag-and-drop-Zwang
 - Blockierung ungültiger Rasterziele vor Mutation
 - Label- und Hilfetext-Bearbeitung
 - Pflichtfeld-Eigenschaft
@@ -103,6 +104,12 @@ I133 ergänzt eine kleine Struktur-Capability: Ein bestehendes Draft-Element kan
 
 Reale Chromium-Evidence prüft die Identitätstrennung, Preview und Fokus-Rückgabe bei **100/150/200 %**. Die Duplizierung bleibt vollständig browserlokal und flüchtig.
 
+## I135 – kontrolliertes browserlokales Neuordnen
+
+I135 ergänzt für ganze Draft-Elemente deterministische **Hoch-/Runter-Controls**. Jeder Schritt verschiebt genau ein Element um genau eine Position; erstes und letztes Element sperren jeweils die nicht mögliche Richtung.
+
+Editor und Vorschau beziehen ihre Reihenfolge weiterhin aus derselben flüchtigen `draftElements`-Sequenz. Nach einer Verschiebung kehrt der Fokus zu einem erreichbaren Reihenfolge-Control desselben Elements zurück. Es gibt weder Drag-and-drop-Zwang noch Persistenz, Store- oder Datenbankzugriff.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -127,15 +134,17 @@ Der Browser-Maskenentwurf wird weiterhin **nicht gespeichert**. Ein Reload verwi
 
 Noch offen sind insbesondere:
 
-- kontrolliertes browserlokales Neuordnen ohne Drag-and-drop-Zwang
+- Abschnitte
+- einklappbare Gruppen
+- explizite Tab-Reihenfolge
 - produktive Umsetzung der bereits geplanten Save-/Load-Grenze
 - produktive Masken-Persistenz
 - größere Struktur-, Regel-, Import-/Export-, Recovery- und Dashboard-Funktionen
 
 ## Nächste sichere Reihenfolge
 
-1. Kontrolliertes Neuordnen als kleine browserlokale Struktur-Capability umsetzen, ohne Drag-and-drop-Zwang.
-2. Danach Abschnitte und einklappbare Gruppen weiterhin als getrennte, kleine Struktur-Slices behandeln.
+1. Abschnitte als nächsten kleinen browserlokalen Struktur-Slice planen und umsetzen.
+2. Danach einklappbare Gruppen und explizite Tab-Reihenfolge weiterhin getrennt behandeln.
 3. Produktive Persistenz erst nach separaten Service-, Recovery- und Integritäts-Gates beginnen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
@@ -177,7 +186,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **21 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **22 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
