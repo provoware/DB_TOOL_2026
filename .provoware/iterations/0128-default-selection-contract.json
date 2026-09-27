@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "iteration": 128,
+  "agent": "default-selection-contract-agent-128",
+  "size": "S",
+  "goal": "defaultSelection ausschließlich als browserlokalen Draft-Vertrag planen. Identität, Validierung, Typwechsel, Optionsentfernung, Preview und Accessibility festlegen, ohne Runtime-Implementierung oder Persistenz zu öffnen.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "defaultSelection bleibt Planungsumfang",
+    "summary": "I128 definiert nur den späteren temporären Choice-Default-Vertrag. Es gibt noch keine neue Bedienfunktion und keine Speicherung.",
+    "target_doc": "docs/development/I128_DEFAULT_SELECTION_CONTRACT.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0128-default-selection-contract.json",
+    "docs/development/I128_DEFAULT_SELECTION_CONTRACT.md",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/mask_builder/store.py"
+  ],
+  "direct_dependencies": [
+    "main d2d075ccd58d4ccad61f0b0f4a272a2b379b0c75",
+    "I127 joint property-preview acceptance is green",
+    "stable draft-option IDs already exist",
+    "choice option add/remove/reorder is browser-local",
+    "persistence remains closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: documentation structure and contract consistency check",
+    "Step 1: contract must reference stable option IDs rather than labels",
+    "Step 1: contract must block silent selected-option removal and invalid multi-to-single narrowing",
+    "Step 1: contract must explicitly exclude model/store/schema/database changes",
+    "Step 2 after green: mark only the TODO item for planning the defaultSelection contract complete",
+    "Step 2: synchronize README/TODO progress without claiming implementation"
+  ],
+  "tests_explicitly_not_run": [
+    "browser tests because no browser runtime changes",
+    "database/repository tests because persistence remains closed",
+    "Control Plane tests because governance implementation is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "documentation could accidentally imply implementation",
+    "label-based references would make later option reorder/rename semantics fragile",
+    "silent normalization could cause hidden data loss"
+  ],
+  "non_changes": [
+    "no browser shell changes",
+    "no model/store changes",
+    "no JSON schema changes",
+    "no persistence or database writes",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies"
+  ],
+  "expected_side_effects": [
+    "the defaultSelection planning contract is versioned without runtime implementation",
+    "the corresponding planning TODO is closed",
+    "A-M progress becomes 19 of 132 = 14.4 percent while persistence remains closed"
+  ],
+  "screenshot_required": false,
+  "status": "STEP2_IMPLEMENTED"
+}
