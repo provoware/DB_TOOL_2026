@@ -40,20 +40,26 @@ _INTERACTION_SCRIPT = r"""
   }
 
   function setPreviewMode(mode) {
-    if (!["desktop", "tablet"].includes(mode)) {
+    const previewModes = {
+      desktop: { width: "1152", label: "Desktop · 1152 px" },
+      tablet: { width: "768", label: "Tablet · 768 px" },
+      narrow: { width: "360", label: "Schmal · 360 px" },
+    };
+    const config = previewModes[mode];
+    if (config === undefined) {
       return;
     }
-    const isDesktop = mode === "desktop";
-    const width = isDesktop ? "1152" : "768";
-    const label = isDesktop ? "Desktop · 1152 px" : "Tablet · 768 px";
     preview.dataset.previewMode = mode;
-    preview.dataset.previewWidth = width;
-    previewModeLabel.textContent = label;
-    previewShell.setAttribute("aria-label", label.replace(" · ", "-Vorschau, ").replace(" px", " Pixel breit"));
+    preview.dataset.previewWidth = config.width;
+    previewModeLabel.textContent = config.label;
+    previewShell.setAttribute(
+      "aria-label",
+      config.label.replace(" · ", "-Vorschau, ").replace(" px", " Pixel breit")
+    );
     previewModeButtons.forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset.previewMode === mode));
     });
-    setStatus(label + " aktiviert · nur temporäre Vorschau.");
+    setStatus(config.label + " aktiviert · nur temporäre Vorschau.");
   }
 
   function focusPreviewSectionToggle(id) {
@@ -1550,6 +1556,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .preview-card {{ min-height:32rem; max-width:none; border:1px solid #303548; border-radius:10px; padding:1.25rem; background:#141720; }}
 .preview-card[data-preview-mode="desktop"] {{ width:72rem; box-shadow:inset 0 0 0 1px #242a3c; }}
 .preview-card[data-preview-mode="tablet"] {{ width:48rem; box-shadow:inset 0 0 0 1px #2d3448; }}
+.preview-card[data-preview-mode="narrow"] {{ width:22.5rem; box-shadow:inset 0 0 0 1px #37405a; }}
 .preview-section {{ margin:0 0 1rem; padding:.75rem; border:1px solid #303548; border-radius:8px; }}
 .preview-section h3 {{ margin:.1rem 0 .65rem; font-size:1rem; }}
 .preview-section-toggle {{ width:100%; text-align:left; padding:.45rem .6rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; font-weight:700; }}
@@ -1564,7 +1571,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 <main class="editor">
 <section class="panel" aria-labelledby="palette-title" data-focus-stage="1"><h2 id="palette-title">Komponenten</h2><div class="palette">{palette}</div></section>
 <section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
-<section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><div class="preview-mode-controls" role="group" aria-label="Vorschaugröße"><button type="button" class="preview-mode-button" data-preview-mode="desktop" aria-pressed="true">Desktop</button><button type="button" class="preview-mode-button" data-preview-mode="tablet" aria-pressed="false">Tablet</button></div><p class="preview-mode-label" id="preview-mode-label">Desktop · 1152 px</p><div class="preview-viewport-shell" aria-label="Desktop-Vorschau, 1152 Pixel breit" aria-describedby="preview-mode-label"><div class="preview-card" id="preview" data-preview-mode="desktop" data-preview-width="1152"><p>Noch keine Komponenten platziert.</p></div></div></section>
+<section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><div class="preview-mode-controls" role="group" aria-label="Vorschaugröße"><button type="button" class="preview-mode-button" data-preview-mode="desktop" aria-pressed="true">Desktop</button><button type="button" class="preview-mode-button" data-preview-mode="tablet" aria-pressed="false">Tablet</button><button type="button" class="preview-mode-button" data-preview-mode="narrow" aria-pressed="false">Schmal</button></div><p class="preview-mode-label" id="preview-mode-label">Desktop · 1152 px</p><div class="preview-viewport-shell" aria-label="Desktop-Vorschau, 1152 Pixel breit" aria-describedby="preview-mode-label"><div class="preview-card" id="preview" data-preview-mode="desktop" data-preview-width="1152"><p>Noch keine Komponenten platziert.</p></div></div></section>
 </main>
 {_INTERACTION_SCRIPT}
 </body>
