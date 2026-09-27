@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "iteration": 126,
+  "agent": "todo-newline-hygiene-agent-126",
+  "size": "S",
+  "goal": "Genau einen Dokumentations-Hygienefehler beheben: die wörtliche Escape-Sequenz \\\\n\\\\n im Einleitungstext von TODO.md durch echte Absatzumbrüche ersetzen, ohne Produktstatus, Checkboxen, Prioritäten oder Fortschrittswerte zu verändern.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Lesbarkeit des Master-TODO-Einleitungstexts",
+    "summary": "Die versehentlich sichtbare Escape-Sequenz im Einleitungstext wird ausschließlich als echter Absatz gerendert. Inhalt, Produktstand und Roadmap bleiben unverändert.",
+    "target_doc": "TODO.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0126-todo-newline-hygiene.json",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "README.md",
+    "scripts/validate_iteration_manifest.py",
+    "docs/PROJECT_STANDARDS.md",
+    ".provoware/iterations/0125-doc-status-sync.json"
+  ],
+  "direct_dependencies": [
+    "main 7fc623c4100edd39ca6d47d7e7f3368cb4f4f982",
+    "I125 documented product state remains I119 and governance state remains I124",
+    "TODO progress remains 17 of 132 = 12.9 percent",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: TODO.md contains exactly one targeted literal \\\\n\\\\n sequence before the patch and zero literal \\\\n escapes after the patch",
+    "Step 1: only the targeted paragraph formatting changes; TODO wording, checkbox states, priority order and progress values remain unchanged",
+    "Step 2: verify README/TODO progress consistency remains 17 of 132 = 12.9 percent",
+    "Step 2: verify diff scope contains only TODO.md and this I126 iteration manifest",
+    "Step 2: documentation structure and readability check; NO_FIX_REQUIRED if no further defect is found"
+  ],
+  "tests_explicitly_not_run": [
+    "browser interaction tests because no UI or product runtime changes",
+    "database/repository tests because no persistent path changes",
+    "Control Plane behavior tests because governance implementation is unchanged",
+    "full suite because this is a documentation-only hygiene correction"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "accidental wording or checkbox changes would distort the product roadmap",
+    "progress values must not change during a formatting-only repair"
+  ],
+  "non_changes": [
+    "no product/runtime code",
+    "no TODO checkbox state changes",
+    "no priority reordering",
+    "no README content changes",
+    "no Control Plane V2 implementation changes",
+    "no CP-03 or CP-06 reopen",
+    "no schema, migration, domain, repository, SQL, test or dependency changes"
+  ],
+  "expected_side_effects": [
+    "TODO introduction renders as two Markdown paragraphs instead of exposing a literal escape sequence",
+    "product progress and roadmap semantics remain byte-equivalent apart from the targeted newline representation"
+  ],
+  "screenshot_required": false,
+  "status": "DOCS_IMPLEMENTED"
+}
