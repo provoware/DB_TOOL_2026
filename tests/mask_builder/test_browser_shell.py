@@ -442,7 +442,7 @@ def test_datatype_is_field_only_browser_local_and_mutates_only_datatype() -> Non
     assert '(item.kind === "field" ? " · Datentyp: " + item.dataType : "")' in html
 
     start = html.index('function changeDataType(id, select)')
-    end = html.index('function removeDraft(id)')
+    end = html.index('function isChoiceDataType(dataType)', start)
     datatype_block = html[start:end]
     assert 'item.dataType = nextDataType;' in datatype_block
     assert 'renderDraft();' in datatype_block
