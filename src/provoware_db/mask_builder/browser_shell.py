@@ -647,6 +647,42 @@ _INTERACTION_SCRIPT = r"""
     focusOptionControl(draftId, option.id, focusSelector);
   }
 
+  function focusDraftOrderControl(id, direction) {
+    const selector = direction < 0 ? ".move-draft-up" : ".move-draft-down";
+    const button = Array.from(placedLayer.querySelectorAll(selector))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (button !== undefined && !button.disabled) {
+      button.focus();
+      return;
+    }
+    const fallbackSelector = direction < 0 ? ".move-draft-down" : ".move-draft-up";
+    const fallback = Array.from(placedLayer.querySelectorAll(fallbackSelector))
+      .find((candidate) => candidate.dataset.draftId === id);
+    if (fallback !== undefined && !fallback.disabled) {
+      fallback.focus();
+    }
+  }
+
+  function moveDraftOrder(id, direction) {
+    if (![-1, 1].includes(direction)) {
+      return;
+    }
+    const index = draftElements.findIndex((item) => item.id === id);
+    const targetIndex = index + direction;
+    if (index < 0 || targetIndex < 0 || targetIndex >= draftElements.length) {
+      return;
+    }
+    const [item] = draftElements.splice(index, 1);
+    draftElements.splice(targetIndex, 0, item);
+    renderDraft();
+    setStatus(
+      item.label
+      + (direction < 0 ? " · in der Reihenfolge nach oben verschoben" : " · in der Reihenfolge nach unten verschoben")
+      + " · nur temporärer Browserentwurf."
+    );
+    focusDraftOrderControl(id, direction);
+  }
+
   function focusDuplicateControl(id) {
     const button = Array.from(placedLayer.querySelectorAll(".duplicate-draft"))
       .find((candidate) => candidate.dataset.draftId === id);
@@ -1098,6 +1134,26 @@ _INTERACTION_SCRIPT = r"""
       visibilityButton.addEventListener("click", () => toggleVisibility(item.id));
       card.appendChild(visibilityButton);
 
+      const moveUpButton = document.createElement("button");
+      moveUpButton.type = "button";
+      moveUpButton.className = "move-draft-up";
+      moveUpButton.dataset.draftId = item.id;
+      moveUpButton.textContent = "Reihenfolge hoch";
+      moveUpButton.disabled = index === 0;
+      moveUpButton.setAttribute("aria-label", item.label + " · in der Reihenfolge nach oben");
+      moveUpButton.addEventListener("click", () => moveDraftOrder(item.id, -1));
+      card.appendChild(moveUpButton);
+
+      const moveDownButton = document.createElement("button");
+      moveDownButton.type = "button";
+      moveDownButton.className = "move-draft-down";
+      moveDownButton.dataset.draftId = item.id;
+      moveDownButton.textContent = "Reihenfolge runter";
+      moveDownButton.disabled = index === draftElements.length - 1;
+      moveDownButton.setAttribute("aria-label", item.label + " · in der Reihenfolge nach unten");
+      moveDownButton.addEventListener("click", () => moveDraftOrder(item.id, 1));
+      card.appendChild(moveDownButton);
+
       const duplicateButton = document.createElement("button");
       duplicateButton.type = "button";
       duplicateButton.className = "duplicate-draft";
@@ -1364,7 +1420,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
-.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .move-draft-up, .move-draft-down, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
 .label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
@@ -1382,7 +1438,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .canvas-empty[hidden] {{ display:none; }}
 .preview-card {{ min-height:12rem; border:1px solid #303548; border-radius:10px; padding:1rem; background:#141720; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
