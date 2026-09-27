@@ -4,7 +4,7 @@
   "agent": "preview-matrix-acceptance-agent-142",
   "size": "S",
   "goal": "Die vollständige browserlokale Preview-Matrix Desktop 1152 px, Tablet 768 px und Schmal 360 px gemeinsam in realem Chromium auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz abnehmen. Nur reproduzierbare Befunde dürfen Runtime-Code verändern.",
-  "change_kind": "test",
+  "change_kind": "ui",
   "gate_profile": "ui",
   "guide_delta": {
     "mode": "explain_change",
@@ -91,5 +91,5 @@
     "A-M progress remains 28 of 132 = 21.2 percent"
   ],
   "screenshot_required": false,
-  "status": "IMPLEMENTED_PENDING_GATE"
+  "status": "GATE_FIX_APPLIED_PENDING_RERUN"
 }
