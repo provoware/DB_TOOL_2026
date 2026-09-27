@@ -19,9 +19,7 @@ def main() -> None:
         'Vorher/Nachher-Vorschau des Rastervorschlags',
         'Zeile " + String(item.before.row) + " → " + String(item.after.row)',
         'Spalte " + String(item.before.column + 1) + " → " + String(item.after.column + 1)',
-        'Übernahme gesperrt: Zeile und Spalte besitzen jetzt einen getrennten temporären Browservertrag.',
-        'Erst ein späterer Mutations-Slice darf die vorgeschlagenen Positionen dort gezielt einsetzen.',
-        'noch nichts übernommen.',
+        'Übernahme wirkt ausschließlich auf den flüchtigen Zeile+Spalte-Layoutvertrag.',
     )
     missing = [token for token in required if token not in html]
     if missing:
@@ -43,15 +41,12 @@ def main() -> None:
     if present:
         raise SystemExit("I144 GRID BEFORE/AFTER: ROT · mutation in comparison block " + ", ".join(present))
 
-    if "Rastervorschlag übernehmen" in html or "Vorschlag anwenden" in html:
-        raise SystemExit("I144 GRID BEFORE/AFTER: ROT · apply action introduced before contract approval")
-
     forbidden_persistence = ("localStorage", "sessionStorage", "indexedDB", "MaskTemplateStore", "sqlite")
     present = [token for token in forbidden_persistence if token in html]
     if present:
         raise SystemExit("I144 GRID BEFORE/AFTER: ROT · persistence token " + ", ".join(present))
 
-    print("I144 GRID BEFORE/AFTER: GRÜN · explicit comparison contract without mutation or apply path")
+    print("I144 GRID BEFORE/AFTER: GRÜN · explicit comparison contract preserved")
 
 
 if __name__ == "__main__":

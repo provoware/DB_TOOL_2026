@@ -1,0 +1,106 @@
+{
+  "schema_version": 2,
+  "iteration": 146,
+  "agent": "grid-apply-agent-146",
+  "size": "M",
+  "goal": "Den bestätigten Rastervorschlag atomar und ausschließlich auf den flüchtigen temporaryGridLayout-Vertrag anwenden. Nur Zeile und Spalte dürfen sich ändern; Draft-Reihenfolge, Breiten und Draftdaten bleiben unverändert. Fokus und Preview müssen synchron bleiben. Persistenz bleibt geschlossen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Browserlokale Rasterübernahme",
+    "summary": "I146 führt erstmals die tatsächliche Rasterübernahme aus: Vorvalidierter Vorschlag wird atomar auf temporaryGridLayout angewendet, mit Stale-Schutz, Fokus-Rückgabe und realer Chromium-Vorher/Nachher-Evidence.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0146-grid-apply.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i144_grid_before_after.py",
+    "tests/mask_builder/test_i145_temporary_grid_layout.py",
+    "tests/mask_builder/test_i146_grid_apply.py",
+    "tests/mask_builder/i146_grid_apply_evidence.mjs",
+    "tests/mask_builder/test_i146_grid_apply_evidence.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i142_preview_matrix_evidence.py",
+    "tests/mask_builder/i142_preview_matrix_evidence.mjs",
+    "tests/mask_builder/test_i145_temporary_grid_layout.py"
+  ],
+  "direct_dependencies": [
+    "main 5cd63999e679112588cd374f9eb61b7d7c6c187d",
+    "I145 temporary row+column layout contract is confirmed",
+    "I144 before/after comparison is confirmed",
+    "I143 deterministic grid suggestion is confirmed",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and I146 Python tests",
+    "node --check i146_grid_apply_evidence.mjs through evidence wrapper",
+    "run test_browser_shell.py",
+    "run I144 and I145 regressions",
+    "run I146 atomic application contract test",
+    "run real Chromium before/after application evidence",
+    "stale suggestion is rejected before mutation",
+    "all target row+column positions are validated before map commit",
+    "only temporaryGridLayout is mutated by apply path",
+    "draft order, widths and labels remain unchanged",
+    "canvas and preview read applied temporary columns consistently",
+    "focus returns deterministically to grid-assistant-button",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because I146 is a gated browser-local mutation slice"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i144_grid_before_after.py",
+      "tests/mask_builder/test_i145_temporary_grid_layout.py",
+      "tests/mask_builder/test_i146_grid_apply.py",
+      "tests/mask_builder/test_i146_grid_apply_evidence.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i144_grid_before_after.py",
+      "tests/mask_builder/test_i145_temporary_grid_layout.py",
+      "tests/mask_builder/test_i146_grid_apply.py",
+      "tests/mask_builder/test_i146_grid_apply_evidence.py"
+    ]
+  },
+  "risks": [
+    "partial layout application must be impossible",
+    "a stale comparison must never be applied",
+    "draft data must not be rewritten as a side effect",
+    "preview must not drift from the applied temporary column",
+    "focus must remain deterministic after DOM refresh",
+    "temporary state must not leak into persistence"
+  ],
+  "non_changes": [
+    "no persisted row or column addition",
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies"
+  ],
+  "expected_side_effects": [
+    "a confirmed grid proposal can be applied browser-locally",
+    "temporary row+column positions change together",
+    "draft order, widths and content remain unchanged",
+    "preview column text follows the temporary layout",
+    "A-M progress becomes 30 of 132 = 22.7 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN"
+}

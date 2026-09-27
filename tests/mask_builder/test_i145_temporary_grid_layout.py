@@ -33,11 +33,6 @@ def main() -> None:
     if 'data-grid-row' in html or 'data-grid-column' in html:
         pass
 
-    forbidden_apply = ("Rastervorschlag übernehmen", "Vorschlag anwenden")
-    present = [token for token in forbidden_apply if token in html]
-    if present:
-        raise SystemExit("I145 TEMP GRID LAYOUT: ROT · apply action introduced early " + ", ".join(present))
-
     forbidden_persistence = ("localStorage", "sessionStorage", "indexedDB", "MaskTemplateStore", "sqlite")
     present = [token for token in forbidden_persistence if token in html]
     if present:
@@ -46,7 +41,7 @@ def main() -> None:
     if "temporaryGridLayout" not in html or "new Map()" not in html:
         raise SystemExit("I145 TEMP GRID LAYOUT: ROT · layout state is not browser-local")
 
-    print("I145 TEMP GRID LAYOUT: GRÜN · explicit transient row+column contract renders without persistence")
+    print("I145 TEMP GRID LAYOUT: GRÜN · explicit transient row+column contract preserved")
 
 
 if __name__ == "__main__":
