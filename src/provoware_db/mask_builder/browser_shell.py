@@ -23,6 +23,8 @@ _INTERACTION_SCRIPT = r"""
   const previewModeLabel = document.getElementById("preview-mode-label");
   const previewModeButtons = Array.from(document.querySelectorAll(".preview-mode-button"));
   const status = document.getElementById("interaction-status");
+  const gridAssistantButton = document.getElementById("grid-assistant-button");
+  const gridAssistantOutput = document.getElementById("grid-assistant-output");
   const gridColumns = Number(canvas.dataset.gridColumns);
   const draftElements = [];
   let nextDraftId = 1;
@@ -37,6 +39,71 @@ _INTERACTION_SCRIPT = r"""
 
   function setStatus(message) {
     status.textContent = message;
+  }
+
+  function gridSuggestionSnapshot(items) {
+    return items.map((item) => ({
+      id: item.id,
+      column: item.column,
+      width: item.width,
+    }));
+  }
+
+  function computeGridSuggestion(items) {
+    let row = 1;
+    let column = 0;
+    return items.map((item) => {
+      if (column + item.width > gridColumns) {
+        row += 1;
+        column = 0;
+      }
+      const suggestion = {
+        id: item.id,
+        label: item.label,
+        row,
+        column,
+        width: item.width,
+      };
+      column += item.width;
+      return suggestion;
+    });
+  }
+
+  function showGridSuggestion() {
+    const before = JSON.stringify(gridSuggestionSnapshot(draftElements));
+    const suggestion = computeGridSuggestion(draftElements);
+    const after = JSON.stringify(gridSuggestionSnapshot(draftElements));
+    if (before !== after) {
+      throw new Error("Raster-Assistent darf den Draft nicht verändern.");
+    }
+
+    gridAssistantOutput.replaceChildren();
+    if (suggestion.length === 0) {
+      const empty = document.createElement("p");
+      empty.textContent = "Noch keine Komponenten für einen Vorschlag vorhanden.";
+      gridAssistantOutput.appendChild(empty);
+      setStatus("Raster-Assistent · kein Vorschlag möglich · Draft unverändert.");
+      return;
+    }
+
+    const list = document.createElement("ol");
+    list.className = "grid-assistant-list";
+    suggestion.forEach((item) => {
+      const row = document.createElement("li");
+      row.dataset.draftId = item.id;
+      row.textContent =
+        item.label
+        + " · Zeile " + String(item.row)
+        + " · Spalte " + String(item.column + 1)
+        + " · Breite " + String(item.width);
+      list.appendChild(row);
+    });
+    gridAssistantOutput.appendChild(list);
+    setStatus(
+      "Raster-Assistent · "
+      + String(suggestion.length)
+      + " Position(en) vorgeschlagen · nur gelesen, nichts übernommen."
+    );
   }
 
   function setPreviewMode(mode) {
@@ -1430,6 +1497,8 @@ _INTERACTION_SCRIPT = r"""
     targetButtons[next].focus();
   }
 
+  gridAssistantButton.addEventListener("click", showGridSuggestion);
+
   previewModeButtons.forEach((button) => {
     button.addEventListener("click", () => setPreviewMode(button.dataset.previewMode));
   });
@@ -1562,6 +1631,12 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .preview-section-toggle {{ width:100%; text-align:left; padding:.45rem .6rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; font-weight:700; }}
 .preview-section-toggle[aria-expanded="false"]::after {{ content:" · eingeklappt"; font-weight:400; }}
 .preview-section-items, .preview-unsectioned-items {{ margin:.35rem 0 .75rem; padding-left:1.5rem; }}
+.grid-assistant {{ margin-top:1rem; padding:.85rem; border:1px solid #4a526b; border-radius:10px; background:#151925; }}
+.grid-assistant h3 {{ margin:.1rem 0 .45rem; font-size:1rem; }}
+.grid-assistant p {{ margin:.35rem 0; color:#b8bfd2; }}
+.grid-assistant-button {{ padding:.45rem .7rem; border:1px solid #6978a4; border-radius:7px; background:#202536; color:inherit; font:inherit; }}
+.grid-assistant-list {{ margin:.65rem 0 0; padding-left:1.5rem; }}
+.grid-assistant-list li {{ margin:.25rem 0; overflow-wrap:anywhere; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
 @media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
@@ -1570,7 +1645,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 <header><strong>PROVOWARE · Masken-Baukasten</strong><p>Entwurf ohne Speichern und ohne Datenbankzugriff.</p></header>
 <main class="editor">
 <section class="panel" aria-labelledby="palette-title" data-focus-stage="1"><h2 id="palette-title">Komponenten</h2><div class="palette">{palette}</div></section>
-<section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
+<section class="panel" aria-labelledby="canvas-title" data-focus-stage="2"><h2 id="canvas-title">12-Spalten-Arbeitsfläche</h2><p id="canvas-keyboard-help">Komponente wählen, dann eine Zielspalte anklicken. Tab erreicht genau eine Zielspalte; mit ← und → zwischen Zielspalten wechseln; Enter oder Leertaste platziert. Danach folgen die Controls der platzierten Elemente.</p><div class="canvas" data-grid-columns="{GRID_COLUMNS}"><div class="grid-guides">{columns}</div><div class="placement-targets" aria-label="Zielspalten" aria-describedby="canvas-keyboard-help">{targets}</div><div class="placed-elements" id="placed-elements"></div><p class="canvas-empty">Noch keine Komponenten platziert.</p></div><aside class="grid-assistant" aria-labelledby="grid-assistant-title"><h3 id="grid-assistant-title">Raster-Assistent · Vorschlag</h3><p>Ordnet die vorhandenen Komponenten nur rechnerisch links nach rechts in Zeilen. Reihenfolge und Breiten bleiben unverändert. Es wird nichts übernommen.</p><button type="button" class="grid-assistant-button" id="grid-assistant-button" aria-describedby="grid-assistant-title">Vorschlag berechnen</button><div id="grid-assistant-output" aria-live="polite"><p>Noch kein Vorschlag berechnet.</p></div></aside><span class="status" id="interaction-status" role="status" aria-live="polite">Nur Entwurf · nicht gespeichert</span></section>
 <section class="panel" aria-labelledby="preview-title" data-focus-stage="3"><h2 id="preview-title">Vorschau</h2><div class="preview-mode-controls" role="group" aria-label="Vorschaugröße"><button type="button" class="preview-mode-button" data-preview-mode="desktop" aria-pressed="true">Desktop</button><button type="button" class="preview-mode-button" data-preview-mode="tablet" aria-pressed="false">Tablet</button><button type="button" class="preview-mode-button" data-preview-mode="narrow" aria-pressed="false">Schmal</button></div><p class="preview-mode-label" id="preview-mode-label">Desktop · 1152 px</p><div class="preview-viewport-shell" aria-label="Desktop-Vorschau, 1152 Pixel breit" aria-describedby="preview-mode-label"><div class="preview-card" id="preview" data-preview-mode="desktop" data-preview-width="1152"><p>Noch keine Komponenten platziert.</p></div></div></section>
 </main>
 {_INTERACTION_SCRIPT}
