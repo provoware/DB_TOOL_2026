@@ -380,7 +380,8 @@ def test_width_change_is_browser_local_prevalidated_and_preview_driven() -> None
     assert 'option.selected = item.width === width;' in html
     assert 'option.disabled = !placementFitsGrid(item.column, width);' in html
     assert 'widthSelect.addEventListener("change", () => changeDraftWidth(item.id, widthSelect));' in html
-    assert 'const lastColumn = item.column + item.width;' in html
+    assert 'const position = temporaryGridPosition(item, itemIndex + 1);' in html
+    assert 'const lastColumn = position.column + item.width;' in html
 
     start = html.index('function changeDraftWidth(id, select)')
     end = html.index('function focusDataTypeControl(id)')
