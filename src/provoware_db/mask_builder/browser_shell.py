@@ -27,6 +27,7 @@ _INTERACTION_SCRIPT = r"""
   const gridAssistantOutput = document.getElementById("grid-assistant-output");
   const gridColumns = Number(canvas.dataset.gridColumns);
   const draftElements = [];
+  const temporaryGridLayout = new Map();
   let nextDraftId = 1;
   let nextDraftOptionId = 1;
   let selectedKind = null;
@@ -41,12 +42,50 @@ _INTERACTION_SCRIPT = r"""
     status.textContent = message;
   }
 
+  function validateTemporaryGridPosition(row, column, width) {
+    return (
+      Number.isInteger(row)
+      && row >= 1
+      && placementFitsGrid(column, width)
+    );
+  }
+
+  function setTemporaryGridPosition(id, row, column, width) {
+    if (!validateTemporaryGridPosition(row, column, width)) {
+      throw new Error("Temporäre Rasterposition ist ungültig.");
+    }
+    temporaryGridLayout.set(id, { row, column });
+  }
+
+  function temporaryGridPosition(item, fallbackRow) {
+    const existing = temporaryGridLayout.get(item.id);
+    if (
+      existing !== undefined
+      && validateTemporaryGridPosition(existing.row, existing.column, item.width)
+    ) {
+      return existing;
+    }
+    setTemporaryGridPosition(item.id, fallbackRow, item.column, item.width);
+    return temporaryGridLayout.get(item.id);
+  }
+
+  function syncTemporaryRowsToDraftOrder() {
+    draftElements.forEach((item, index) => {
+      const position = temporaryGridPosition(item, index + 1);
+      setTemporaryGridPosition(item.id, index + 1, position.column, item.width);
+    });
+  }
+
   function gridSuggestionSnapshot(items) {
-    return items.map((item) => ({
-      id: item.id,
-      column: item.column,
-      width: item.width,
-    }));
+    return items.map((item, index) => {
+      const position = temporaryGridPosition(item, index + 1);
+      return {
+        id: item.id,
+        row: position.row,
+        column: position.column,
+        width: item.width,
+      };
+    });
   }
 
   function computeGridSuggestion(items) {
@@ -70,13 +109,16 @@ _INTERACTION_SCRIPT = r"""
   }
 
   function currentGridLayout(items) {
-    return items.map((item, index) => ({
-      id: item.id,
-      label: item.label,
-      row: index + 1,
-      column: item.column,
-      width: item.width,
-    }));
+    return items.map((item, index) => {
+      const position = temporaryGridPosition(item, index + 1);
+      return {
+        id: item.id,
+        label: item.label,
+        row: position.row,
+        column: position.column,
+        width: item.width,
+      };
+    });
   }
 
   function compareGridLayouts(current, suggestion) {
@@ -188,8 +230,8 @@ _INTERACTION_SCRIPT = r"""
     const note = document.createElement("p");
     note.className = "grid-assistant-contract-note";
     note.textContent =
-      "Übernahme gesperrt: Der aktuelle Draft speichert keine eigene Rasterzeile. "
-      + "Ein späterer Mutations-Slice muss Zeile und Spalte als temporären Layoutvertrag gemeinsam absichern.";
+      "Übernahme gesperrt: Zeile und Spalte besitzen jetzt einen getrennten temporären Browservertrag. "
+      + "Erst ein späterer Mutations-Slice darf die vorgeschlagenen Positionen dort gezielt einsetzen.";
     gridAssistantOutput.appendChild(note);
 
     setStatus(
@@ -889,6 +931,7 @@ _INTERACTION_SCRIPT = r"""
     }
     const [item] = draftElements.splice(index, 1);
     draftElements.splice(targetIndex, 0, item);
+    syncTemporaryRowsToDraftOrder();
     renderDraft();
     setStatus(
       item.label
@@ -945,6 +988,7 @@ _INTERACTION_SCRIPT = r"""
       defaultSelection,
     };
     draftElements.push(duplicate);
+    setTemporaryGridPosition(duplicate.id, draftElements.length, duplicate.column, duplicate.width);
     renderDraft();
     updateTargetAvailability();
     setStatus(
@@ -964,6 +1008,8 @@ _INTERACTION_SCRIPT = r"""
     const removed = draftElements[index];
     draftElements.splice(index, 1);
     collapsedSectionIds.delete(id);
+    temporaryGridLayout.delete(id);
+    syncTemporaryRowsToDraftOrder();
     renderDraft();
     setStatus(removed.label + " entfernt · nur temporärer Browserentwurf.");
     setTargetTabStop(removed.column);
@@ -973,14 +1019,17 @@ _INTERACTION_SCRIPT = r"""
   function renderDraft() {
     placedLayer.replaceChildren();
     draftElements.forEach((item, index) => {
+      const position = temporaryGridPosition(item, index + 1);
       const card = document.createElement("div");
       card.className = "placed-element";
       card.dataset.kind = item.kind;
       card.dataset.draftId = item.id;
+      card.dataset.gridRow = String(position.row);
+      card.dataset.gridColumn = String(position.column);
       card.setAttribute("role", "group");
       card.setAttribute("aria-label", item.label);
-      card.style.gridColumn = String(item.column + 1) + " / span " + String(item.width);
-      card.style.gridRow = String(index + 1);
+      card.style.gridColumn = String(position.column + 1) + " / span " + String(item.width);
+      card.style.gridRow = String(position.row);
 
       const label = document.createElement("span");
       label.textContent = item.label;
@@ -1526,6 +1575,9 @@ _INTERACTION_SCRIPT = r"""
         return;
       }
       moving.column = column;
+      const movingIndex = draftElements.findIndex((item) => item.id === moving.id);
+      const movingPosition = temporaryGridPosition(moving, movingIndex + 1);
+      setTemporaryGridPosition(moving.id, movingPosition.row, column, moving.width);
       movingDraftId = null;
       renderDraft();
       updateTargetAvailability();
@@ -1555,7 +1607,7 @@ _INTERACTION_SCRIPT = r"""
       return;
     }
 
-    draftElements.push({
+    const created = {
       id: nextDraftElementId(),
       kind: selectedKind,
       label: selectedLabel,
@@ -1568,7 +1620,9 @@ _INTERACTION_SCRIPT = r"""
       defaultValue: selectedKind === "field" ? "" : null,
       options: selectedKind === "field" ? [] : null,
       defaultSelection: null,
-    });
+    };
+    draftElements.push(created);
+    setTemporaryGridPosition(created.id, draftElements.length, column, created.width);
     renderDraft();
     setStatus(
       selectedLabel

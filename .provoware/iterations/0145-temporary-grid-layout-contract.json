@@ -1,0 +1,93 @@
+{
+  "schema_version": 2,
+  "iteration": 145,
+  "agent": "temporary-grid-layout-contract-agent-145",
+  "size": "S",
+  "goal": "Einen expliziten rein browserlokalen temporären Raster-Layoutvertrag für Zeile und Spalte definieren und aus diesem rendern. Bestehende Bedienaktionen halten den Vertrag synchron; Rastervorschläge dürfen weiterhin nicht angewendet werden.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Temporärer Raster-Layoutvertrag",
+    "summary": "Zeile und Spalte werden getrennt vom Draftmodell in einer flüchtigen Browser-Map gehalten. Die Arbeitsfläche rendert aus diesem Vertrag; Persistenz und Vorschlagsübernahme bleiben geschlossen.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0145-temporary-grid-layout-contract.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i144_grid_before_after.py",
+    "tests/mask_builder/test_i145_temporary_grid_layout.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i144_grid_before_after.py"
+  ],
+  "direct_dependencies": [
+    "main 70443fec05aa6533c387a1f98ad205732b898d44",
+    "I144 before/after contract is confirmed",
+    "I143 read-only grid assistant remains confirmed",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py, I144 regression and I145 contract test",
+    "run test_browser_shell.py",
+    "run I144 before/after regression",
+    "run I145 temporary layout contract test",
+    "row and column live in browser-local transient layout state",
+    "canvas rendering reads row and column from the temporary layout contract",
+    "place/move/duplicate/remove/reorder keep temporary layout synchronized",
+    "existing width remains on the draft and remains validated against column",
+    "no grid proposal apply/accept action exists",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because I145 is a browser-local transient layout contract",
+    "real Chromium apply evidence because no proposal-application path exists"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i144_grid_before_after.py",
+      "tests/mask_builder/test_i145_temporary_grid_layout.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i144_grid_before_after.py",
+      "tests/mask_builder/test_i145_temporary_grid_layout.py"
+    ]
+  },
+  "risks": [
+    "temporary layout state could drift from existing manual placement operations",
+    "reordering/removing elements could leave stale row values",
+    "future proposal application must write row and column atomically",
+    "temporary state must not leak into persistence"
+  ],
+  "non_changes": [
+    "no grid proposal application",
+    "no persisted row property",
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no new A-M product point completed"
+  ],
+  "expected_side_effects": [
+    "current layout gains an explicit transient row+column representation",
+    "rendering remains behaviorally equivalent for existing interactions",
+    "the next gated slice can target temporary row+column positions atomically",
+    "A-M progress remains 29 of 132 = 22.0 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN"
+}
