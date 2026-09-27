@@ -427,7 +427,7 @@ def test_width_focus_accessibility_narrow_and_consistency() -> None:
     assert '.toggle-visibility, .width-select, .datatype-select' in html
 
     assert 'const activeWidth = moving === null ? selectedWidth : moving.width;' in html
-    assert 'const lastColumn = item.column + item.width;' in html
+    assert 'const lastColumn = position.column + item.width;' in html
     assert 'option.disabled = !placementFitsGrid(item.column, width);' in html
 
 
