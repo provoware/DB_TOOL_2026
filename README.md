@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I116 auf `main`  
-> **Gate-Stand:** Targeted + Foundation für I116 grün  
+> **Bestätigter Produktstand:** I119 auf `main`  
+> **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **15 / 132 = 11,4 %**
+> **Gesamtfortschritt Master-TODO A–M:** **17 / 132 = 12,9 %**
 
 ## Zielbild
 
@@ -53,7 +53,7 @@ Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur d
 
 ### Browser-Masken-Baukasten
 
-Bis einschließlich **I116** besitzt der temporäre Browser-Draft:
+Bis einschließlich **I119** besitzt der temporäre Browser-Draft:
 
 - Komponentenpalette und feste 12-Spalten-Arbeitsfläche
 - deterministische monotone Draft-IDs
@@ -70,6 +70,8 @@ Bis einschließlich **I116** besitzt der temporäre Browser-Draft:
 - Live-Status, Tastaturwege und deterministische Fokus-Rückgabe
 - schmale Darstellung für die bisher freigegebenen Property-Controls
 - **statische Sichtbarkeit:** Komponenten bleiben im Editor erreichbar, können aber aus der Vorschau ausgeblendet werden
+- browserlokale Breitenbearbeitung von 1–12 Spalten mit Prüfung vor Mutation
+- bestätigte 100/150/200-%-Evidence für die vollständige vorhandene Property-Matrix
 - deterministische Preview ohne produktiven Write
 
 ### I115-Härtung
@@ -81,14 +83,24 @@ I115 hat zwei nach I113 gefundene Laufzeitrisiken gezielt repariert:
 
 Beide Reparaturen wurden über Targeted + Foundation gegatet.
 
+## I118/I119 – bestätigte Produkt-Härtung
+
+I118 ergänzt die browserlokale Breitenbearbeitung. Eine neue Breite wird nur übernommen, wenn das Element weiterhin vollständig in das 12-Spalten-Raster passt.
+
+I119 liefert reproduzierbare reale Chromium-Evidence für die vollständige vorhandene Property-Matrix bei **100/150/200 %**. Die Evidence deckte zugleich einen Fokusverlust am Pflichtfeld-Toggle auf; dieser konkrete Befund wurde in derselben Iteration repariert und gegatet.
+
+## I120–I124 – Control Plane V2 im Shadow-Modus
+
+Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
+
+Wichtig: Diese Kette ist **shadow-only und nicht autoritativ**. Sie verändert keine Produktfunktion, keine Persistenz und keinen Frozen Core. Deshalb erhöht I120–I124 den Produktfortschritt A–M nicht.
+
 ## Was bewusst noch nicht freigegeben ist
 
 Der Browser-Maskenentwurf wird weiterhin **nicht gespeichert**. Ein Reload verwirft den Draft.
 
 Noch offen sind insbesondere:
 
-- Breitenänderung im 12-Spalten-Raster
-- vollständige 100/150/200-%-Evidence der gesamten Eigenschaftenbearbeitung
 - gemeinsame Eigenschaften-/Preview-Abnahme
 - `defaultSelection`-Vertrag für Choice-Felder
 - Save-/Load-Grenze für Masken
@@ -97,10 +109,10 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. **Breite im 12-Spalten-Raster** browserlokal ändern und Grenzen vor Mutation prüfen.
-2. **Gesamte Eigenschaftenbearbeitung** bei 100/150/200 % sowie Tastatur/Fokus/schmaler Darstellung abnehmen.
-3. **`defaultSelection`-Vertrag** separat planen, ohne Persistenz vorwegzunehmen.
-4. **Persistenzgrenze für Masken** separat planen; erst danach Save/Load bewerten.
+1. **Gemeinsame Eigenschaften-/Preview-Abnahme** als letzten offenen Browser-Draft-Abgleich schließen.
+2. **`defaultSelection`-Vertrag** separat planen, ohne Persistenz vorwegzunehmen.
+3. **Persistenzgrenze für Masken** separat planen; erst danach Save/Load bewerten.
+4. Danach erst die nächste Struktur-Capability aus dem Master-TODO auswählen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -141,7 +153,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **11,4 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **15 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt.
+Die **12,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **17 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

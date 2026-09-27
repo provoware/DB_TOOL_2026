@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "iteration": 125,
+  "agent": "docs-status-drift-cleanup-agent-125",
+  "size": "S",
+  "goal": "Den dokumentierten Projektstand ausschließlich an den bereits gemergten Stand I124 plus globalen Entwicklungsvertrag angleichen. I118 Breitenbearbeitung und I119 100/150/200-%-Accessibility-Evidence als bestätigt markieren, Fortschritt A-M reproduzierbar auf 17 von 132 aktualisieren und I120-I124 als shadow-only Governance ohne Produktfortschrittszählung einordnen.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Aktueller Produkt- und Governance-Stand nach I124",
+    "summary": "README und TODO werden von I116 auf den bestätigten Stand gebracht; bereits erledigte I118/I119-Punkte werden nicht länger als offen geführt. Control Plane V2 I120-I124 wird ausdrücklich als nicht-produktiver Shadow-Governance-Stand dokumentiert.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0125-doc-status-sync.json",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    ".provoware/iterations/0117-readme-todo-i116-status-sync.json",
+    "merged I118-I124 history on main",
+    "global development contract commit 90d326d93eeecdbdf0342a190eb72e71c361aa19"
+  ],
+  "direct_dependencies": [
+    "main 90d326d93eeecdbdf0342a190eb72e71c361aa19",
+    "I118 width editing merged and gated",
+    "I119 property accessibility baseline merged with 100/150/200-percent evidence",
+    "I120-I124 Control Plane V2 remains shadow-only and non-authoritative",
+    "CP-03 and CP-06 remain frozen",
+    "browser draft remains non-persistent"
+  ],
+  "tests_required": [
+    "Step 1: manifest-only scope check; exactly this iteration manifest changes",
+    "Step 2 after green: README and TODO describe only confirmed capabilities through I124",
+    "Step 2: TODO pool A-M contains exactly 17 completed and 115 open items",
+    "Step 2: README progress matches TODO pool count at 12.9 percent",
+    "Step 2: I120-I124 are described as shadow-only governance and not counted as product TODO completion",
+    "Step 2: no product, schema, domain, repository, persistence, SQL, browser runtime or Control Plane implementation file changes",
+    "documentation structure and consistency check"
+  ],
+  "tests_explicitly_not_run": [
+    "browser interaction tests because no product code changes",
+    "database/repository tests because no persistent path changes",
+    "Control Plane behavior tests because its implementation is unchanged",
+    "full suite because this is documentation-only synchronization"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "documentation must not imply mask persistence",
+    "I120-I124 governance must not be miscounted as product TODO progress",
+    "progress percentage must exclude the duplicated priority list",
+    "next-step wording must not reopen CP-03 or CP-06"
+  ],
+  "non_changes": [
+    "no product/runtime code",
+    "no Control Plane V2 implementation changes",
+    "no CP-03 or CP-06 reopen",
+    "no schema or migration changes",
+    "no domain, repository, service, SQL or database changes",
+    "no browser shell changes",
+    "no tests changed",
+    "no dependency changes"
+  ],
+  "expected_side_effects": [
+    "README stops reporting I116 as the latest confirmed state",
+    "TODO no longer lists I118/I119 work as open",
+    "progress becomes 17/132 = 12.9 percent",
+    "shadow governance I120-I124 is visible without overstating product capability"
+  ],
+  "screenshot_required": false,
+  "status": "DOCS_IMPLEMENTED"
+}

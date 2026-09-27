@@ -1,17 +1,32 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **nach I116 auf `main`**.
+Stand: **nach I124 auf `main`**. Der letzte Produkt-Slice ist I119; I120–I124 sind ausschließlich Control-Plane-V2-Shadow-Governance.
 
-Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.\n\n**Fortschritt A–M:** **15 von 132 = 11,4 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.\n\n**Bestätigte Härtung:** I115 reparierte die Browser-JavaScript-Newline-Regressionsstelle und die Fokus-Rückgabe beim Choice-Reorder; Targeted + Foundation waren grün.
+Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.\n\n**Fortschritt A–M:** **17 von 132 = 12,9 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+
+**Bestätigter Produktstand:** I118 ergänzte die browserlokale Breitenbearbeitung mit 12-Spalten-Vorabvalidierung. I119 bestätigte die vollständige vorhandene Property-Matrix bei 100/150/200 % und härtete den gefundenen Fokuspfad. I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance und zählen deshalb nicht als Produktfortschritt.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] Breite im 12-Spalten-Raster ändern, Grenzen vor Mutation prüfen
-2. [ ] vollständige 100/150/200-%-Evidence und gemeinsame Accessibility-Abnahme
-3. [ ] `defaultSelection`-Vertrag separat planen
-4. [ ] Persistenzgrenze für Masken separat planen
+1. [ ] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
+2. [ ] `defaultSelection`-Vertrag separat planen
+3. [ ] Persistenzgrenze für Masken separat planen
+4. [ ] Element duplizieren bei neuer monotoner Draft-ID
 
 Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen**.
+
+
+## Bestätigter Governance-Stand
+
+Control Plane V2 ist bis **I124** vollständig als **Shadow-Vertrag** vorhanden, bleibt aber ausdrücklich **nicht autoritativ**. Die bestehende Governance bleibt maßgeblich.
+
+- I120: Registry, Rollen-, Trigger- und Lifecycle-Verträge
+- I121: versiegelter Plan, globaler Single-Writer-Lease und Validierungsvertrag
+- I122: triggerbasierte read-only Inspektion, Findings und Planner-Intake
+- I123: Controller-Sealing sowie append-only Event-/Audit-Kette
+- I124: Finalizer, Lease-Release und immutable Outcome-Bindung
+
+Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persistenz, CP-03 oder CP-06 und wird deshalb **nicht** in den 17/132 Produktpunkten A–M mitgezählt.
 
 ## A. Masken-Baukasten – Eigenschaften
 
@@ -29,9 +44,9 @@ Bis dahin bleiben **Persistenz, `defaultSelection`, CP-03 und CP-06 geschlossen*
 - [x] stabile monotone `draft-option-*`-IDs beibehalten
 - [x] Option-Controls: zugängliche Namen, Live-Status und Fokus-Rückgabe
 - [x] Option-Controls in schmaler Darstellung erreichbar halten
-- [ ] vollständige 100/150/200-%-Evidence für die gesamte Eigenschaftenbearbeitung
+- [x] vollständige 100/150/200-%-Evidence für die gesamte Eigenschaftenbearbeitung
 - [x] statische Sichtbarkeit
-- [ ] Breite im 12-Spalten-Raster ändern
+- [x] Breite im 12-Spalten-Raster ändern
 - [ ] gemeinsame Eigenschaften-Vorschau vollständig abnehmen
 - [ ] `defaultSelection`-Vertrag separat planen
 - [ ] Persistenzgrenze für Masken separat planen
