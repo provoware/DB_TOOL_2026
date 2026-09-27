@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "iteration": 143,
+  "agent": "readonly-grid-assistant-agent-143",
+  "size": "S",
+  "goal": "Aus dem vorhandenen browserlokalen Draft einen deterministischen Rastervorschlag berechnen und anzeigen, ohne den Draft zu verändern. Reihenfolge und Breiten bleiben unverändert; es gibt noch keinen Übernahmeweg und keine Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Raster-Assistent als read-only Vorschlag",
+    "summary": "Der Assistent packt vorhandene Elemente deterministisch links nach rechts in das 12-Spalten-Raster und zeigt Zeile, Startspalte und Breite nur als Vorschlag an.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0143-readonly-grid-assistant.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i143_grid_assistant.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py"
+  ],
+  "direct_dependencies": [
+    "main 4fe0d5037be0e93e258b8e5576729b995f1f673a",
+    "I142 preview matrix acceptance is confirmed",
+    "existing 12-column grid contract is confirmed",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser_shell.py and test_i143_grid_assistant.py",
+    "run test_i143_grid_assistant.py",
+    "run existing test_browser_shell.py as narrow browser-shell regression",
+    "suggestion preserves draft order",
+    "suggestion preserves existing widths",
+    "packing is deterministic left-to-right with row wrap at 12 columns",
+    "before/after read-only snapshot is identical",
+    "no apply/accept action exists",
+    "no persistence/network/store path"
+  ],
+  "tests_explicitly_not_run": [
+    "database/repository tests because no persistence path changes",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because I143 is a browser-local read-only UI slice",
+    "new Chromium evidence because no productive mutation or new preview viewport is introduced"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i143_grid_assistant.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i143_grid_assistant.py"
+    ]
+  },
+  "risks": [
+    "assistant logic must not mutate draft positions or widths",
+    "proposal order must remain deterministic",
+    "the UI must not imply that the proposal has already been applied",
+    "a future apply path must remain a separate gated iteration"
+  ],
+  "non_changes": [
+    "no draft column or width mutation from the assistant",
+    "no apply/accept path",
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no JSON schema or SQLite changes",
+    "no HTTP write route or browser storage",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies"
+  ],
+  "expected_side_effects": [
+    "the user can request a read-only compact grid proposal",
+    "proposal rows show deterministic row, start column and width",
+    "A-M progress becomes 29 of 132 = 22.0 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
