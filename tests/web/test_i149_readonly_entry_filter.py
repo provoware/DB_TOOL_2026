@@ -111,6 +111,6 @@ def test_i149_empty_and_no_match_filter_states_are_clear() -> None:
         assert "Akkuschrauber" not in none
         assert "Bohrhammer" not in none
         assert "0 Einträge sichtbar" in none
-        assert "Bitte zuerst eine Kategorie wählen." in none
+        assert "Keine Einträge entsprechen dem Titel-Filter." in none
     finally:
         con.close()
