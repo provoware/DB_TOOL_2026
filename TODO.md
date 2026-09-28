@@ -68,7 +68,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 ## C. Datenarbeit
 
 - [x] Suche
-- [ ] Filter
+- [x] Filter
 - [ ] Sortierung
 - [ ] starke Detailansicht
 - [ ] globale Suche Kategorie → Eintrag → Feldwert
