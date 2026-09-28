@@ -22,6 +22,7 @@ class WebNavItem:
     id: str
     label: str
     meta: str = ""
+    is_favorite: bool = False
 
 
 @dataclass(frozen=True)
@@ -117,6 +118,7 @@ class WebCatalogReadAdapter:
                 str(item.id),
                 f"★ {item.title}" if bool(getattr(item, "is_favorite", False)) else str(item.title),
                 f"Revision {item.revision}",
+                bool(getattr(item, "is_favorite", False)),
             )
             for item in self._catalog.list_entries(category_id)
         )

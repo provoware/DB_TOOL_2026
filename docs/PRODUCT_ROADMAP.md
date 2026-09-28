@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I160 bindet die zuvor isolierte Feldwertsuche end-to-end read-only über Repository → CatalogService → additive SearchHit-Projektion → I156-Fundstelle → Websuche an. Schema, FTS/Index, Ranking und Persistenz bleiben geschlossen. Nächster Schritt: nächsten unabhängigen Read-only-Datenkomfort-Slice aus C inventarisieren.
+**Aktueller Stand:** I161 ergänzt einen GET-only Favoritenfilter auf Basis des bereits vorhandenen is_favorite-Merkmals und erhält Titel-Filter/Sortierung. Keine neue Persistenz oder Repository-Änderung. Nächster Schritt: den nächsten unabhängigen Read-only-Datenkomfort-Slice aus C inventarisieren.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.

@@ -81,6 +81,7 @@ def make_app(catalog: CatalogReadPort) -> Callable[[dict[str, Any], StartRespons
         search_query = _one(params, "q")
         entry_filter = _one(params, "filter")
         entry_sort = _one(params, "sort")
+        favorites_only = _one(params, "favorites") == "1"
 
         page = render_page(
             adapter,
@@ -89,6 +90,7 @@ def make_app(catalog: CatalogReadPort) -> Callable[[dict[str, Any], StartRespons
             search_query=search_query,
             entry_filter=entry_filter,
             entry_sort=entry_sort,
+            favorites_only=favorites_only,
         ).encode("utf-8")
 
         start_response(

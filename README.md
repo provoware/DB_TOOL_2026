@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I160 auf diesem Branch; globale read-only Feldwertsuche ist end-to-end über Repository → CatalogService → SearchHit → I156-Fundstelle → Web angebunden  
+> **Bestätigter Produktstand:** I161 auf diesem Branch; vorhandene Favoriten können GET-only gefiltert und mit Titel-Filter/Sortierung kombiniert werden  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **36 / 132 = 27,3 %**
+> **Gesamtfortschritt Master-TODO A–M:** **37 / 132 = 28,0 %**
 
 ## Zielbild
 
@@ -279,6 +279,12 @@ Feldwerttreffer aller unterstützten Scalar- und Choice-Typen zeigen eine mensch
 
 Die Integration berührt Domain, Application und Storage und läuft deshalb vollständig als Frozen-Core/Deep-Gate-Slice. Es gibt weiterhin keine Schema-, FTS-, Index-, Ranking- oder Persistenzänderung.
 
+## I161 – Read-only Favoritenfilter
+
+I161 nutzt ausschließlich das bereits vorhandene `is_favorite`-Merkmal. Innerhalb einer gewählten Kategorie kann die Liste per GET auf Favoriten begrenzt werden. Der Zustand ist mit Titel-Filter und Sortierung kombinierbar und wird in allen beteiligten Formularen erhalten.
+
+Wichtig: I161 setzt oder entfernt **keine** Favoriten. Es gibt keine neue Persistenz, keinen Repository-Patch und keinen Write-Pfad. Der vorhandene Stern bleibt reine Anzeige; die Filterlogik verwendet das explizite boolesche Favoritenmerkmal.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -353,7 +359,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **27,3 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **36 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **28,0 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **37 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

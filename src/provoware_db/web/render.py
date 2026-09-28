@@ -119,15 +119,17 @@ def _entry_filter_markup(
     value: str | None,
     visible_count: int,
     sort_value: str | None,
+    favorites_only: bool,
 ) -> str:
     if not category_id:
         return ""
     current = "" if value is None else value
-    status = (
-        f'<p id="entry-filter-status" role="status">{visible_count} Einträge sichtbar</p>'
-        if current.strip()
-        else '<p id="entry-filter-status">Titel-Filter ist aus.</p>'
-    )
+    if favorites_only:
+        status = f'<p id="entry-filter-status" role="status">Nur Favoriten · {visible_count} Einträge sichtbar</p>'
+    elif current.strip():
+        status = f'<p id="entry-filter-status" role="status">{visible_count} Einträge sichtbar</p>'
+    else:
+        status = '<p id="entry-filter-status">Titel-Filter ist aus.</p>'
     return (
         '<form method="get" action="/" aria-labelledby="entry-filter-title">'
         '<h3 id="entry-filter-title">Einträge filtern</h3>'
@@ -137,6 +139,7 @@ def _entry_filter_markup(
             if sort_value
             else ""
         )
+        + ('<input type="hidden" name="favorites" value="1">' if favorites_only else "")
         + '<label for="entry-filter">Titel enthält</label> '
         f'<input id="entry-filter" name="filter" type="search" value="{escape(current, quote=True)}" '
         'autocomplete="off"> '
@@ -146,7 +149,12 @@ def _entry_filter_markup(
 
 
 
-def _entry_sort_markup(category_id: str | None, filter_value: str | None, sort_value: str | None) -> str:
+def _entry_sort_markup(
+    category_id: str | None,
+    filter_value: str | None,
+    sort_value: str | None,
+    favorites_only: bool,
+) -> str:
     if not category_id:
         return ""
     current = sort_value if sort_value in {"title_asc", "title_desc"} else "default"
@@ -168,9 +176,38 @@ def _entry_sort_markup(category_id: str | None, filter_value: str | None, sort_v
             if filter_value and filter_value.strip()
             else ""
         )
+        + ('<input type="hidden" name="favorites" value="1">' if favorites_only else "")
         + '<label for="entry-sort">Reihenfolge</label> '
         f'<select id="entry-sort" name="sort">{option_markup}</select> '
         '<button type="submit">Sortieren</button></form>'
+    )
+
+
+def _favorites_markup(
+    category_id: str | None,
+    filter_value: str | None,
+    sort_value: str | None,
+    favorites_only: bool,
+) -> str:
+    if not category_id:
+        return ""
+    checked = " checked" if favorites_only else ""
+    return (
+        '<form method="get" action="/" aria-labelledby="favorites-title">'
+        '<h3 id="favorites-title">Favoriten</h3>'
+        f'<input type="hidden" name="category_id" value="{escape(category_id, quote=True)}">'
+        + (
+            f'<input type="hidden" name="filter" value="{escape(filter_value, quote=True)}">'
+            if filter_value and filter_value.strip()
+            else ""
+        )
+        + (
+            f'<input type="hidden" name="sort" value="{escape(sort_value, quote=True)}">'
+            if sort_value
+            else ""
+        )
+        + f'<label><input type="checkbox" name="favorites" value="1"{checked}> Nur Favoriten anzeigen</label> '
+        '<button type="submit">Anwenden</button></form>'
     )
 
 
@@ -221,11 +258,14 @@ def render_page(
     search_query: str | None = None,
     entry_filter: str | None = None,
     entry_sort: str | None = None,
+    favorites_only: bool = False,
 ) -> str:
     """Render the read-only three-stage page without database access."""
     template = _TEMPLATE.read_text(encoding="utf-8")
     categories = adapter.categories()
     entries = adapter.entries(category_id) if category_id else ()
+    if favorites_only:
+        entries = tuple(item for item in entries if item.is_favorite)
     if entry_filter and entry_filter.strip():
         needle = entry_filter.strip().casefold()
         entries = tuple(item for item in entries if needle in item.label.casefold())
@@ -254,8 +294,9 @@ def render_page(
         )
         .replace(
             "<!-- ENTRIES -->",
-            _entry_filter_markup(category_id, entry_filter, len(entries), entry_sort)
-            + _entry_sort_markup(category_id, entry_filter, entry_sort)
+            _entry_filter_markup(category_id, entry_filter, len(entries), entry_sort, favorites_only)
+            + _entry_sort_markup(category_id, entry_filter, entry_sort, favorites_only)
+            + _favorites_markup(category_id, entry_filter, entry_sort, favorites_only)
             + _nav_markup(
                 entries,
                 (
