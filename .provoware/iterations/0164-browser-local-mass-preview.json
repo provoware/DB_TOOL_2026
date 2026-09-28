@@ -1,0 +1,92 @@
+{
+  "schema_version": 2,
+  "iteration": 164,
+  "agent": "browser-local-mass-preview-agent-164",
+  "size": "L",
+  "goal": "C · Datenarbeit → Preview für Massenaktionen als rein browserlokale, aktionsneutrale Read-only-Vorschau umsetzen, ohne Ausführungsweg oder Persistenz.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Preview für Massenaktionen",
+    "summary": "I164 zeigt auf Basis der I163-Auswahl ausschließlich, welche Einträge betroffen wären; es gibt keinen Execute-Button, keine konkrete Write-Aktion und keine Speicherung.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0164-browser-local-mass-preview.json",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.js",
+    "src/provoware_db/web/static/app.css",
+    "tests/web/test_i164_browser_local_mass_preview.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.js",
+    "src/provoware_db/web/static/app.css",
+    "tests/web/test_i163_browser_local_multiselect.py"
+  ],
+  "direct_dependencies": [
+    "main 262c660303be0049ee57beb794b72057b9ee9f8a",
+    "I163 browser-local multi-selection is merged and green",
+    "selection remains ephemeral and browser-local",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile changed render and I164 test",
+    "preview panel exists only as read-only browser UI",
+    "preview list is derived from currently checked entry boxes",
+    "preview uses no LocalStorage/SessionStorage/network",
+    "preview has no submit/execute control",
+    "SQLite total_changes remains unchanged",
+    "I163 multi-selection regressions remain green",
+    "existing HTTP navigation remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "storage deep gate because repository/schema are unchanged",
+    "mass-write tests because I164 implements no mass write",
+    "mask-builder Chromium tests because mask-builder runtime is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i164_browser_local_mass_preview.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i163_browser_local_multiselect.py",
+      "tests/web/test_i164_browser_local_mass_preview.py"
+    ]
+  },
+  "risks": [
+    "preview wording must not imply that a write action is available",
+    "preview must stay derived from ephemeral DOM selection only",
+    "later mass-write work must remain separately authorized and gated"
+  ],
+  "non_changes": [
+    "no mass write",
+    "no execute button",
+    "no selected-action model",
+    "no persisted selection",
+    "no LocalStorage/SessionStorage",
+    "no network request from app.js",
+    "no repository/schema change",
+    "no POST/write route",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "C · Preview für Massenaktionen can close if gates are green",
+    "later mass-action planning has a safe read-only preview prerequisite",
+    "A-M progress becomes 39 of 132 = 29.5 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
