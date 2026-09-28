@@ -164,13 +164,14 @@ def _entry_sort_markup(category_id: str | None, filter_value: str | None, sort_v
 
 def _field_markup(items: tuple[WebFieldItem, ...]) -> str:
     if not items:
-        return '<p class="placeholder">Keine Felder vorhanden.</p>'
+        return '<p class="placeholder" id="detail-empty">Keine sichtbaren Felder vorhanden.</p>'
 
     rows: list[str] = []
     for item in items:
         required = " · Pflichtfeld" if item.required else ""
         rows.append(
             '<div class="data-row field-row" '
+            f'id="field-{escape(item.id, quote=True)}" '
             f'data-id="{escape(item.id, quote=True)}">'
             f'<strong>{escape(item.label)}</strong>'
             f'<span> · {escape(item.field_type + required)}</span>'
@@ -178,6 +179,26 @@ def _field_markup(items: tuple[WebFieldItem, ...]) -> str:
             f'<strong>{escape(item.value)}</strong></div></div>'
         )
     return "".join(rows)
+
+
+def _detail_markup(
+    category: WebNavItem | None,
+    entry: WebNavItem | None,
+    fields: tuple[WebFieldItem, ...],
+) -> str:
+    if entry is None:
+        return '<section id="detail" class="panel" aria-labelledby="detail-title"><h2 id="detail-title">Details</h2><p class="placeholder">Bitte zuerst einen Eintrag wählen.</p></section>'
+    category_label = "Unbekannte Kategorie" if category is None else category.label
+    return (
+        '<section id="detail" class="panel" aria-labelledby="detail-title" tabindex="-1">'
+        '<h2 id="detail-title">Eintragsdetails</h2>'
+        f'<p class="detail-context"><span>Kategorie: </span><strong>{escape(category_label)}</strong></p>'
+        f'<h3>{escape(entry.label)}</h3>'
+        f'<p id="detail-field-count" role="status">{len(fields)} sichtbare Felder</p>'
+        '<div aria-label="Felder des Eintrags">'
+        + _field_markup(fields)
+        + '</div></section>'
+    )
 
 
 def render_page(
@@ -201,6 +222,8 @@ def render_page(
     elif entry_sort == "title_desc":
         entries = tuple(sorted(entries, key=lambda item: (item.label.casefold(), item.id), reverse=True))
     fields = adapter.fields(entry_id) if entry_id else ()
+    selected_category = next((item for item in categories if item.id == category_id), None)
+    selected_entry = next((item for item in entries if item.id == entry_id), None)
 
     return (
         template.replace(
@@ -233,5 +256,5 @@ def render_page(
                 selected_id=entry_id,
             ),
         )
-        .replace("<!-- FIELDS -->", _field_markup(fields))
+        .replace("<!-- FIELDS -->", _detail_markup(selected_category, selected_entry, fields))
     )
