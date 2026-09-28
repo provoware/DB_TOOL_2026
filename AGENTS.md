@@ -252,6 +252,21 @@ LOW/INFO wird gesammelt, nicht sofort umgesetzt.
 - integrity_check
 - komplette betroffene DB-Regression
 
+## 5.1 Single-Source Preflight
+
+Vor einem Produktpatch oder vor dem Öffnen eines PR wird einmal ausgeführt:
+
+`python scripts/iteration_preflight.py`
+
+Dieses Preflight ist die gemeinsame Wahrheitsquelle für:
+- Fast-Context-/Fortschrittskonsistenz,
+- Manifest-V2-Validierung,
+- zulässige Kombination aus `change_kind` und `gate_profile`,
+- Frozen-Core-Eskalation auf `deep`,
+- Routing auf targeted / governance / foundation.
+
+Der PR-Router verwendet dieselbe Python-Implementierung. Routingregeln dürfen nicht erneut als paralleler Inline-Code im Workflow gepflegt werden. Die geänderten Dateipfade werden weiterhin separat gegen den Manifest-Scope geprüft.
+
 ## 6. Stop-Kriterien
 
 Eine Iteration endet sofort, wenn:
