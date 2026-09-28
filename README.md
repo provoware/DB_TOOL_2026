@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I151 auf diesem Branch; starke Detailansicht ist inventarisiert, Runtime unverändert  
+> **Bestätigter Produktstand:** I153 auf diesem Branch; eindeutiger Fundstellenvertrag ist geplant, globale Feldwertsuche bleibt separat plan-only  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -228,6 +228,12 @@ Es gibt weiterhin keinen Repository-Write, keine Schemaänderung, keine gespeich
 ## I151 – Inventur starke Detailansicht
 
 I151 verändert keine Runtime. Die vorhandene Detaildarstellung wurde inventarisiert und der kleinste spätere Umsetzungsscope auf die bestehende Web-Read-Projektion begrenzt: expliziter Detailkopf, Kategorie-/Eintragskontext, Feldanzahl, stabiler semantischer Detailcontainer und klarer Leerzustand. Repository, Schema, Persistenz, Fundstellenvertrag und globale Feldwertsuche bleiben geschlossen.
+
+## I153 – Fundstellenvertrag separat geplant
+
+I153 implementiert noch keine Feldwertsuche. Der Vertrag legt stattdessen fest, dass jeder spätere Treffer Kategorie-, Eintrags- und optional Feldkontext sowie eine explizite Trefferart tragen muss. Feldwerttreffer dürfen erst entstehen, wenn ihre Fundstelle als deterministische Kette und als stabiles GET-Navigationsziel eindeutig projizierbar ist.
+
+Damit wird verhindert, dass die spätere globale Suche zwar Werte findet, aber nicht eindeutig zeigen kann, **wo** der Treffer liegt.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
