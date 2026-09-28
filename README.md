@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I154 auf diesem Branch; globale Feldwertsuche ist separat geplant und bleibt bis zum späteren Deep-Gate plan-only  
+> **Bestätigter Produktstand:** I155 auf diesem Branch; starke GET-only Detailansicht mit stabilen Detail-/Feldankern ist umgesetzt  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **33 / 132 = 25,0 %**
+> **Gesamtfortschritt Master-TODO A–M:** **34 / 132 = 25,8 %**
 
 ## Zielbild
 
@@ -241,6 +241,12 @@ I154 implementiert noch keine neue Suche. Der Plan legt fest, welche vorhandenen
 
 Die spätere Repository-Erweiterung wird ausdrücklich als **Deep-Gate/Frozen-Core-Slice** behandelt. I153-Fundstellenvertrag und der stabile Detail-Zielpunkt aus I151 sind Vorbedingungen; FTS, Suchindex, Ranking und Schemaänderungen bleiben außerhalb des ersten Feldwert-Slices.
 
+## I155 – starke Read-only Detailansicht
+
+I155 ergänzt einen expliziten Detailbereich für den gewählten Eintrag: sichtbarer Kategorie-/Eintragskontext, Anzahl sichtbarer Felder, klarer Leerzustand und stabile DOM-Ziele `#detail` sowie `#field-<id>`. Dadurch kann die spätere I153-Fundstellenprojektion deterministisch in den richtigen Detailbereich beziehungsweise direkt zum Feld navigieren.
+
+Der Slice bleibt vollständig GET-only; Repository, Schema, Persistenz und Feldwertsuche bleiben unverändert.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -315,7 +321,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **25,0 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **33 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **25,8 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **34 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
