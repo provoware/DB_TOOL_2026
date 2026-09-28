@@ -1,6 +1,6 @@
 # PROVOWARE DB TOOL 2026 – Produkt-Roadmap
 
-Stand: I167 auf Basis des grünen I166-Stands; die browserlokale Pflichtwert-Preview ist implementiert, aber ihr reales Chromium-/Screenshot-Gate ist mangels Browser-Binary noch blockiert.
+Stand: I170 akzeptiert die implementierte I167-Pflichtwert-Preview und die browserlokale Regel-Preview auf ausdrücklichen Nutzerwunsch unter Testausnahme. Reale Chromium-/Screenshot-Evidence fehlt weiterhin.
 
 Diese Roadmap bündelt den langfristigen Funktionspool. Sie ist **keine Freigabe, alle Punkte in einem Patch umzusetzen**. Jede Funktion erhält weiterhin eine kleine Iteration mit eigenem Scope, Zwischen-Gate und Freeze-Prüfung.
 
@@ -136,7 +136,7 @@ Fehlertexte müssen fachlich erklären:
 
 Keine kryptischen internen Exception-Texte in der normalen Oberfläche.
 
-I166 definiert den gemeinsamen Planungsvertrag: stabile Draft-Regel-ID, Regelart, Ziel-Feld-ID, Aktivstatus und typabhängige Parameter; deterministische Auswertung als `erfüllt`, `verletzt` oder `nicht auswertbar`; verständliche Fehlerprojektion aus demselben Ergebnis. I167 implementiert darauf die browserlokale Pflichtwert-Preview samt fokussierbaren Hilfetexten. Produktive Aktivierung, weitere Regelarten, Schema und Persistenz bleiben geschlossen; Pflichtwert und Regel-Preview werden erst nach realem Chromium-/Screenshot-Gate als abgeschlossen gezählt.
+I166 definiert den gemeinsamen Planungsvertrag: stabile Draft-Regel-ID, Regelart, Ziel-Feld-ID, Aktivstatus und typabhängige Parameter; deterministische Auswertung als `erfüllt`, `verletzt` oder `nicht auswertbar`; verständliche Fehlerprojektion aus demselben Ergebnis. I167 implementiert darauf die browserlokale Pflichtwert-Preview samt fokussierbaren Hilfetexten. I170 akzeptiert Pflichtwert und diese browserlokale Regel-Preview unter ausdrücklicher Testausnahme. Produktive Aktivierung, weitere Regelarten, Schema und Persistenz bleiben geschlossen; der reale Chromium-/Screenshot-Nachweis fehlt.
 
 ### P5 – Assistentenmodus
 
@@ -300,7 +300,7 @@ P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P1
 **Eingefrorener Stand:** I165 bestätigt I148–I164 als abgeschlossenen persistenzfreien Datenkomfort. Offene persistenzabhängige Punkte bleiben außerhalb dieses Freeze und benötigen eigene Schutzverträge.
 
 ### Phase B2 – Regeln planen
-**Implementiert, Browser-Gate offen:** I167 zeigt Pflichtwert ausschließlich für browserlokale Draft-Felder an und erklärt Umschaltung sowie Testwert über zugängliche Tooltips. Vor einem Freeze sind reale Keyboard-/Live-Status-/Layout-Evidence und ein Screenshot nachzuholen. Keine Regel aktivieren, keine Daten schreiben und keine Schema-/Frozen-Core-Grenze öffnen.
+**Implementiert, unter I170-Testausnahme akzeptiert:** I167 zeigt Pflichtwert ausschließlich für browserlokale Draft-Felder an und erklärt Umschaltung sowie Testwert über zugängliche Tooltips. Reale Keyboard-/Live-Status-/Layout-Evidence und Screenshot fehlen; das ist kein technischer Browser-PASS. Keine Regel aktivieren, keine Daten schreiben und keine Schema-/Frozen-Core-Grenze öffnen.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
