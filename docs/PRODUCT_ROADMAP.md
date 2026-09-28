@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I149 ergänzt nach der bestätigten GET-only Suche den kleinsten unabhängigen Filtervertrag: Titel-Filter der Eintragsliste innerhalb einer gewählten Kategorie, weiterhin vollständig read-only. Nächster kleiner Slice: getrennte Sortierung → danach Detail/globaler Fundpfad. Anschließend P10 read-only Dashboard-Grundlage → P12 Health read-only.
+**Aktueller Stand:** I150 ergänzt nach Suche und Filter eine explizite GET-only Titel-Sortierung A–Z/Z–A auf derselben Read-Projektion. Nächster kleiner Slice: starke Detailansicht → danach Fundstellenvertrag/globale Feldwertsuche. Anschließend P10 read-only Dashboard-Grundlage → P12 Health read-only.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.

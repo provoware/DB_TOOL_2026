@@ -102,7 +102,12 @@ def _search_markup(adapter: WebCatalogReadAdapter, query: str | None) -> str:
     )
 
 
-def _entry_filter_markup(category_id: str | None, value: str | None, visible_count: int) -> str:
+def _entry_filter_markup(
+    category_id: str | None,
+    value: str | None,
+    visible_count: int,
+    sort_value: str | None,
+) -> str:
     if not category_id:
         return ""
     current = "" if value is None else value
@@ -115,11 +120,45 @@ def _entry_filter_markup(category_id: str | None, value: str | None, visible_cou
         '<form method="get" action="/" aria-labelledby="entry-filter-title">'
         '<h3 id="entry-filter-title">Einträge filtern</h3>'
         f'<input type="hidden" name="category_id" value="{escape(category_id, quote=True)}">'
-        '<label for="entry-filter">Titel enthält</label> '
+        + (
+            f'<input type="hidden" name="sort" value="{escape(sort_value, quote=True)}">'
+            if sort_value
+            else ""
+        )
+        + '<label for="entry-filter">Titel enthält</label> '
         f'<input id="entry-filter" name="filter" type="search" value="{escape(current, quote=True)}" '
         'autocomplete="off"> '
         '<button type="submit">Filtern</button></form>'
         + status
+    )
+
+
+
+def _entry_sort_markup(category_id: str | None, filter_value: str | None, sort_value: str | None) -> str:
+    if not category_id:
+        return ""
+    current = sort_value if sort_value in {"title_asc", "title_desc"} else "default"
+    options = (
+        ("default", "Standardreihenfolge"),
+        ("title_asc", "Titel A–Z"),
+        ("title_desc", "Titel Z–A"),
+    )
+    option_markup = "".join(
+        f'<option value="{value}"{" selected" if value == current else ""}>{label}</option>'
+        for value, label in options
+    )
+    return (
+        '<form method="get" action="/" aria-labelledby="entry-sort-title">'
+        '<h3 id="entry-sort-title">Einträge sortieren</h3>'
+        f'<input type="hidden" name="category_id" value="{escape(category_id, quote=True)}">'
+        + (
+            f'<input type="hidden" name="filter" value="{escape(filter_value, quote=True)}">'
+            if filter_value and filter_value.strip()
+            else ""
+        )
+        + '<label for="entry-sort">Reihenfolge</label> '
+        f'<select id="entry-sort" name="sort">{option_markup}</select> '
+        '<button type="submit">Sortieren</button></form>'
     )
 
 
@@ -148,6 +187,7 @@ def render_page(
     entry_id: str | None = None,
     search_query: str | None = None,
     entry_filter: str | None = None,
+    entry_sort: str | None = None,
 ) -> str:
     """Render the read-only three-stage page without database access."""
     template = _TEMPLATE.read_text(encoding="utf-8")
@@ -156,6 +196,10 @@ def render_page(
     if entry_filter and entry_filter.strip():
         needle = entry_filter.strip().casefold()
         entries = tuple(item for item in entries if needle in item.label.casefold())
+    if entry_sort == "title_asc":
+        entries = tuple(sorted(entries, key=lambda item: (item.label.casefold(), item.id)))
+    elif entry_sort == "title_desc":
+        entries = tuple(sorted(entries, key=lambda item: (item.label.casefold(), item.id), reverse=True))
     fields = adapter.fields(entry_id) if entry_id else ()
 
     return (
@@ -175,7 +219,8 @@ def render_page(
         )
         .replace(
             "<!-- ENTRIES -->",
-            _entry_filter_markup(category_id, entry_filter, len(entries))
+            _entry_filter_markup(category_id, entry_filter, len(entries), entry_sort)
+            + _entry_sort_markup(category_id, entry_filter, entry_sort)
             + _nav_markup(
                 entries,
                 (

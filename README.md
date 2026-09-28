@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I149 auf diesem Branch; der GET-only Titel-Filter ergänzt die bestätigte Read-only-Suche ohne Persistenz oder Frozen-Core-Änderung  
+> **Bestätigter Produktstand:** I150 auf diesem Branch; GET-only Titel-Sortierung A–Z/Z–A ergänzt Suche und Filter ohne Persistenz oder Frozen-Core-Änderung  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **32 / 132 = 24,2 %**
+> **Gesamtfortschritt Master-TODO A–M:** **33 / 132 = 25,0 %**
 
 ## Zielbild
 
@@ -219,6 +219,12 @@ I149 schließt den nächsten kleinen Datenarbeits-Slice ohne den Frozen Core zu 
 
 Der Filter arbeitet ausschließlich auf der Web-Read-Projektion. Es gibt kein SQL, keinen Repository-Write, keine Browser-Persistenz und keinen gespeicherten Filter. Ein eigener Regressionstest prüft Treffer, Nicht-Treffer, Leerzustand und dass SQLite-`total_changes` durch Filter-GETs unverändert bleibt. Sortierung und globale Feldwertsuche bleiben getrennte spätere Slices.
 
+## I150 – Read-only Titel-Sortierung
+
+I150 ergänzt ausschließlich die explizite Sortierung der bereits geladenen Eintragsliste: Standardreihenfolge, Titel A–Z oder Titel Z–A. Die Sortierung ist deterministisch, GET-only und arbeitet nach dem I149-Filter auf derselben Web-Read-Projektion. Filter und Sortierung erhalten ihren jeweiligen Zustand gegenseitig.
+
+Es gibt weiterhin keinen Repository-Write, keine Schemaänderung, keine gespeicherte Sortierung und keine Browser-Persistenz. Der gezielte Test prüft Standardreihenfolge, beide Sortierrichtungen, Filter+Sort-Komposition und unveränderte SQLite-`total_changes`.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -250,8 +256,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. I150: `Sortierung` als eigenen kleinen Read-only-Datenarbeits-Slice inventarisieren; Filtervertrag unverändert lassen.
-2. Danach starke Detailansicht bzw. Fundstellenvertrag getrennt inventarisieren.
+1. I151: `starke Detailansicht` als nächsten unabhängigen Read-only-Datenarbeits-Slice inventarisieren.
+2. Fundstellenvertrag und globale Feldwertsuche danach getrennt behandeln.
 3. Globale Feldwertsuche, Persistenz und gespeicherte Ansichten bleiben separat geschlossen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
@@ -293,7 +299,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **24,2 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **32 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **25,0 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **33 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
