@@ -82,7 +82,7 @@ def test_i157_lab_finds_text_and_choice_values_without_writes() -> None:
         repo = FieldRepository(con)
         changes_before = con.total_changes
 
-        text_hits = repo.search_values("profi")
+        text_hits = repo.search_value_lab("profi")
         assert len(text_hits) == 1
         assert text_hits[0]["category_id"] == "cat-1"
         assert text_hits[0]["entry_id"] == "ent-1"
@@ -90,12 +90,12 @@ def test_i157_lab_finds_text_and_choice_values_without_writes() -> None:
         assert text_hits[0]["value_preview"] == "Robustes Profigerät"
         assert text_hits[0]["source_kind"] == "scalar_text"
 
-        single_hits = repo.search_values("bosch")
+        single_hits = repo.search_value_lab("bosch")
         assert len(single_hits) == 1
         assert single_hits[0]["field_id"] == "fld-single"
         assert single_hits[0]["source_kind"] == "single_choice"
 
-        multi_hits = repo.search_values("akku")
+        multi_hits = repo.search_value_lab("akku")
         assert len(multi_hits) == 1
         assert multi_hits[0]["field_id"] == "fld-multi"
         assert multi_hits[0]["value_preview"] == "Akku, Akku-System"
@@ -111,9 +111,9 @@ def test_i157_lab_excludes_deleted_parents_and_obeys_limit() -> None:
         _seed(con)
         repo = FieldRepository(con)
 
-        assert repo.search_values("geheim") == []
-        assert repo.search_values("akku", limit=0) == []
-        assert len(repo.search_values("a", limit=1)) == 1
+        assert repo.search_value_lab("geheim") == []
+        assert repo.search_value_lab("akku", limit=0) == []
+        assert len(repo.search_value_lab("a", limit=1)) == 1
     finally:
         con.close()
 
@@ -124,22 +124,22 @@ def test_i158_lab_finds_remaining_scalar_types_with_human_readable_aliases() -> 
         _seed(con)
         repo = FieldRepository(con)
 
-        integer = repo.search_values("42")
+        integer = repo.search_value_lab("42")
         assert any(hit["field_id"] == "fld-int" and hit["value_preview"] == "42" for hit in integer)
 
-        decimal = repo.search_values("12,5")
+        decimal = repo.search_value_lab("12,5")
         assert any(hit["field_id"] == "fld-dec" and hit["value_preview"] == "12,5" for hit in decimal)
 
-        money = repo.search_values("12,99")
+        money = repo.search_value_lab("12,99")
         assert any(hit["field_id"] == "fld-money" and hit["value_preview"] == "12,99 EUR" for hit in money)
 
-        boolean = repo.search_values("ja")
+        boolean = repo.search_value_lab("ja")
         assert any(hit["field_id"] == "fld-bool" and hit["value_preview"] == "Ja" for hit in boolean)
 
-        date = repo.search_values("28.09.2026")
+        date = repo.search_value_lab("28.09.2026")
         assert any(hit["field_id"] == "fld-date" and hit["value_preview"] == "28.09.2026" for hit in date)
 
-        dt = repo.search_values("28.09.2026")
+        dt = repo.search_value_lab("28.09.2026")
         assert any(hit["field_id"] == "fld-datetime" and hit["value_preview"] == "28.09.2026, 14:30" for hit in dt)
     finally:
         con.close()
