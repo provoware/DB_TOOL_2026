@@ -202,3 +202,6 @@ class SearchHit:
     label: str
     category_id: str | None = None
     entry_id: str | None = None
+    field_id: str | None = None
+    match_kind: str | None = None
+    value_preview: str | None = None

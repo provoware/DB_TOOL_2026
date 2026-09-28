@@ -1,0 +1,107 @@
+{
+  "schema_version": 2,
+  "iteration": 160,
+  "agent": "global-field-value-search-agent-160",
+  "size": "L",
+  "goal": "Feldwerttreffer gemäß I159 end-to-end an Repository, CatalogService, additive SearchHit-Projektion, I156-Fundstellenprojektion und Websuche anbinden und die globale Feldwertsuche vollständig abnehmen.",
+  "change_kind": "frozen_core",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Globale Feldwertsuche",
+    "summary": "I160 macht die im I157/I158-Labor abgesicherte Feldwertsuche produktiv read-only verfügbar und bindet sie über CatalogService, SearchHit und I156-Fundstellenprojektion in die Websuche ein.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0160-global-field-value-search.json",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i160_global_field_value_search.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_159_FIELD_VALUE_SEARCH_INTEGRATION_CONTRACT.md",
+    "docs/development/ITERATION_158_FIELD_VALUE_SEARCH_SCALARS_LAB.md",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/repository/test_i157_field_value_search_lab.py",
+    "tests/web/test_i148_readonly_search_acceptance.py",
+    "tests/web/test_i156_search_location_projection.py"
+  ],
+  "direct_dependencies": [
+    "main 2bba0544487162fbff0182376537969cf223d4e0",
+    "I159 integration contract is merged and green",
+    "I158 all-scalar deep-lab is merged and green",
+    "I156 search-location projection is merged"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile all changed product/search files and I160 test",
+    "existing category/entry/field-name search remains compatible",
+    "field-value hits from scalar and choice values reach CatalogService and Web",
+    "SearchHit extension remains additive",
+    "field-value results show explicit I156 location and #field-id target",
+    "human-readable value preview is rendered",
+    "empty query remains []",
+    "global service limit remains authoritative",
+    "POST remains 405",
+    "SQLite total_changes remains unchanged",
+    "existing I148/I156 search regressions remain green",
+    "I157/I158 repository lab regressions remain green",
+    "full deep/foundation/governance gate"
+  ],
+  "tests_explicitly_not_run": [
+    "mask-builder Chromium tests because mask-builder runtime is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/domain/models.py",
+      "src/provoware_db/application/catalog_service.py",
+      "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+      "src/provoware_db/web/read_adapter.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i160_global_field_value_search.py"
+    ],
+    "python_tests": [
+      "tests/repository/test_i157_field_value_search_lab.py",
+      "tests/repository/test_read_core_a.py",
+      "tests/repository/test_read_core_b.py",
+      "tests/web/test_i148_readonly_search_acceptance.py",
+      "tests/web/test_i156_search_location_projection.py",
+      "tests/web/test_i160_global_field_value_search.py"
+    ]
+  },
+  "risks": [
+    "domain/application/storage protected paths are reopened only for this bounded integration",
+    "field-value hits must not alter existing hit semantics or global limit behavior",
+    "human-readable previews must not leak raw storage details",
+    "no write path may be introduced by search"
+  ],
+  "non_changes": [
+    "no schema/FTS/index change",
+    "no ranking engine",
+    "no saved searches",
+    "no write route",
+    "no persistence change"
+  ],
+  "expected_side_effects": [
+    "C · globale Suche Kategorie → Eintrag → Feldwert can close if gates are green",
+    "field-value results become visible with explicit location and stable field navigation",
+    "A-M progress becomes 36 of 132 = 27.3 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_DEEP_GATE"
+}

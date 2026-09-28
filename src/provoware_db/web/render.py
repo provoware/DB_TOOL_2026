@@ -93,7 +93,12 @@ def _search_markup(adapter: WebCatalogReadAdapter, query: str | None) -> str:
         target = _search_target(item)
         label = f'{escape(item.kind_label)} · {escape(item.label)}'
         location = escape(item.location_label)
-        meta = f'<span class="search-location">Fundstelle: {location}</span>'
+        preview = (
+            f'<span class="search-value">Wert: {escape(item.value_preview)}</span>'
+            if item.value_preview is not None
+            else ""
+        )
+        meta = f'<span class="search-location">Fundstelle: {location}</span>' + preview
         if target is None:
             rows.append(f'<li><span>{label}</span>{meta}</li>')
         else:

@@ -44,6 +44,7 @@ class WebSearchItem:
     category_id: str | None
     entry_id: str | None
     field_id: str | None
+    value_preview: str | None
 
 
 def _format_scalar(value: object, field: object, raw_type: str) -> str:
@@ -141,11 +142,13 @@ class WebCatalogReadAdapter:
             "category": "Kategorie",
             "entry": "Eintrag",
             "field_definition": "Feld",
+            "field_value": "Feldwert",
         }
         match_kinds = {
             "category": "category_name",
             "entry": "entry_title",
             "field_definition": "field_name",
+            "field_value": "field_value",
         }
 
         category_labels = {item.id: item.label for item in self.categories()}
@@ -169,9 +172,10 @@ class WebCatalogReadAdapter:
             label = str(item.label)
 
             location_parts = [part for part in (category_label, entry_label) if part]
-            field_id = None
-            if entity_type == "field_definition":
-                field_id = str(item.entity_id)
+            field_id = None if getattr(item, "field_id", None) is None else str(item.field_id)
+            if entity_type in {"field_definition", "field_value"}:
+                if field_id is None:
+                    field_id = str(item.entity_id)
                 location_parts.append(label)
             elif entity_type == "entry" and not entry_label:
                 location_parts.append(label)
@@ -189,6 +193,7 @@ class WebCatalogReadAdapter:
                     category_id=category_id,
                     entry_id=entry_id,
                     field_id=field_id,
+                    value_preview=None if getattr(item, "value_preview", None) is None else str(item.value_preview),
                 )
             )
         return tuple(rows)

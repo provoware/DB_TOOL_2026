@@ -423,9 +423,25 @@ class CatalogService:
         q=query.strip()
         if not q:return []
         hits=[]
-        for r in self.categories.search(q,limit): hits.append(SearchHit("category",r['id'],r['name'],category_id=r['id']))
-        for r in self.entries.search(q,limit): hits.append(SearchHit("entry",r['id'],r['title'],category_id=r['category_id'],entry_id=r['id']))
-        for r in self.fields.search(q,limit): hits.append(SearchHit("field_definition",r['id'],r['name'],category_id=r['category_id'],entry_id=r['entry_id']))
+        for r in self.categories.search(q,limit):
+            hits.append(SearchHit("category",r['id'],r['name'],category_id=r['id'],match_kind="category_name"))
+        for r in self.entries.search(q,limit):
+            hits.append(SearchHit("entry",r['id'],r['title'],category_id=r['category_id'],entry_id=r['id'],match_kind="entry_title"))
+        for r in self.fields.search(q,limit):
+            hits.append(SearchHit("field_definition",r['id'],r['name'],category_id=r['category_id'],entry_id=r['entry_id'],field_id=r['id'],match_kind="field_name"))
+        for r in self.fields.search_values(q,limit):
+            hits.append(
+                SearchHit(
+                    "field_value",
+                    r["field_id"],
+                    r["field_name"],
+                    category_id=r["category_id"],
+                    entry_id=r["entry_id"],
+                    field_id=r["field_id"],
+                    match_kind="field_value",
+                    value_preview=r["value_preview"],
+                )
+            )
         return hits[:limit]
 
 
