@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I148 auf diesem Branch; die vorhandene Read-only-Suche ist end-to-end abgenommen, inklusive sicherer Navigation für eintragsspezifische Feldtreffer  
+> **Bestätigter Produktstand:** I149 auf diesem Branch; der GET-only Titel-Filter ergänzt die bestätigte Read-only-Suche ohne Persistenz oder Frozen-Core-Änderung  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **31 / 132 = 23,5 %**
+> **Gesamtfortschritt Master-TODO A–M:** **32 / 132 = 24,2 %**
 
 ## Zielbild
 
