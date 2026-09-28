@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I163 auf diesem Branch; Einträge können temporär browserlokal mehrfach ausgewählt werden, ohne Speicherung oder Write-Pfad  
+> **Bestätigter Produktstand:** I164 auf diesem Branch; die I163-Auswahl speist eine rein browserlokale Read-only-Vorschau der betroffenen Einträge  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **38 / 132 = 28,8 %**
+> **Gesamtfortschritt Master-TODO A–M:** **39 / 132 = 29,5 %**
 
 ## Zielbild
 
@@ -299,6 +299,12 @@ I163 ergänzt Eintrags-Checkboxen, einen sichtbaren Auswahlzähler und `Auswahl 
 
 Navigation und Auswahl bleiben getrennte Bedienelemente. Der ausgewählte Zustand wird visuell hervorgehoben, Checkboxen sind tastaturbedienbar und eindeutig beschriftet, der Zähler verwendet `aria-live=polite`. I163 führt **keine Massenaktion** aus; es schafft nur deren sichere temporäre Auswahlbasis.
 
+## I164 – browserlokale Preview für Massenaktionen
+
+I164 ergänzt auf Basis der flüchtigen I163-Mehrfachauswahl eine reine Vorschau. Sie zeigt, wie viele und welche Einträge von einer späteren Massenaktion betroffen wären. Die Vorschau ist absichtlich **aktionsneutral**: Sie legt noch keine Lösch-, Verschiebe-, Favoriten- oder Bearbeitungsaktion fest.
+
+Es gibt keinen Ausführen-Button, keinen Submit-Pfad und keine Speicherung. Die Vorschau wird ausschließlich aus dem aktuellen Browser-DOM erzeugt und verschwindet zusammen mit der Auswahl bei Reload oder Navigation. Damit existiert erstmals eine belastbare Preview-Basis, ohne produktive Massenwrites zu öffnen.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -373,7 +379,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **28,8 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **38 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **29,5 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **39 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

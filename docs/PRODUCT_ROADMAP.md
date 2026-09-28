@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I163 ergänzt browserlokale Mehrfachauswahl ohne LocalStorage, Serverstate oder Datenbankmutation. Nächster sicherer Slice: Preview für Massenaktionen rein browserlokal/read-only; produktive Massenwrites bleiben geschlossen.
+**Aktueller Stand:** I164 ergänzt eine browserlokale, aktionsneutrale Preview für die I163-Mehrfachauswahl. Es existiert kein Ausführen- oder Write-Pfad. Nächster Schritt: Read-only-Datenkomfortblock einfrieren und den nächsten unabhängigen Produktbereich inventarisieren.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
