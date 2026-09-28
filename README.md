@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I159 auf diesem Branch; Repository → CatalogService → SearchHit Integration ist separat vertraglich festgelegt, Runtime unverändert  
+> **Bestätigter Produktstand:** I160 auf diesem Branch; globale read-only Feldwertsuche ist end-to-end über Repository → CatalogService → SearchHit → I156-Fundstelle → Web angebunden  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **35 / 132 = 26,5 %**
+> **Gesamtfortschritt Master-TODO A–M:** **36 / 132 = 27,3 %**
 
 ## Zielbild
 
@@ -271,6 +271,14 @@ I159 verändert keine Runtime. Der Vertrag legt fest, dass `CatalogService.searc
 
 Die spätere End-to-End-Integration berührt Domain, Application und Storage und ist deshalb ausdrücklich **Frozen-Core/Deep-Gate**. I156 bleibt für Fundstellenkette und stabile Feldnavigation zuständig.
 
+## I160 – globale Feldwertsuche end-to-end
+
+I160 überführt den zuvor isolierten I157/I158-Laborread in einen neutralen read-only Repositorypfad und bindet ihn ausschließlich über `CatalogService.search()` an die bestehende Suche an. `SearchHit` erhält additive optionale Felder für Trefferart, Feld-ID und Wertvorschau; bestehende Treffer bleiben kompatibel.
+
+Feldwerttreffer aller unterstützten Scalar- und Choice-Typen zeigen eine menschenlesbare Vorschau, die I156-Fundstellenkette und einen stabilen `#field-<id>`-Link in die I155-Detailansicht. Das globale Service-Limit, leere Suche, Deleted-Parent-Schutz, GET-only HTTP und No-Write-Invarianten bleiben erhalten.
+
+Die Integration berührt Domain, Application und Storage und läuft deshalb vollständig als Frozen-Core/Deep-Gate-Slice. Es gibt weiterhin keine Schema-, FTS-, Index-, Ranking- oder Persistenzänderung.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -345,7 +353,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **26,5 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **35 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **27,3 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **36 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
