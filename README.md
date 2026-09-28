@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I155 auf diesem Branch; starke GET-only Detailansicht mit stabilen Detail-/Feldankern ist umgesetzt  
+> **Bestätigter Produktstand:** I156 auf diesem Branch; bestehende Suchtreffer zeigen eindeutige Fundstellen und stabile GET-Ziele  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **34 / 132 = 25,8 %**
+> **Gesamtfortschritt Master-TODO A–M:** **35 / 132 = 26,5 %**
 
 ## Zielbild
 
@@ -247,6 +247,12 @@ I155 ergänzt einen expliziten Detailbereich für den gewählten Eintrag: sichtb
 
 Der Slice bleibt vollständig GET-only; Repository, Schema, Persistenz und Feldwertsuche bleiben unverändert.
 
+## I156 – eindeutige Fundstellen für bestehende Suchtreffer
+
+I156 setzt den I153-Vertrag für die bereits vorhandenen Trefferarten um. Suchergebnisse zeigen nun eine explizite Fundstellenkette wie `Werkzeug → Akkuschrauber → Seriennummer`. Eintragstreffer verlinken auf den stabilen `#detail`-Bereich aus I155; eintragsspezifische Feldtreffer direkt auf `#field-<id>`.
+
+Die Projektion nutzt IDs für Navigation und Labels nur für die Anzeige. Feldwertsuche, Domain-`SearchHit`, Repository und Persistenz bleiben unverändert.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -321,7 +327,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **25,8 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **34 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **26,5 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **35 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
