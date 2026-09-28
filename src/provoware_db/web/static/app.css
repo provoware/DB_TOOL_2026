@@ -201,3 +201,26 @@ h2 {
 .multiselect-note {
   color: #cbd5e1;
 }
+
+
+.mass-preview {
+  margin-block: 0.75rem;
+  padding: 0.75rem;
+  border: 2px dashed var(--accent);
+  border-radius: 0.85rem;
+}
+
+.mass-preview h3,
+.mass-preview p {
+  margin-block: 0.35rem;
+}
+
+.mass-preview ul {
+  margin-block: 0.5rem;
+  padding-inline-start: 1.5rem;
+}
+
+.mass-preview-warning {
+  color: #f8fafc;
+  font-weight: 600;
+}
