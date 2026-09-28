@@ -15,7 +15,7 @@ echo "Repo: $ROOT"
 echo "Zeit: $(date --iso-8601=seconds 2>/dev/null || date)"
 echo
 
-for f in README.md CONTRIBUTING.md .gitignore .editorconfig docs/PROJECT_STANDARDS.md; do
+for f in README.md TODO.md AGENTS.md CONTRIBUTING.md .gitignore .editorconfig docs/PROJECT_STANDARDS.md scripts/build_iteration_context.py scripts/iteration_preflight.py src/provoware_db/mask_builder/browser_shell.py; do
   if [[ -f "$f" ]]; then
     echo "GRÜN: $f vorhanden"
   else
@@ -25,9 +25,24 @@ for f in README.md CONTRIBUTING.md .gitignore .editorconfig docs/PROJECT_STANDAR
 done
 
 echo
+if python3 scripts/build_iteration_context.py --check; then
+  echo "GRÜN: Fast Context"
+else
+  echo "ROT: Fast Context"
+  FAILS=$((FAILS+1))
+fi
+if python3 scripts/iteration_preflight.py; then
+  echo "GRÜN: Iterations-Preflight"
+else
+  echo "ROT: Iterations-Preflight"
+  FAILS=$((FAILS+1))
+fi
+
+echo
 if [[ "$FAILS" -eq 0 ]]; then
   echo "GESAMTSTATUS: GRÜN"
-  echo "Empfehlung: Produktcode über separaten Import-PR hinzufügen und danach CI auf echte CP-Gates erweitern."
+  echo "Umfang: Repository-Struktur und Iterations-Preflight; keine vollständige Produkt- oder Browserabnahme."
+  echo "Nächster Schritt: I167-Chromium-Gate mit installiertem Browser ausführen."
   exit 0
 fi
 

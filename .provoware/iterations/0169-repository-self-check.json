@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "iteration": 169,
+  "agent": "repository-self-check-169",
+  "size": "M",
+  "goal": "Den Repository-Selbstcheck an den realen Projektstand binden und irreführende grüne Ergebnisse vermeiden.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Repository-Selbstprüfung",
+    "summary": "Der Selbstcheck prüft nun den aktuellen Iterationskontext und Preflight; sein Ergebnis ist ausdrücklich keine vollständige Produktabnahme.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0169-repository-self-check.json",
+    "scripts/repo_self_check.sh",
+    ".gitignore",
+    "README.md",
+    "docs/development/ITERATION_169_REPOSITORY_SELF_CHECK.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    "scripts/repo_self_check.sh",
+    "scripts/build_iteration_context.py",
+    "scripts/iteration_preflight.py",
+    "tests/mask_builder/test_i167_chromium_evidence.py",
+    "README.md",
+    ".gitignore"
+  ],
+  "direct_dependencies": ["main 14c3b1e", "I167 Chromium gate remains BLOCKED without browser", "CP-03 and CP-06 frozen"],
+  "tests_required": ["Manifest validation and preflight", "Self-check success on unchanged repository", "Self-check failure when a required project file is missing", "Shell syntax and diff scope"],
+  "tests_explicitly_not_run": ["Full product suite without pytest", "Chromium interaction without browser binary", "Database deep gate: no database path changed"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["Self-check remains a lightweight repository integrity gate and must not claim product completeness"],
+  "non_changes": ["No product code", "No schema or persistence change", "No TODO completion claimed", "No CP-03 or CP-06 reopen"],
+  "expected_side_effects": ["Missing core files or failed preflight now produce a nonzero status", "Generated local reports do not dirty the repository"],
+  "screenshot_required": false,
+  "status": "VALIDATED"
+}
