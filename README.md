@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I147 auf diesem Branch; der vollständig grüne Masken-Baukasten-Strukturblock ist auf I146 eingefroren, nächster Kandidat ist die Abnahme der bereits vorhandenen Read-only-Suche  
+> **Bestätigter Produktstand:** I148 auf diesem Branch; die vorhandene Read-only-Suche ist end-to-end abgenommen, inklusive sicherer Navigation für eintragsspezifische Feldtreffer  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **30 / 132 = 22,7 %**
+> **Gesamtfortschritt Master-TODO A–M:** **31 / 132 = 23,5 %**
 
 ## Zielbild
 
@@ -205,6 +205,14 @@ Die Inventur der offenen Bereiche zeigt zugleich, dass der TODO-Punkt **C · Dat
 
 Der Produktfortschritt bleibt in I147 unverändert bei **30 / 132 = 22,7 %**.
 
+## I148 – formelle Read-only-Suche-Abnahme
+
+I148 baut keine zweite Suche, sondern nimmt den bereits vorhandenen Pfad **Service → Repository → Web-Adapter → GET-only HTTP → Ergebnisdarstellung** end-to-end ab. Leere bzw. nur aus Leerzeichen bestehende Suchbegriffe liefern keinen Suchlauf, Treffer und Nicht-Treffer werden klar angezeigt, und POST bleibt mit `405 Method Not Allowed` blockiert.
+
+Die Abnahme hat genau eine konkrete Lücke gefunden: Eintragsspezifische Feldtreffer lieferten bislang ihre `entry_id`, aber nicht die Eltern-`category_id`. Dadurch waren sie sichtbar, konnten aber nicht sicher zum zugehörigen Eintrag navigieren. Der Read-only-Repository-Query projiziert dafür jetzt `COALESCE(f.category_id, e.category_id)` als Kategoriebezug. Es gibt keine Schema- oder Schreibänderung.
+
+Ein End-to-End-Test prüft zusätzlich, dass Such-GETs den SQLite-`total_changes`-Zähler nicht verändern und Treffer unter gelöschten Eltern weiterhin ausgeschlossen bleiben. Die getrennte spätere **globale Suche Kategorie → Eintrag → Feldwert** bleibt ausdrücklich offen.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -236,9 +244,9 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. I148: die bereits vorhandene GET-only Suche gegen einen klaren Read-only-Produktvertrag abnehmen; nicht neu implementieren.
-2. Den TODO-Punkt `Suche` nur schließen, wenn Service → Adapter → HTTP → Ergebnisnavigation vollständig bestätigt sind.
-3. Danach erst Filter oder Sortierung als jeweils separaten kleinen Datenarbeits-Slice planen; Persistenz bleibt geschlossen.
+1. I149: `Filter` als nächsten kleinen Read-only-Datenarbeits-Slice inventarisieren und nur den kleinsten unabhängigen Filtervertrag implementieren.
+2. Sortierung weiterhin getrennt behandeln; keine kombinierte Filter+Sortier-Iteration.
+3. Globale Feldwertsuche, Persistenz und gespeicherte Ansichten bleiben separat geschlossen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -279,7 +287,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **30 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **31 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
