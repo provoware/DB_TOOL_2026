@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I148 auf diesem Branch; die vorhandene Read-only-Suche ist end-to-end abgenommen, inklusive sicherer Navigation für eintragsspezifische Feldtreffer  
+> **Bestätigter Produktstand:** I149 auf diesem Branch; der GET-only Titel-Filter ergänzt die bestätigte Read-only-Suche ohne Persistenz oder Frozen-Core-Änderung  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **31 / 132 = 23,5 %**
+> **Gesamtfortschritt Master-TODO A–M:** **32 / 132 = 24,2 %**
 
 ## Zielbild
 
@@ -213,6 +213,12 @@ Die Abnahme hat genau eine konkrete Lücke gefunden: Eintragsspezifische Feldtre
 
 Ein End-to-End-Test prüft zusätzlich, dass Such-GETs den SQLite-`total_changes`-Zähler nicht verändern und Treffer unter gelöschten Eltern weiterhin ausgeschlossen bleiben. Die getrennte spätere **globale Suche Kategorie → Eintrag → Feldwert** bleibt ausdrücklich offen.
 
+## I149 – Read-only Titel-Filter für Einträge
+
+I149 schließt den nächsten kleinen Datenarbeits-Slice ohne den Frozen Core zu öffnen. Sobald eine Kategorie gewählt ist, kann ihre bereits geladene Eintragsliste über den GET-Parameter `filter` nach einem im Titel enthaltenen Text eingeschränkt werden. Der Vergleich ist ohne Beachtung der Groß-/Kleinschreibung; Leerzeichen-only verhält sich wie „Filter aus“.
+
+Der Filter arbeitet ausschließlich auf der Web-Read-Projektion. Es gibt kein SQL, keinen Repository-Write, keine Browser-Persistenz und keinen gespeicherten Filter. Ein eigener Regressionstest prüft Treffer, Nicht-Treffer, Leerzustand und dass SQLite-`total_changes` durch Filter-GETs unverändert bleibt. Sortierung und globale Feldwertsuche bleiben getrennte spätere Slices.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -244,8 +250,8 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. I149: `Filter` als nächsten kleinen Read-only-Datenarbeits-Slice inventarisieren und nur den kleinsten unabhängigen Filtervertrag implementieren.
-2. Sortierung weiterhin getrennt behandeln; keine kombinierte Filter+Sortier-Iteration.
+1. I150: `Sortierung` als eigenen kleinen Read-only-Datenarbeits-Slice inventarisieren; Filtervertrag unverändert lassen.
+2. Danach starke Detailansicht bzw. Fundstellenvertrag getrennt inventarisieren.
 3. Globale Feldwertsuche, Persistenz und gespeicherte Ansichten bleiben separat geschlossen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
@@ -287,7 +293,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **15,9 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **31 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **24,2 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **32 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

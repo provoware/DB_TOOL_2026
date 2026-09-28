@@ -102,6 +102,27 @@ def _search_markup(adapter: WebCatalogReadAdapter, query: str | None) -> str:
     )
 
 
+def _entry_filter_markup(category_id: str | None, value: str | None, visible_count: int) -> str:
+    if not category_id:
+        return ""
+    current = "" if value is None else value
+    status = (
+        f'<p id="entry-filter-status" role="status">{visible_count} Einträge sichtbar</p>'
+        if current.strip()
+        else '<p id="entry-filter-status">Titel-Filter ist aus.</p>'
+    )
+    return (
+        '<form method="get" action="/" aria-labelledby="entry-filter-title">'
+        '<h3 id="entry-filter-title">Einträge filtern</h3>'
+        f'<input type="hidden" name="category_id" value="{escape(category_id, quote=True)}">'
+        '<label for="entry-filter">Titel enthält</label> '
+        f'<input id="entry-filter" name="filter" type="search" value="{escape(current, quote=True)}" '
+        'autocomplete="off"> '
+        '<button type="submit">Filtern</button></form>'
+        + status
+    )
+
+
 def _field_markup(items: tuple[WebFieldItem, ...]) -> str:
     if not items:
         return '<p class="placeholder">Keine Felder vorhanden.</p>'
@@ -126,11 +147,15 @@ def render_page(
     category_id: str | None = None,
     entry_id: str | None = None,
     search_query: str | None = None,
+    entry_filter: str | None = None,
 ) -> str:
     """Render the read-only three-stage page without database access."""
     template = _TEMPLATE.read_text(encoding="utf-8")
     categories = adapter.categories()
     entries = adapter.entries(category_id) if category_id else ()
+    if entry_filter and entry_filter.strip():
+        needle = entry_filter.strip().casefold()
+        entries = tuple(item for item in entries if needle in item.label.casefold())
     fields = adapter.fields(entry_id) if entry_id else ()
 
     return (
@@ -150,9 +175,14 @@ def render_page(
         )
         .replace(
             "<!-- ENTRIES -->",
-            _nav_markup(
+            _entry_filter_markup(category_id, entry_filter, len(entries))
+            + _nav_markup(
                 entries,
-                "Bitte zuerst eine Kategorie wählen.",
+                (
+                    "Keine Einträge entsprechen dem Titel-Filter."
+                    if category_id and entry_filter and entry_filter.strip()
+                    else "Bitte zuerst eine Kategorie wählen."
+                ),
                 param_name="entry_id",
                 category_id=category_id,
                 selected_id=entry_id,
