@@ -188,4 +188,5 @@ class FieldRepository:
             str(r["field_id"]),
         ))
         return rows[:limit]
-
+    def search_value_lab(self,q:str,limit:int=50):
+        return self.search_values(q,limit)
