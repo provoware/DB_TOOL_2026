@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "iteration": 161,
+  "agent": "readonly-favorites-filter-agent-161",
+  "size": "L",
+  "goal": "C · Datenarbeit → Favoriten als kleinsten GET-only Datenkomfort-Slice schließen: vorhandene favorisierte Einträge innerhalb der gewählten Kategorie filtern, ohne Favoritenstatus zu mutieren oder Persistenz zu öffnen.",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Read-only Favoritenfilter",
+    "summary": "I161 nutzt das bereits vorhandene is_favorite-Merkmal für einen GET-only Listenfilter und erhält Titel-Filter sowie Sortierung.",
+    "target_doc": "docs/development/ITERATION_161_READONLY_FAVORITES_FILTER.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0161-readonly-favorites-filter.json",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i161_readonly_favorites_filter.py",
+    "docs/development/ITERATION_161_READONLY_FAVORITES_FILTER.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i149_readonly_entry_filter.py",
+    "tests/web/test_i150_readonly_entry_sorting.py"
+  ],
+  "direct_dependencies": [
+    "main fc6a907433f7750bc8fd0c3552e761eae4db0afc",
+    "I160 global field-value search is merged and green",
+    "Entry.is_favorite already exists in the read model",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile changed web files and I161 test",
+    "favorites=1 shows only favorited entries",
+    "default list remains unchanged",
+    "favorites compose with title filter and title sorting",
+    "favorites state is preserved across GET forms",
+    "SQLite total_changes remains unchanged",
+    "I149 filter and I150 sorting regressions remain green",
+    "existing HTTP navigation remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "storage deep gate because repository/schema are unchanged",
+    "mask-builder Chromium tests because mask-builder runtime is unchanged",
+    "favorite mutation tests because I161 is read-only and adds no favorite write path"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/read_adapter.py",
+      "src/provoware_db/web/http_app.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i161_readonly_favorites_filter.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i149_readonly_entry_filter.py",
+      "tests/web/test_i150_readonly_entry_sorting.py",
+      "tests/web/test_i161_readonly_favorites_filter.py"
+    ]
+  },
+  "risks": [
+    "favorites filter must use explicit state rather than parsing the visible star label",
+    "favorites/filter/sort query state must compose without silently clearing controls",
+    "read-only slice must not imply a favorite mutation capability"
+  ],
+  "non_changes": [
+    "no favorite add/remove action",
+    "no repository or schema change",
+    "no new persistence",
+    "no POST/write route",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "C · Favoriten can close for read-only data comfort if gates are green",
+    "favorite entries can be isolated without changing stored data",
+    "A-M progress becomes 37 of 132 = 28.0 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
