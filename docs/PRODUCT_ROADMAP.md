@@ -1,6 +1,6 @@
 # PROVOWARE DB TOOL 2026 – Produkt-Roadmap
 
-Stand: nach I129 auf `main`.
+Stand: nach I147 auf `main`-Basis I146; Strukturblock P2 ist eingefroren, nächster Kandidat ist I148 Read-only-Suche-Abnahme.
 
 Diese Roadmap bündelt den langfristigen Funktionspool. Sie ist **keine Freigabe, alle Punkte in einem Patch umzusetzen**. Jede Funktion erhält weiterhin eine kleine Iteration mit eigenem Scope, Zwischen-Gate und Freeze-Prüfung.
 
@@ -31,8 +31,11 @@ Auf `main` ist aktuell bestätigt:
 - gemeinsame Eigenschaften-/Preview-Projektion als I127-Regressionsvertrag
 - reale Chromium-Evidence der vorhandenen Property-Matrix bei 100/150/200 %
 - GET-only-/Loopback-only-Browser-Shell ohne Persistenz- oder Netzwerk-Write
-- I128: `defaultSelection` ist **nur geplant**, noch nicht implementiert
-- I129: Persistenzgrenze ist **nur als Preview-/Integritäts-/Recovery-Vertrag geplant**, produktiver Save bleibt geschlossen
+- `defaultSelection` ist browserlokal umgesetzt und regressionsgeschützt.
+- P2 Masken-Struktur/Layout ist bis I146 vollständig grün und durch I147 auf `e875670d…` eingefroren.
+- Desktop 1152 px, Tablet 768 px und Schmal 360 px sind als Preview-Verträge bestätigt.
+- Rastervorschlag, Vorher/Nachher und atomare browserlokale Übernahme auf `temporaryGridLayout` sind bestätigt.
+- Die Persistenzgrenze bleibt weiterhin nur geplant; produktiver Save bleibt geschlossen.
 
 ## 3. Ausbauprinzip
 
@@ -81,7 +84,7 @@ Reihenfolge:
    - Rastergrenzen vor Mutation prüfen
    - Move-/Preview-Verträge wiederverwenden
 
-**Gate vor Persistenz:** Die bis I119 implementierte Property-Matrix ist durch I127 gemeinsam regressionsgebunden und besitzt reale 100/150/200-%-Evidence. `defaultSelection` bleibt ein separater, noch nicht implementierter I128-Vertrag; der produktive Save bleibt hinter dem I129-Persistenzvertrag geschlossen.
+**Gate vor Persistenz:** Die Property-Matrix ist durch I127 gemeinsam regressionsgebunden und besitzt reale 100/150/200-%-Evidence. `defaultSelection` ist browserlokal umgesetzt. Der produktive Save bleibt weiterhin hinter dem separat geplanten Persistenzvertrag geschlossen.
 
 ### P2 – Masken-Struktur und Layout
 
@@ -93,7 +96,7 @@ Reihenfolge:
 - Desktop-/Tablet-/schmale Vorschau
 - später Raster-Assistent mit Vorschlag statt automatischer stiller Änderung
 
-Der Raster-Assistent darf zuerst nur Vorschläge erzeugen. Übernahme erst nach expliziter Bestätigung.
+Der Raster-Assistent ist bis I146 browserlokal umgesetzt: read-only Vorschlag → Vorher/Nachher → temporärer Zeile+Spalte-Vertrag → explizit bestätigte atomare Übernahme. I147 friert diesen Strukturblock ein. Persistenz bleibt ausgeschlossen.
 
 ### P3 – Datenarbeit und Navigation
 
@@ -289,10 +292,10 @@ Vorbedingungen:
 ## 5. Empfohlene Umsetzungsreihenfolge
 
 ### Phase A – Browser-Draft vervollständigen
-P1 Eigenschaften → P2 Struktur/Layout → P11 Accessibility-Härtung.
+P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-P3 Suche/Filter/Sortierung/Detail/globaler Fundpfad → P10 read-only Dashboard-Grundlage → P12 Health read-only.
+**Aktueller Einstieg:** I148 formelle Abnahme der bereits vorhandenen Suche → danach Filter → Sortierung → Detail/globaler Fundpfad. Anschließend P10 read-only Dashboard-Grundlage → P12 Health read-only.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
