@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "iteration": 162,
+  "agent": "recently-used-inventory-agent-162",
+  "size": "S",
+  "goal": "Prüfen, ob C · zuletzt verwendet ohne neue Persistenz korrekt umsetzbar ist, und bei fehlender belastbarer Nutzungsmetrik die Schutzgrenze dokumentieren.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Zuletzt verwendet",
+    "summary": "I162 bestätigt, dass updated_at und Audit-Historie keine Nutzungszeit darstellen, hält den Punkt offen und empfiehlt Mehrfachauswahl als nächsten persistenzfreien Slice.",
+    "target_doc": "docs/development/ITERATION_162_RECENTLY_USED_INVENTORY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0162-recently-used-inventory.json",
+    "docs/development/ITERATION_162_RECENTLY_USED_INVENTORY.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/storage/sqlite/repositories/entry_repository.py",
+    "src/provoware_db/storage/sqlite/audit.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/http_app.py"
+  ],
+  "direct_dependencies": [
+    "main fd18a3a814f1f1934e7e2d55ee0f1c9feeb1a651",
+    "I161 favorites filter is merged and green",
+    "GET-only web reads must remain write-free",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "manifest V2 validation",
+    "scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime is unchanged",
+    "storage tests because repository/schema are unchanged",
+    "Chromium tests because UI is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "updated_at could be misrepresented as usage time",
+    "adding access tracking to GET would violate the current read-only contract",
+    "usage state requires an explicit persistence/privacy/recovery decision before implementation"
+  ],
+  "non_changes": [
+    "no recently-used runtime feature",
+    "no last_used_at field",
+    "no audit event on GET",
+    "no LocalStorage/session persistence",
+    "no repository or schema change",
+    "TODO item remains open"
+  ],
+  "expected_side_effects": [
+    "recently-used remains correctly blocked instead of being implemented with false semantics",
+    "multiple selection becomes the next recommended persistence-free read-only slice",
+    "A-M product progress remains 37 of 132 = 28.0 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}

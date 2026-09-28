@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I161 auf diesem Branch; vorhandene Favoriten können GET-only gefiltert und mit Titel-Filter/Sortierung kombiniert werden  
+> **Bestätigter Produktstand:** I162 auf diesem Branch; „zuletzt verwendet“ ist fachlich inventarisiert und bleibt ohne eigenen Usage-State bewusst offen  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -284,6 +284,14 @@ Die Integration berührt Domain, Application und Storage und läuft deshalb voll
 I161 nutzt ausschließlich das bereits vorhandene `is_favorite`-Merkmal. Innerhalb einer gewählten Kategorie kann die Liste per GET auf Favoriten begrenzt werden. Der Zustand ist mit Titel-Filter und Sortierung kombinierbar und wird in allen beteiligten Formularen erhalten.
 
 Wichtig: I161 setzt oder entfernt **keine** Favoriten. Es gibt keine neue Persistenz, keinen Repository-Patch und keinen Write-Pfad. Der vorhandene Stern bleibt reine Anzeige; die Filterlogik verwendet das explizite boolesche Favoritenmerkmal.
+
+## I162 – „zuletzt verwendet“ bewusst nicht vorgetäuscht
+
+I162 prüft den offenen Punkt **„zuletzt verwendet“** gegen den tatsächlichen Datenbestand. Das vorhandene `updated_at` beschreibt Änderungen, nicht Nutzung; Audit-Events dokumentieren Mutationen, nicht normale GET-/Lesezugriffe. Eine Umsetzung auf dieser Basis wäre daher semantisch falsch.
+
+Der Punkt bleibt bewusst offen. Es wurde weder ein GET-Schreibzugriff eingeführt noch LocalStorage, Audit oder Schema als neue Usage-Quelle zweckentfremdet. Für eine echte Funktion braucht es zuerst einen separaten Usage-State-Vertrag.
+
+Als nächster persistenzfreier Datenkomfort-Slice wird **browserlokale Mehrfachauswahl** empfohlen.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 

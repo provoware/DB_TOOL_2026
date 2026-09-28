@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I161 ergänzt einen GET-only Favoritenfilter auf Basis des bereits vorhandenen is_favorite-Merkmals und erhält Titel-Filter/Sortierung. Keine neue Persistenz oder Repository-Änderung. Nächster Schritt: den nächsten unabhängigen Read-only-Datenkomfort-Slice aus C inventarisieren.
+**Aktueller Stand:** I162 bestätigt, dass „zuletzt verwendet“ ohne expliziten Usage-State nicht korrekt aus updated_at oder Audit ableitbar ist; der Punkt bleibt bewusst offen. Nächster sicherer persistenzfreier Kandidat: browserlokale Mehrfachauswahl.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
