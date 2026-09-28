@@ -10,7 +10,7 @@
     "mode": "explain_change",
     "topic": "Browserlokale Mehrfachauswahl",
     "summary": "I163 ergänzt temporäre Eintrags-Checkboxen, Auswahlzähler und Reset ohne LocalStorage, Netzwerk, Repository oder Persistenz.",
-    "target_doc": "docs/development/ITERATION_163_BROWSER_LOCAL_MULTISELECT.md"
+    "target_doc": "README.md"
   },
   "write_files": [
     ".provoware/iterations/0163-browser-local-multiselect.json",
@@ -20,7 +20,6 @@
     "src/provoware_db/web/static/app.css",
     "src/provoware_db/web/static/app.js",
     "tests/web/test_i163_browser_local_multiselect.py",
-    "docs/development/ITERATION_163_BROWSER_LOCAL_MULTISELECT.md",
     "README.md",
     "TODO.md",
     "docs/PRODUCT_ROADMAP.md"
