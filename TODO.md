@@ -10,9 +10,9 @@ Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet
 
 ## Nächste sichere Prioritäten
 
-1. **I148:** vorhandene Read-only-Suche abnehmen – Service → Adapter → GET-only HTTP → Ergebnisdarstellung/Navigation.
-2. TODO `C · Suche` nur bei vollständig grünem Vertrag schließen; keine Neuimplementierung ohne Befund.
-3. Danach Filter und Sortierung weiterhin getrennt und read-only planen.
+1. [ ] I148: vorhandene Read-only-Suche abnehmen – Service → Adapter → GET-only HTTP → Ergebnisdarstellung/Navigation.
+2. [ ] TODO `C · Suche` nur bei vollständig grünem Vertrag schließen; keine Neuimplementierung ohne Befund.
+3. [ ] Danach Filter und Sortierung weiterhin getrennt und read-only planen.
 
 **Persistenz, CP-03 und CP-06 bleiben geschlossen.** Der Strukturblock B ist auf I146 eingefroren.
 
