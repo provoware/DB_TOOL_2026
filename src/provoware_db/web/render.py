@@ -178,7 +178,11 @@ def render_page(
             _entry_filter_markup(category_id, entry_filter, len(entries))
             + _nav_markup(
                 entries,
-                "Bitte zuerst eine Kategorie wählen.",
+                (
+                    "Keine Einträge entsprechen dem Titel-Filter."
+                    if category_id and entry_filter and entry_filter.strip()
+                    else "Bitte zuerst eine Kategorie wählen."
+                ),
                 param_name="entry_id",
                 category_id=category_id,
                 selected_id=entry_id,
