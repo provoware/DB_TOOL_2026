@@ -1,0 +1,50 @@
+{
+  "freeze_id": "mask-builder-structure-i146",
+  "freeze_type": "product-structure-block",
+  "source_main_sha": "e875670d10716e9330f09e5fc4456903c2ea8edd",
+  "confirmed_through_iteration": 146,
+  "scope": "TODO section B · Masken-Baukasten – Struktur",
+  "product_progress": {
+    "done": 30,
+    "total": 132,
+    "percent": 22.7
+  },
+  "confirmed_items": [
+    "Element duplizieren bei neuer monotoner Draft-ID",
+    "kontrolliertes Neuordnen ohne Drag-and-drop-Zwang",
+    "Abschnitte",
+    "einklappbare Gruppen",
+    "explizite Tab-Reihenfolge",
+    "Desktop-Vorschau",
+    "Tablet-Vorschau",
+    "schmale Vorschau",
+    "Raster-Assistent als read-only Vorschlag",
+    "Übernahme eines Rastervorschlags mit Vorher/Nachher"
+  ],
+  "freeze_invariants": [
+    "Struktur-Slices I133 und I135-I146 bleiben regressionsgeschützt.",
+    "Rastervorschlagsübernahme mutiert ausschließlich temporaryGridLayout.",
+    "Draft-Reihenfolge, Draft-Inhalt und Breiten bleiben bei Rasterübernahme unverändert.",
+    "Preview-Viewport-Verträge bleiben Desktop 1152, Tablet 768 und Schmal 360.",
+    "Keine Masken-Persistenz ist freigegeben.",
+    "CP-03 und CP-06 bleiben geschlossen."
+  ],
+  "next_area_inventory": {
+    "selected_area": "C · Datenarbeit",
+    "selected_candidate": "Suche",
+    "selection_reason": "Die Suche besitzt bereits einen GET-only Read-Pfad in CatalogService, WebCatalogReadAdapter, http_app und render.py. Der kleinste sichere nächste Slice ist daher eine formelle Read-only-Abnahme statt einer Neuimplementierung.",
+    "existing_evidence_paths": [
+      "src/provoware_db/application/catalog_service.py::CatalogService.search",
+      "src/provoware_db/web/read_adapter.py::WebCatalogReadAdapter.search",
+      "src/provoware_db/web/http_app.py::q GET parameter",
+      "src/provoware_db/web/render.py::_search_markup"
+    ],
+    "next_iteration": "I148 · vorhandene Read-only-Suche inventarisieren und abnehmen; TODO nur bei erfülltem Vertrag schließen"
+  },
+  "explicitly_not_frozen": [
+    "Masken-Persistenz",
+    "Datenarbeit C-M",
+    "CP-03",
+    "CP-06"
+  ]
+}
