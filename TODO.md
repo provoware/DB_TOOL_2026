@@ -1,18 +1,18 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **I148 auf Feature-Branch, Basis I147 auf `main`**. I148 nimmt die vorhandene Read-only-Suche end-to-end ab und repariert ausschließlich die Navigation eintragsspezifischer Feldtreffer; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **I167 auf diesem Branch, Basis I166**. I167 implementiert die browserlokale Pflichtwert-Preview mit zugänglichen Tooltips; Pflichtwert und Regel-Preview bleiben bis zur realen Chromium-/Screenshot-Abnahme offen.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **39 von 132 = 29,5 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **40 von 132 = 30,3 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I164 ergänzt eine rein browserlokale, aktionsneutrale Preview für die I163-Mehrfachauswahl; I163 ergänzt browserlokale Mehrfachauswahl ohne Persistenz; I162 bestätigt, dass „zuletzt verwendet“ ohne eigenen Usage-State nicht korrekt ableitbar ist und deshalb offen bleibt; I161 ergänzt einen GET-only Favoritenfilter auf Basis des bestehenden is_favorite-Merkmals; I160 bindet die globale read-only Feldwertsuche end-to-end an Service, SearchHit, Fundstellenprojektion und Websuche an; I159 definiert den Integrationsvertrag Repository → CatalogService → SearchHit separat; I158 erweitert das nicht integrierte Deep-Gate-Labor auf alle restlichen Scalar-Typen; I157 startet die Feldwertsuche ausschließlich als nicht integriertes Deep-Gate-Labor; I156 projiziert eindeutige Fundstellen für bestehende Suchtreffer; I155 ergänzt die starke GET-only Detailansicht mit stabilen Detail-/Feldankern; I154 plant die globale Feldwertsuche separat auf Basis des I153-Fundstellenvertrags; I153 plant den eindeutigen Fundstellenvertrag getrennt von der späteren Feldwertsuche; I151 inventarisiert die starke Detailansicht ohne Runtime-Änderung; I150 ergänzt eine explizite GET-only Titel-Sortierung A–Z/Z–A und erhält den Filterzustand; I149 ergänzt den kleinsten GET-only Titel-Filter für Einträge innerhalb der gewählten Kategorie; I148 bestätigt die bestehende GET-only Suche von Service bis Ergebnisnavigation; eintragsspezifische Feldtreffer erhalten für sichere Navigation nun ihre Eltern-Kategorie. I147 friert den vollständig erledigten Strukturblock B auf dem I146-main-Stand ein. I146 übernimmt einen bestätigten Rastervorschlag atomar in die flüchtige Zeile+Spalte-Layout-Map, mit Stale-Schutz, Fokus-Rückgabe und echter Chromium-Evidence; Draftdaten und Persistenz bleiben unverändert. I145 hält Rasterzeile und -spalte explizit in einer flüchtigen Browser-Layout-Map und rendert daraus, ohne Persistenz oder Vorschlagsübernahme. I144 stellt aktuelles und vorgeschlagenes Raster inklusive geplanter Zeilen-/Spaltenänderungen gegenüber, ohne zu mutieren. I143 ergänzt einen deterministischen read-only Raster-Assistenten ohne Übernahmeweg oder Persistenz. I142 nimmt Desktop 1152 px, Tablet 768 px und Schmal 360 px gemeinsam in realem Chromium auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz ab. I141 ergänzt den dritten browserlokalen Preview-Modus Schmal mit 360 px und erhält Desktop 1152 px sowie Tablet 768 px unverändert. I140 ergänzt einen browserlokalen Tablet-Modus mit 768 px und erhält I139 Desktop 1152 px als Standard. I139 ergänzt eine feste browserlokale Desktop-Vorschau mit 1152-px-Viewport. I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
+**Bestätigter Produktstand:** I167 enthält die Pflichtwert-Preview für temporäre Draft-Felder. Statische Vertragsprüfungen sind grün; das UI-Gate ist mangels Chrome-/Chromium-Binary noch blockiert. Persistenz und offene Datenarbeitsfunktionen bleiben separat geschützt.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] C · Datenarbeit als Read-only-Komfortblock einfrieren und nächsten unabhängigen Produktbereich inventarisieren.
-2. [ ] „Zuletzt verwendet“ bleibt bis zu einem expliziten Usage-State-/Persistenzvertrag blockiert.
-3. [ ] Globale Suche bis zu Feldwerten und Fundstellen bleibt ein eigener späterer Vertrag.
+1. [ ] D · I167-Pflichtwert-Preview mit realem Chromium und Screenshot abnehmen.
+2. [ ] Danach Pflichtwert und Regel-Preview vor Aktivierung gemeinsam schließen.
+3. [ ] Weitere Regelarten sowie C · persistenzabhängige Datenarbeit bleiben bis zu eigenen Verträgen blockiert.
 
 **Persistenz, CP-03 und CP-06 bleiben geschlossen.** Der Strukturblock B ist auf I146 eingefroren.
 
@@ -81,7 +81,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 
 ## D. Regeln und Validierung
 
-- [ ] gemeinsames Regelmodell planen
+- [x] gemeinsames Regelmodell planen
 - [ ] Pflichtwert
 - [ ] Zahlenbereich
 - [ ] Datum von/bis

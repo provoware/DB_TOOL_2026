@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I164 auf diesem Branch; die I163-Auswahl speist eine rein browserlokale Read-only-Vorschau der betroffenen Einträge  
+> **Bestätigter Produktstand:** I167 implementiert die browserlokale Pflichtwert-Preview mit zugänglichen Tooltips; reale Chromium-/Screenshot-Evidence ist mangels Browser-Binary noch blockiert
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **39 / 132 = 29,5 %**
+> **Gesamtfortschritt Master-TODO A–M:** **40 / 132 = 30,3 %**
 
 ## Zielbild
 
@@ -305,6 +305,24 @@ I164 ergänzt auf Basis der flüchtigen I163-Mehrfachauswahl eine reine Vorschau
 
 Es gibt keinen Ausführen-Button, keinen Submit-Pfad und keine Speicherung. Die Vorschau wird ausschließlich aus dem aktuellen Browser-DOM erzeugt und verschwindet zusammen mit der Auswahl bei Reload oder Navigation. Damit existiert erstmals eine belastbare Preview-Basis, ohne produktive Massenwrites zu öffnen.
 
+## I165 – Datenarbeits-Freeze und Regelmodell-Inventur
+
+I165 friert den in I148–I164 bestätigten, persistenzfreien Datenkomfort ein. Das bedeutet nicht, dass alle Datenarbeitswünsche umgesetzt sind: „zuletzt verwendet“ und gespeicherte Ansichten bleiben offen, bis eigene Persistenz-, Datenschutz- und Recovery-Verträge ihre korrekte Umsetzung absichern.
+
+Als nächster unabhängiger Produktbereich wird **D · Regeln und Validierung** inventarisiert. Zulässig ist zunächst nur die Planung eines gemeinsamen Regelmodells mit einheitlicher Auswertung, verständlichen Fehlern und einer Preview vor Aktivierung. I165 implementiert noch keine Regel und öffnet weder Schema noch Schreibpfade.
+
+## I166 – gemeinsamer Regelmodell-Vertrag
+
+I166 legt für spätere Regeln eine gemeinsame Form aus stabiler Draft-ID, Regelart, Ziel-Feld-ID, Aktivstatus und typabhängigen Parametern fest. Jede Auswertung liefert deterministisch `erfüllt`, `verletzt` oder `nicht auswertbar` sowie eine verständliche Fehlerprojektion. Derselbe Auswerter muss später Preview und Aktivierung tragen; Sonderlogik pro Oberfläche bleibt ausgeschlossen.
+
+Als kleinster späterer Preview-Slice ist **Pflichtwert** bestimmt: ein einzelnes browserlokales Draft-Feld wird gegen leer beziehungsweise nicht leer geprüft. I166 implementiert diese Preview noch nicht. Persistenz, Datensatzänderungen, Schema und die offenen Datenarbeitsfunktionen bleiben geschlossen.
+
+## I167 – browserlokale Pflichtwert-Preview
+
+I167 ergänzt für temporäre Draft-Felder eine Pflichtwert-Preview. Nach dem Einschalten kann ein Testwert eingegeben werden; leer und reiner Leerraum führen zum verständlichen Hinweis „Dieses Feld ist ein Pflichtfeld. Gib einen Wert ein.“, ein gefüllter Wert zu „Pflichtwert vorhanden.“ Strukturell ungültige Zustände scheitern geschlossen als nicht auswertbar.
+
+Zwei fokussierbare `?`-Tooltips erklären die Pflichtwert-Umschaltung und den Testwert sowohl per Tastatur als auch per Maus. Regel und Testwert bleiben ausschließlich im Browser-Draft; es gibt keinen Speichern-, Aktivieren-, Netzwerk- oder Datenbankpfad. Das statische Gate ist grün, die verpflichtende reale Chromium- und Screenshot-Abnahme bleibt in dieser Umgebung ohne Browser-Binary blockiert.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -336,9 +354,9 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. I151: `starke Detailansicht` als nächsten unabhängigen Read-only-Datenarbeits-Slice inventarisieren.
-2. Fundstellenvertrag und globale Feldwertsuche danach getrennt behandeln.
-3. Globale Feldwertsuche, Persistenz und gespeicherte Ansichten bleiben separat geschlossen.
+1. I167 in einer Umgebung mit Chrome/Chromium real auf Keyboard, Live-Status, Tooltips und Layout gaten und Screenshot aufnehmen.
+2. Erst nach grünem Browser-Gate Pflichtwert und Regel-Preview im Produktfortschritt schließen.
+3. Weitere Regelarten und persistenzabhängige Datenarbeit bleiben bis zu eigenen Verträgen geschlossen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -379,7 +397,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **29,5 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **39 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **30,3 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **40 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 
