@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I146 auf diesem Branch; ein bestätigter Rastervorschlag kann atomar browserlokal auf den flüchtigen Zeile+Spalte-Layoutvertrag angewendet werden  
+> **Bestätigter Produktstand:** I147 auf diesem Branch; der vollständig grüne Masken-Baukasten-Strukturblock ist auf I146 eingefroren, nächster Kandidat ist die Abnahme der bereits vorhandenen Read-only-Suche  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -197,6 +197,14 @@ Vor dem Commit werden alle Zielpositionen gegen Breite und 12-Spalten-Raster val
 
 Persistenz, Store, SQLite sowie CP-03/CP-06 bleiben geschlossen.
 
+## I147 – Struktur-Freeze und nächste Produktinventur
+
+I147 führt **keine neue Produktfunktion** ein. Der vollständig abgeschlossene TODO-Bereich **B · Masken-Baukasten – Struktur** wird auf dem bestätigten I146-`main`-Stand **`e875670d…`** maschinenprüfbar eingefroren. Der Freeze hält die zehn bestätigten Strukturpunkte sowie die Schutzinvarianten fest: keine Masken-Persistenz, CP-03/CP-06 geschlossen und Rasterübernahme weiterhin ausschließlich browserlokal.
+
+Die Inventur der offenen Bereiche zeigt zugleich, dass der TODO-Punkt **C · Datenarbeit → Suche** nicht bei null beginnt. Bereits vorhanden sind `CatalogService.search()`, die Web-Read-Projektion, der GET-Parameter `q` sowie die Suchergebnisdarstellung im Read-only-Web-UI. Deshalb wird als nächster Slice **I148 – vorhandene Read-only-Suche formell abnehmen** gewählt. Erst wenn dieser bestehende Pfad den Produktvertrag erfüllt, wird der TODO-Punkt geschlossen; eine unnötige Neuimplementierung wird vermieden.
+
+Der Produktfortschritt bleibt in I147 unverändert bei **30 / 132 = 22,7 %**.
+
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
 Die Governance-Kette ist inzwischen durchgängig modelliert: Registry/Lifecycle → versiegelter Plan und Single-Writer-Lease → triggerbasierte Inspektion/Planung → Controller-Sealing und Audit-Kette → Finalizer/Outcome.
@@ -228,9 +236,9 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. Nach grüner I146-Abnahme den Masken-Baukasten-Strukturblock als abgeschlossen einfrieren.
-2. Danach den nächsten offenen Produktbereich außerhalb der Struktur-Funktionen auswählen und wieder klein gegatet beginnen.
-3. Produktive Persistenz weiterhin erst nach separaten Service-, Recovery- und Integritäts-Gates öffnen.
+1. I148: die bereits vorhandene GET-only Suche gegen einen klaren Read-only-Produktvertrag abnehmen; nicht neu implementieren.
+2. Den TODO-Punkt `Suche` nur schließen, wenn Service → Adapter → HTTP → Ergebnisnavigation vollständig bestätigt sind.
+3. Danach erst Filter oder Sortierung als jeweils separaten kleinen Datenarbeits-Slice planen; Persistenz bleibt geschlossen.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
