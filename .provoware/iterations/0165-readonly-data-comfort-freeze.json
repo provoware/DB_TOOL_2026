@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "iteration": 165,
+  "agent": "readonly-data-comfort-freeze-agent-165",
+  "size": "S",
+  "goal": "Den bestätigten Read-only-Datenkomfortblock C nach I164 einfrieren, seine Grenzen dokumentieren und den nächsten unabhängigen Produktbereich inventarisieren, ohne Runtime- oder Persistenzänderung.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Freeze Read-only-Datenkomfortblock C",
+    "summary": "I165 friert die bestätigten read-only/browserlokalen C-Capabilities ein. Zuletzt verwendet und gespeicherte Ansichten bleiben ausdrücklich offen und persistenzabhängig.",
+    "target_doc": "docs/development/I165_READONLY_DATA_COMFORT_FREEZE.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0165-readonly-data-comfort-freeze.json",
+    "docs/development/I165_READONLY_DATA_COMFORT_FREEZE.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0164-browser-local-mass-preview.json"
+  ],
+  "direct_dependencies": [
+    "main 5c5152efe116b9f9469c958570f87c54f6926b92",
+    "I164 merged and green",
+    "C read-only/browser-local capabilities through mass-action preview are confirmed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "documentation/manifest consistency",
+    "foundation repository checks"
+  ],
+  "tests_explicitly_not_run": [
+    "runtime UI tests because I165 changes no runtime code",
+    "storage deep gate because repository/schema are unchanged",
+    "Chromium evidence because browser behavior is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "freeze wording must not falsely close persistency-dependent C items",
+    "next product area must not imply write authorization"
+  ],
+  "non_changes": [
+    "no runtime code",
+    "no database/repository/schema change",
+    "no product write path",
+    "no LocalStorage/SessionStorage",
+    "no CP-03 or CP-06 reopen",
+    "no change to the 39/132 product count"
+  ],
+  "expected_side_effects": [
+    "C read-only/browser-local comfort baseline is frozen on I164 main",
+    "stale TODO header is synchronized to I165",
+    "next independent candidate is D · gemeinsames Regelmodell planen, contract-first only"
+  ],
+  "screenshot_required": false,
+  "status": "FREEZE_PENDING_GATE"
+}
