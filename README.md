@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I157 auf diesem Branch; Feldwertsuche läuft ausschließlich als nicht integriertes Deep-Gate-Labor  
+> **Bestätigter Produktstand:** I158 auf diesem Branch; das nicht integrierte Deep-Gate-Labor deckt nun alle Scalar-Typen plus Choice-Werte ab  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -258,6 +258,12 @@ Die Projektion nutzt IDs für Navigation und Labels nur für die Anzeige. Feldwe
 I157 öffnet noch **keine** globale Feldwertsuche im Produkt. Ein neuer Repository-Laborread prüft ausschließlich Text/Langtext sowie Single-/Multi-Choice-Werte. Er filtert gelöschte Eltern/Optionen, dedupliziert passende Multi-Choice-Werte pro Eintrag/Feld und bleibt read-only.
 
 Der Laborpfad ist nicht an `CatalogService.search()`, Web-Adapter oder HTTP angebunden. Da der geschützte Storage-/Repository-Bereich berührt wird, läuft I157 ausschließlich mit Deep-Gate. Numerische, boolesche und Datumswerte sowie jede Produktintegration bleiben getrennte spätere Schritte.
+
+## I158 – restliche Scalar-Typen im Deep-Gate-Labor
+
+I158 erweitert den isolierten I157-Repository-Read auf Integer, Decimal, Money, Boolean, Date und Datetime. Neben kanonischen Speicherformen werden auch menschenlesbare Suchformen wie `12,99 EUR`, `Ja` und `28.09.2026` geprüft.
+
+Service, `SearchHit`, Web und HTTP bleiben weiterhin unverbunden. Die globale Feldwertsuche ist damit **noch nicht produktiv**, aber ihre Typsemantik ist im geschützten Labor vollständig vorbereitet.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
