@@ -552,6 +552,75 @@ _INTERACTION_SCRIPT = r"""
     }
   }
 
+  function requiredRuleFor(item) {
+    return {
+      id: "draft-rule-required-" + item.id,
+      kind: "required",
+      targetFieldId: item.id,
+      enabled: item.isRequired,
+      parameters: {},
+    };
+  }
+
+  function evaluateRequiredRule(rule, item, value) {
+    const validParameters = (
+      rule !== null
+      && typeof rule.parameters === "object"
+      && rule.parameters !== null
+      && Object.keys(rule.parameters).length === 0
+    );
+    if (
+      rule === null
+      || rule.kind !== "required"
+      || typeof rule.id !== "string"
+      || item === undefined
+      || item.kind !== "field"
+      || rule.targetFieldId !== item.id
+      || !validParameters
+    ) {
+      return { state: "not_evaluable", message: "Vorschau nicht möglich: Pflichtwertregel oder Zielfeld ist ungültig." };
+    }
+    if (!rule.enabled) {
+      return { state: "not_evaluable", message: "Pflichtwert-Preview ist ausgeschaltet." };
+    }
+    if (typeof value !== "string") {
+      return { state: "not_evaluable", message: "Vorschau nicht möglich: Der Testwert ist ungültig." };
+    }
+    return value.trim().length === 0
+      ? { state: "violated", message: "Dieses Feld ist ein Pflichtfeld. Gib einen Wert ein." }
+      : { state: "satisfied", message: "Pflichtwert vorhanden." };
+  }
+
+  function updateRequiredPreview(id, control, resultNode) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field") {
+      resultNode.dataset.ruleState = "not_evaluable";
+      resultNode.textContent = "Vorschau nicht möglich: Das Zielfeld ist ungültig.";
+      return;
+    }
+    item.requiredPreviewValue = control.value;
+    const result = evaluateRequiredRule(requiredRuleFor(item), item, item.requiredPreviewValue);
+    resultNode.dataset.ruleState = result.state;
+    resultNode.textContent = result.message;
+    setStatus(item.label + " · " + result.message + " · nur temporäre Vorschau.");
+  }
+
+  function appendTooltip(container, id, label, text) {
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "tooltip-trigger";
+    trigger.textContent = "?";
+    trigger.setAttribute("aria-label", label);
+    trigger.setAttribute("aria-describedby", id);
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip-text";
+    tooltip.id = id;
+    tooltip.setAttribute("role", "tooltip");
+    tooltip.textContent = text;
+    container.appendChild(trigger);
+    container.appendChild(tooltip);
+  }
+
   function toggleRequired(id) {
     const item = draftElements.find((candidate) => candidate.id === id);
     if (item === undefined) {
@@ -1053,6 +1122,7 @@ _INTERACTION_SCRIPT = r"""
       defaultValue: source.defaultValue,
       options,
       defaultSelection,
+      requiredPreviewValue: source.requiredPreviewValue,
     };
     draftElements.push(duplicate);
     setTemporaryGridPosition(duplicate.id, draftElements.length, duplicate.column, duplicate.width);
@@ -1207,6 +1277,55 @@ _INTERACTION_SCRIPT = r"""
         requiredButton.setAttribute("aria-label", item.label + " · Pflichtfeld umschalten");
         requiredButton.addEventListener("click", () => toggleRequired(item.id));
         card.appendChild(requiredButton);
+        appendTooltip(
+          card,
+          "required-toggle-help-" + item.id,
+          item.label + " · Hilfe zur Pflichtwertregel",
+          "Schaltet nur die temporäre Pflichtwert-Preview ein oder aus. Es wird keine Regel gespeichert."
+        );
+
+        if (item.isRequired) {
+          const requiredPreviewLabel = document.createElement("label");
+          requiredPreviewLabel.className = "required-preview-label";
+          requiredPreviewLabel.id = "required-preview-label-" + item.id;
+          requiredPreviewLabel.textContent = "Testwert für Pflichtfeld-Preview";
+
+          const requiredPreviewInput = document.createElement("input");
+          requiredPreviewInput.type = "text";
+          requiredPreviewInput.className = "required-preview-input";
+          requiredPreviewInput.id = "required-preview-input-" + item.id;
+          requiredPreviewInput.dataset.draftId = item.id;
+          requiredPreviewInput.value = item.requiredPreviewValue;
+          requiredPreviewLabel.htmlFor = requiredPreviewInput.id;
+
+          const requiredPreviewResult = document.createElement("span");
+          const initialResult = evaluateRequiredRule(
+            requiredRuleFor(item), item, item.requiredPreviewValue
+          );
+          requiredPreviewResult.className = "required-preview-result";
+          requiredPreviewResult.id = "required-preview-result-" + item.id;
+          requiredPreviewResult.dataset.ruleState = initialResult.state;
+          requiredPreviewResult.setAttribute("role", "status");
+          requiredPreviewResult.setAttribute("aria-live", "polite");
+          requiredPreviewResult.textContent = initialResult.message;
+          requiredPreviewInput.setAttribute(
+            "aria-describedby",
+            requiredPreviewResult.id + " required-preview-help-" + item.id
+          );
+          requiredPreviewInput.addEventListener(
+            "input",
+            () => updateRequiredPreview(item.id, requiredPreviewInput, requiredPreviewResult)
+          );
+          card.appendChild(requiredPreviewLabel);
+          card.appendChild(requiredPreviewInput);
+          appendTooltip(
+            card,
+            "required-preview-help-" + item.id,
+            item.label + " · Hilfe zum Testwert",
+            "Leer und nur Leerzeichen verletzen die Pflichtwertregel. Der Testwert bleibt ausschließlich im Browser."
+          );
+          card.appendChild(requiredPreviewResult);
+        }
 
         const dataTypeLabel = document.createElement("label");
         dataTypeLabel.className = "datatype-label";
@@ -1689,6 +1808,7 @@ _INTERACTION_SCRIPT = r"""
       defaultValue: selectedKind === "field" ? "" : null,
       options: selectedKind === "field" ? [] : null,
       defaultSelection: null,
+      requiredPreviewValue: "",
     };
     draftElements.push(created);
     setTemporaryGridPosition(created.id, draftElements.length, column, created.width);
@@ -1817,11 +1937,20 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .placement-target[aria-disabled="true"] {{ border-color:#5d4650; color:#9a8790; background:#211b20; }}
 .placed-elements {{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); grid-auto-rows:minmax(3rem,auto); gap:.4rem; padding:1rem .5rem 3rem; }}
 .placed-element {{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-width:0; padding:.6rem; border:1px solid #6978a4; border-radius:8px; background:#242a3c; }}
+.placed-element {{ position:relative; }}
 .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .move-draft-up, .move-draft-down, .move-draft, .remove-draft {{ flex:0 0 auto; padding:.35rem .5rem; border:1px solid #6978a4; border-radius:6px; background:#191c26; color:inherit; font:inherit; }}
+.tooltip-trigger {{ flex:0 0 auto; width:1.8rem; height:1.8rem; border:1px solid #8ca5ff; border-radius:50%; background:#202536; color:#f4f6fb; font:inherit; font-weight:700; }}
+.tooltip-text {{ position:absolute; z-index:5; max-width:20rem; margin-top:2.25rem; padding:.55rem .65rem; border:1px solid #8ca5ff; border-radius:7px; background:#11131a; color:#f4f6fb; box-shadow:0 .4rem 1rem #0008; opacity:0; pointer-events:none; }}
+.tooltip-trigger:hover + .tooltip-text, .tooltip-trigger:focus-visible + .tooltip-text {{ opacity:1; }}
 .label-editor, .help-editor, .option-editor {{ display:flex; gap:.4rem; min-width:0; }}
 .label-editor-input, .help-editor-input, .option-editor-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
 .draft-help-text {{ color:#b8bfd2; overflow-wrap:anywhere; }}
 .required-state, .visibility-state, .width-label, .datatype-label, .default-value-label, .default-selection-label {{ color:#d7def5; font-weight:600; }}
+.required-preview-label {{ color:#d7def5; font-weight:600; }}
+.required-preview-input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
+.required-preview-result {{ width:100%; padding:.45rem .55rem; border:1px solid #4a526b; border-radius:7px; color:#d7def5; }}
+.required-preview-result[data-rule-state="violated"] {{ border-color:#ff9c9c; color:#ffd0d0; }}
+.required-preview-result[data-rule-state="satisfied"] {{ border-color:#76d7a0; color:#bff2d2; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .option-editor-label {{ color:#d7def5; font-weight:600; }}
 .choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
@@ -1860,7 +1989,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .grid-assistant-comparison th, .grid-assistant-comparison td {{ padding:.45rem; border:1px solid #4a526b; text-align:left; vertical-align:top; overflow-wrap:anywhere; }}
 .grid-assistant-comparison th {{ background:#202536; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .required-preview-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .required-preview-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>

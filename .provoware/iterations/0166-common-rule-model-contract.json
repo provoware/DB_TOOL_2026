@@ -1,0 +1,73 @@
+{
+  "schema_version": 2,
+  "iteration": 166,
+  "agent": "common-rule-model-contract-agent-166",
+  "size": "M",
+  "goal": "Das gemeinsame Regelmodell als eigenständigen Vertrag planen und Pflichtwert als kleinsten rein temporären Preview-Slice bestimmen.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Gemeinsames Regelmodell und Pflichtwert-Preview",
+    "summary": "I166 erklärt die gemeinsame Form späterer Regeln und dass die erste geplante Pflichtwert-Vorschau nur temporär prüft, ohne Regel oder Eingabe zu speichern.",
+    "target_doc": "docs/development/ITERATION_166_COMMON_RULE_MODEL_CONTRACT.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0166-common-rule-model-contract.json",
+    "docs/development/ITERATION_166_COMMON_RULE_MODEL_CONTRACT.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_165_DATA_WORK_FREEZE_RULE_MODEL_INVENTORY.md",
+    "docs/development/I128_DEFAULT_SELECTION_CONTRACT.md",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py"
+  ],
+  "direct_dependencies": [
+    "work 10227c334c3198a7b7b29470bf829e209c977adf",
+    "I165 authorizes only common-rule-model planning",
+    "I128 establishes stable browser-local draft identity",
+    "existing productive required metadata remains read-only and unchanged",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "manifest V2 validation",
+    "scope validation",
+    "TODO progress and next-priority consistency"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime is unchanged",
+    "UI and Chromium tests because rendering is unchanged",
+    "storage tests because repository and schema are unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "the contract could be mistaken for runtime implementation approval",
+    "preview and later activation could diverge if they do not share one evaluator",
+    "existing productive is_required metadata could be conflated with transient draft rules",
+    "progress could count the preview before implementation"
+  ],
+  "non_changes": [
+    "no runtime or UI change",
+    "no rule preview implementation or activation",
+    "no validation_json, persistence or schema change",
+    "no dependency or CI change",
+    "no C data-work item reopened",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "D common-rule-model planning closes",
+    "required becomes the only authorized next preview slice",
+    "A-M product progress becomes 40 of 132 = 30.3 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}

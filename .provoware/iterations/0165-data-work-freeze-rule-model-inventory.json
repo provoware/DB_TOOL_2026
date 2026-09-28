@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "iteration": 165,
+  "agent": "data-work-freeze-rule-model-inventory-agent-165",
+  "size": "M",
+  "goal": "Den persistenzfreien Datenarbeitsblock auf I164 einfrieren und den nächsten unabhängigen Scope ausschließlich als Planung eines gemeinsamen Regelmodells abgrenzen.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Datenarbeits-Freeze und nächster Regelmodell-Scope",
+    "summary": "I165 erklärt, dass der sichere Datenkomfort abgeschlossen ist, persistenzabhängige Wünsche offen bleiben und als Nächstes nur das gemeinsame Regelmodell geplant wird.",
+    "target_doc": "docs/development/ITERATION_165_DATA_WORK_FREEZE_RULE_MODEL_INVENTORY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0165-data-work-freeze-rule-model-inventory.json",
+    "docs/development/ITERATION_165_DATA_WORK_FREEZE_RULE_MODEL_INVENTORY.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0164-browser-local-mass-preview.json"
+  ],
+  "direct_dependencies": [
+    "work 5c5152efe116b9f9469c958570f87c54f6926b92",
+    "I164 browser-local mass-action preview is merged and green",
+    "I162 keeps recently-used blocked without a usage-state contract",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "manifest V2 validation",
+    "scope validation",
+    "documentation consistency for progress and next priority"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime is unchanged",
+    "storage tests because repository and schema are unchanged",
+    "Chromium tests because rendering is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "freeze wording could incorrectly imply that persistence-dependent C items are complete",
+    "rule-model inventory could be mistaken for implementation approval",
+    "progress could be increased despite no product checkbox closing"
+  ],
+  "non_changes": [
+    "no runtime or UI change",
+    "no rule implementation or activation",
+    "no persistence or schema change",
+    "no dependency or CI change",
+    "no TODO product checkbox change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "persistenzfreier Datenkomfort is formally frozen on I164",
+    "the next iteration has one bounded planning target in D",
+    "A-M product progress remains 39 of 132 = 29.5 percent"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}

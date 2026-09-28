@@ -1,6 +1,6 @@
 # PROVOWARE DB TOOL 2026 – Produkt-Roadmap
 
-Stand: nach I148 auf `main`-Basis I147; Strukturblock P2 bleibt eingefroren, Read-only-Suche ist bestätigt, nächster Datenarbeits-Kandidat ist Filter.
+Stand: I167 auf Basis des grünen I166-Stands; die browserlokale Pflichtwert-Preview ist implementiert, aber ihr reales Chromium-/Screenshot-Gate ist mangels Browser-Binary noch blockiert.
 
 Diese Roadmap bündelt den langfristigen Funktionspool. Sie ist **keine Freigabe, alle Punkte in einem Patch umzusetzen**. Jede Funktion erhält weiterhin eine kleine Iteration mit eigenem Scope, Zwischen-Gate und Freeze-Prüfung.
 
@@ -135,6 +135,8 @@ Fehlertexte müssen fachlich erklären:
 - wie er behoben werden kann.
 
 Keine kryptischen internen Exception-Texte in der normalen Oberfläche.
+
+I166 definiert den gemeinsamen Planungsvertrag: stabile Draft-Regel-ID, Regelart, Ziel-Feld-ID, Aktivstatus und typabhängige Parameter; deterministische Auswertung als `erfüllt`, `verletzt` oder `nicht auswertbar`; verständliche Fehlerprojektion aus demselben Ergebnis. I167 implementiert darauf die browserlokale Pflichtwert-Preview samt fokussierbaren Hilfetexten. Produktive Aktivierung, weitere Regelarten, Schema und Persistenz bleiben geschlossen; Pflichtwert und Regel-Preview werden erst nach realem Chromium-/Screenshot-Gate als abgeschlossen gezählt.
 
 ### P5 – Assistentenmodus
 
@@ -295,7 +297,10 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I164 ergänzt eine browserlokale, aktionsneutrale Preview für die I163-Mehrfachauswahl. Es existiert kein Ausführen- oder Write-Pfad. Nächster Schritt: Read-only-Datenkomfortblock einfrieren und den nächsten unabhängigen Produktbereich inventarisieren.
+**Eingefrorener Stand:** I165 bestätigt I148–I164 als abgeschlossenen persistenzfreien Datenkomfort. Offene persistenzabhängige Punkte bleiben außerhalb dieses Freeze und benötigen eigene Schutzverträge.
+
+### Phase B2 – Regeln planen
+**Implementiert, Browser-Gate offen:** I167 zeigt Pflichtwert ausschließlich für browserlokale Draft-Felder an und erklärt Umschaltung sowie Testwert über zugängliche Tooltips. Vor einem Freeze sind reale Keyboard-/Live-Status-/Layout-Evidence und ein Screenshot nachzuholen. Keine Regel aktivieren, keine Daten schreiben und keine Schema-/Frozen-Core-Grenze öffnen.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
