@@ -5,7 +5,7 @@
   "size": "S",
   "goal": "Den kleinsten unabhängigen Filtervertrag in C · Datenarbeit umsetzen: Einträge innerhalb der gewählten Kategorie browserseitig/read-only nach Titel filtern.",
   "change_kind": "product",
-  "gate_profile": "standard",
+  "gate_profile": "product",
   "guide_delta": {
     "mode": "optimize_existing",
     "topic": "Read-only Eintragsfilter",
