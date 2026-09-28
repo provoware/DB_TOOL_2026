@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "iteration": 156,
+  "agent": "search-location-projection-agent-156",
+  "size": "M",
+  "goal": "Den I153-Fundstellenvertrag für bestehende Kategorie-, Eintrags- und Feldnamen-Treffer umsetzen, inklusive sichtbarer Fundstellenkette und stabiler GET-Navigationsziele.",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Such-Fundstellenprojektion",
+    "summary": "I156 projiziert eindeutige Fundstellen für bestehende Treffer und nutzt die stabilen Detail-/Feldanker aus I155, ohne Feldwertsuche zu öffnen.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0156-search-location-projection.json",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i156_search_location_projection.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_153_SEARCH_LOCATION_CONTRACT.md",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i148_readonly_search_acceptance.py",
+    "tests/web/test_i155_strong_detail_view.py"
+  ],
+  "direct_dependencies": [
+    "main aa0bc44d0f3d9619d85180b660bff06066883c8f",
+    "I155 strong detail anchors are merged",
+    "I153 search-location contract is merged",
+    "field-value search remains closed"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile changed adapter/render and I156 test",
+    "category hit shows category location",
+    "entry hit shows category → entry location and targets #detail",
+    "entry-scoped field hit shows category → entry → field and targets #field-id",
+    "category-scoped field remains safely category-targeted",
+    "SQLite total_changes unchanged",
+    "existing I148 search acceptance remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "storage deep gate because repository/schema are unchanged",
+    "mask-builder Chromium tests because mask-builder runtime is unchanged",
+    "field-value search tests because field-value search remains closed"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/read_adapter.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i156_search_location_projection.py"
+    ],
+    "python_tests": [
+      "tests/web/test_i148_readonly_search_acceptance.py",
+      "tests/web/test_i155_strong_detail_view.py",
+      "tests/web/test_i156_search_location_projection.py"
+    ]
+  },
+  "risks": [
+    "location projection must not reconstruct navigation from labels",
+    "field anchors must only be used when entry context exists",
+    "existing search hit semantics must remain unchanged"
+  ],
+  "non_changes": [
+    "no field-value search",
+    "no SearchHit/domain change",
+    "no repository or schema change",
+    "no persistence",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "C · Fundstelle eindeutig anzeigen can close if gates are green",
+    "existing search results become unambiguous and deep-linkable",
+    "A-M progress becomes 35 of 132 = 26.5 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}

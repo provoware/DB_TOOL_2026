@@ -39,8 +39,11 @@ class WebSearchItem:
     entity_id: str
     label: str
     kind_label: str
+    match_kind: str
+    location_label: str
     category_id: str | None
     entry_id: str | None
+    field_id: str | None
 
 
 def _format_scalar(value: object, field: object, raw_type: str) -> str:
@@ -133,19 +136,59 @@ class WebCatalogReadAdapter:
         return tuple(rows)
 
     def search(self, query: str) -> tuple[WebSearchItem, ...]:
+        raw_hits = tuple(self._catalog.search(query))
         kind_labels = {
             "category": "Kategorie",
             "entry": "Eintrag",
             "field_definition": "Feld",
         }
-        return tuple(
-            WebSearchItem(
-                entity_type=str(item.entity_type),
-                entity_id=str(item.entity_id),
-                label=str(item.label),
-                kind_label=kind_labels.get(str(item.entity_type), str(item.entity_type)),
-                category_id=None if item.category_id is None else str(item.category_id),
-                entry_id=None if item.entry_id is None else str(item.entry_id),
+        match_kinds = {
+            "category": "category_name",
+            "entry": "entry_title",
+            "field_definition": "field_name",
+        }
+
+        category_labels = {item.id: item.label for item in self.categories()}
+        entry_labels: dict[str, str] = {}
+        needed_categories = {
+            str(item.category_id)
+            for item in raw_hits
+            if getattr(item, "category_id", None) is not None
+        }
+        for category_id in sorted(needed_categories):
+            for entry in self.entries(category_id):
+                entry_labels[entry.id] = entry.label
+
+        rows: list[WebSearchItem] = []
+        for item in raw_hits:
+            entity_type = str(item.entity_type)
+            category_id = None if item.category_id is None else str(item.category_id)
+            entry_id = None if item.entry_id is None else str(item.entry_id)
+            category_label = category_labels.get(category_id or "", "")
+            entry_label = entry_labels.get(entry_id or "", "")
+            label = str(item.label)
+
+            location_parts = [part for part in (category_label, entry_label) if part]
+            field_id = None
+            if entity_type == "field_definition":
+                field_id = str(item.entity_id)
+                location_parts.append(label)
+            elif entity_type == "entry" and not entry_label:
+                location_parts.append(label)
+            elif entity_type == "category" and not category_label:
+                location_parts.append(label)
+
+            rows.append(
+                WebSearchItem(
+                    entity_type=entity_type,
+                    entity_id=str(item.entity_id),
+                    label=label,
+                    kind_label=kind_labels.get(entity_type, entity_type),
+                    match_kind=match_kinds.get(entity_type, entity_type),
+                    location_label=" → ".join(location_parts) if location_parts else label,
+                    category_id=category_id,
+                    entry_id=entry_id,
+                    field_id=field_id,
+                )
             )
-            for item in self._catalog.search(query)
-        )
+        return tuple(rows)

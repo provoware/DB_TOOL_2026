@@ -57,7 +57,12 @@ def _search_target(item: WebSearchItem) -> str | None:
         params["entry_id"] = item.entry_id
     if not params:
         return None
-    return "/?" + urlencode(params)
+    target = "/?" + urlencode(params)
+    if item.field_id and item.entry_id:
+        return target + "#field-" + item.field_id
+    if item.entry_id:
+        return target + "#detail"
+    return target
 
 
 def _search_markup(adapter: WebCatalogReadAdapter, query: str | None) -> str:
@@ -87,11 +92,13 @@ def _search_markup(adapter: WebCatalogReadAdapter, query: str | None) -> str:
     for item in hits:
         target = _search_target(item)
         label = f'{escape(item.kind_label)} · {escape(item.label)}'
+        location = escape(item.location_label)
+        meta = f'<span class="search-location">Fundstelle: {location}</span>'
         if target is None:
-            rows.append(f'<li><span>{label}</span></li>')
+            rows.append(f'<li><span>{label}</span>{meta}</li>')
         else:
             rows.append(
-                f'<li><a href="{escape(target, quote=True)}">{label}</a></li>'
+                f'<li><a href="{escape(target, quote=True)}">{label}</a>{meta}</li>'
             )
     return (
         form
