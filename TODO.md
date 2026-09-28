@@ -10,8 +10,8 @@ Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet
 
 ## Nächste sichere Prioritäten
 
-1. [ ] Governance: Single-Source-of-Truth-/Preflight-Mechanismus als kleine isolierte Optimierung umsetzen.
-2. [ ] Danach Fundstellenvertrag und globale Feldwertsuche getrennt planen.
+1. [ ] Fundstellenvertrag als eigenen read-only Plan-Slice definieren.
+2. [ ] Globale Suche Kategorie → Eintrag → Feldwert danach separat planen.
 3. [ ] Globale Suche bis zu Feldwerten und Fundstellen bleibt ein eigener späterer Vertrag.
 
 **Persistenz, CP-03 und CP-06 bleiben geschlossen.** Der Strukturblock B ist auf I146 eingefroren.
