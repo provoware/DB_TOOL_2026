@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I157 beginnt die Feldwertsuche ausschließlich als nicht integriertes Deep-Gate-Labor für Text/Langtext und Choice-Werte. Service/Web-Integration, weitere Datentypen und der TODO-Abschluss der globalen Feldwertsuche bleiben geschlossen und benötigen eigene Folgeslices.
+**Aktueller Stand:** I158 erweitert das isolierte Deep-Gate-Labor auf alle Scalar-Typen sowie Choice-Werte. Nächster Schritt: Integrationsvertrag Repository → CatalogService → SearchHit separat planen und gaten; Web-/HTTP-Anbindung bleibt bis danach geschlossen.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
