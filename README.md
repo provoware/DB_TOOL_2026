@@ -38,6 +38,11 @@ Standardadresse: `http://127.0.0.1:8765`.
 bash scripts/repo_self_check.sh
 ```
 
+Der Selbstcheck prüft die zentralen Projektdateien, den aktuellen Iterationskontext
+und den gemeinsamen Preflight. Ein grünes Ergebnis bescheinigt ausschließlich diese
+Repository-Prüfung. Die vollständige Produktabnahme und das noch blockierte
+I167-Chromium-Gate sind gesonderte Prüfungen.
+
 Die Entwicklungsgates wählen zusätzlich abhängig vom Iterationsmanifest nur die jeweils betroffenen Compile- und Regressionstests.
 
 ## Was das Projekt heute kann

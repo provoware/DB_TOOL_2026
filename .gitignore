@@ -20,6 +20,7 @@ venv/
 *.sqlite3
 *.log
 CP*_GATE_AUSWERTUNG_*.txt
+REPO_SELF_CHECK_*.txt
 
 # Build
 build/
