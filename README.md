@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I153 auf diesem Branch; eindeutiger Fundstellenvertrag ist geplant, globale Feldwertsuche bleibt separat plan-only  
+> **Bestätigter Produktstand:** I154 auf diesem Branch; globale Feldwertsuche ist separat geplant und bleibt bis zum späteren Deep-Gate plan-only  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -234,6 +234,12 @@ I151 verändert keine Runtime. Die vorhandene Detaildarstellung wurde inventaris
 I153 implementiert noch keine Feldwertsuche. Der Vertrag legt stattdessen fest, dass jeder spätere Treffer Kategorie-, Eintrags- und optional Feldkontext sowie eine explizite Trefferart tragen muss. Feldwerttreffer dürfen erst entstehen, wenn ihre Fundstelle als deterministische Kette und als stabiles GET-Navigationsziel eindeutig projizierbar ist.
 
 Damit wird verhindert, dass die spätere globale Suche zwar Werte findet, aber nicht eindeutig zeigen kann, **wo** der Treffer liegt.
+
+## I154 – globale Feldwertsuche separat geplant
+
+I154 implementiert noch keine neue Suche. Der Plan legt fest, welche vorhandenen Feldtypen später read-only durchsuchbar werden, wie Wertvorschauen formatiert werden, wie Choice-Treffer dedupliziert werden und welche Deleted-Parent-/Limit-/No-Write-Invarianten gelten.
+
+Die spätere Repository-Erweiterung wird ausdrücklich als **Deep-Gate/Frozen-Core-Slice** behandelt. I153-Fundstellenvertrag und der stabile Detail-Zielpunkt aus I151 sind Vorbedingungen; FTS, Suchindex, Ranking und Schemaänderungen bleiben außerhalb des ersten Feldwert-Slices.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 

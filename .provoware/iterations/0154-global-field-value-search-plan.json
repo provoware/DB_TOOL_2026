@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "iteration": 154,
+  "agent": "global-field-value-search-plan-agent-154",
+  "size": "S",
+  "goal": "Globale Suche bis zu Feldwerten separat auf Basis des I153-Fundstellenvertrags planen, inklusive Datentypumfang, Read-only-Invarianten und späterer Deep-Gate-Grenze.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Globale Feldwertsuche",
+    "summary": "I154 plant Datentypen, Ergebnisvertrag, Query-Schutz und Implementierungsreihenfolge für spätere Feldwerttreffer, ohne Runtime oder Repository zu ändern.",
+    "target_doc": "docs/development/ITERATION_154_GLOBAL_FIELD_VALUE_SEARCH_PLAN.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0154-global-field-value-search-plan.json",
+    "docs/development/ITERATION_154_GLOBAL_FIELD_VALUE_SEARCH_PLAN.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_153_SEARCH_LOCATION_CONTRACT.md",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py"
+  ],
+  "direct_dependencies": [
+    "main aa50d05d90f368591854fd1dd925e72ec91d3115",
+    "I153 search-location contract is merged",
+    "I151 strong-detail inventory is merged",
+    "I152 shared preflight is merged"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "manifest V2 validation",
+    "scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "search product tests because no runtime search code changes",
+    "storage tests because no repository code changes",
+    "Chromium tests because UI is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "typed values require deterministic searchable and display representations",
+    "choice values can create duplicate rows unless deduplicated per entry/field",
+    "later repository implementation touches protected CP-06 scope and must use deep gate"
+  ],
+  "non_changes": [
+    "no runtime search implementation",
+    "no SearchHit change",
+    "no SQL or repository change",
+    "no FTS/index/schema change",
+    "no persistence"
+  ],
+  "expected_side_effects": [
+    "global field-value search has a bounded implementation contract",
+    "future implementation is explicitly deep-gated when repository code is touched"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}
