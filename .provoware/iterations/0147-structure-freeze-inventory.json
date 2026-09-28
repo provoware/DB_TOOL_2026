@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "iteration": 147,
+  "agent": "structure-freeze-inventory-agent-147",
+  "size": "S",
+  "goal": "Den vollständig grünen Masken-Baukasten-Strukturblock nach I146 maschinenprüfbar einfrieren und die offenen Produktbereiche inventarisieren, ohne neue Produktfunktion zu implementieren. Als kleinster nächster Kandidat wird die bereits vorhandene GET-only Suche zur formellen Abnahme ausgewählt.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Struktur-Freeze und nächste Produktinventur",
+    "summary": "I147 friert TODO-Bereich B auf dem bestätigten I146-Stand ein und dokumentiert, dass die bereits vorhandene Read-only-Suche als I148 abgenommen statt neu gebaut werden soll.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0147-structure-freeze-inventory.json",
+    ".provoware/freezes/mask-builder-structure-i146.json",
+    "tests/mask_builder/test_i147_structure_freeze.py",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    ".provoware/iterations/0146-grid-apply.json"
+  ],
+  "direct_dependencies": [
+    "main e875670d10716e9330f09e5fc4456903c2ea8edd",
+    "I146 is GATE_GREEN and merged",
+    "TODO section B has no open product item",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile test_i147_structure_freeze.py",
+    "run test_i147_structure_freeze.py",
+    "verify every TODO section B item remains checked",
+    "verify product progress remains 30 of 132 = 22.7 percent",
+    "verify freeze is bound to I146 main SHA",
+    "verify I148 candidate is existing read-only search acceptance",
+    "verify no runtime/product source file changes in I147"
+  ],
+  "tests_explicitly_not_run": [
+    "browser UI regressions because I147 changes no runtime code",
+    "database/repository tests because I147 changes no runtime or persistence path",
+    "Control Plane tests because governance is unchanged",
+    "Chromium evidence because I147 introduces no UI behavior"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/mask_builder/test_i147_structure_freeze.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_i147_structure_freeze.py"
+    ]
+  },
+  "risks": [
+    "freeze documentation could drift from TODO completion state",
+    "an existing search capability could be mistakenly reimplemented instead of accepted",
+    "product progress must not increase for a freeze-only iteration",
+    "freeze must not be interpreted as persistence approval"
+  ],
+  "non_changes": [
+    "no runtime source changes",
+    "no new product function",
+    "no TODO product item closed",
+    "no product progress increase",
+    "no MaskTemplate/MaskFieldSpec/MaskTemplateStore changes",
+    "no SQLite or browser storage",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "structure block B gains a machine-readable freeze record",
+    "README and TODO identify I146 as the frozen structure baseline",
+    "I148 is selected as read-only search acceptance rather than search reimplementation",
+    "A-M progress remains 30 of 132 = 22.7 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
