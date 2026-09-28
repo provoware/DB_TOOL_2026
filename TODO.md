@@ -1,17 +1,17 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **I167 auf diesem Branch, Basis I166**. I167 implementiert die browserlokale Pflichtwert-Preview mit zugänglichen Tooltips; Pflichtwert und Regel-Preview bleiben bis zur realen Chromium-/Screenshot-Abnahme offen.
+Stand: **I170 auf Basis I169**. I167-Pflichtwert und Regel-Preview sind auf ausdrücklichen Nutzerwunsch unter dokumentierter Browser-Testausnahme akzeptiert. Ein realer Screenshot-Test wurde nicht bestanden oder behauptet.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
-**Fortschritt A–M:** **40 von 132 = 30,3 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
+**Fortschritt A–M:** **42 von 132 = 31,8 %**. Zwei Punkte sind per I170-Testausnahme akzeptiert; die Prioritätenliste wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I167 enthält die Pflichtwert-Preview für temporäre Draft-Felder. Statische Vertragsprüfungen sind grün; das UI-Gate ist mangels Chrome-/Chromium-Binary noch blockiert. Persistenz und offene Datenarbeitsfunktionen bleiben separat geschützt.
+**Bestätigter Produktstand:** I167 enthält die Pflichtwert-Preview für temporäre Draft-Felder. Statische Vertragsprüfungen sind grün. Das reale UI-Gate ist **WAIVED auf Nutzerentscheidung**, nicht technisch GRÜN. Persistenz bleibt geschützt.
 
 ## Nächste sichere Prioritäten
 
-1. [ ] D · I167-Pflichtwert-Preview mit realem Chromium und Screenshot abnehmen.
-2. [ ] Danach Pflichtwert und Regel-Preview vor Aktivierung gemeinsam schließen.
+1. [x] D · I167-Browser-Gate als ausdrückliche Testausnahme akzeptieren; Screenshot-Evidence fehlt weiterhin.
+2. [x] Pflichtwert und browserlokale Regel-Preview unter dieser Ausnahme schließen.
 3. [ ] Weitere Regelarten sowie C · persistenzabhängige Datenarbeit bleiben bis zu eigenen Verträgen blockiert.
 
 **Persistenz, CP-03 und CP-06 bleiben geschlossen.** Der Strukturblock B ist auf I146 eingefroren.
@@ -82,7 +82,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 ## D. Regeln und Validierung
 
 - [x] gemeinsames Regelmodell planen
-- [ ] Pflichtwert
+- [x] Pflichtwert (I170-Testausnahme: keine reale Chromium-Abnahme)
 - [ ] Zahlenbereich
 - [ ] Datum von/bis
 - [ ] erlaubte Dateitypen
@@ -90,7 +90,7 @@ Diese Governance-Arbeit verändert weder Browser-Produktfunktionen noch Persiste
 - [ ] statische/bedingte Sichtbarkeit
 - [ ] Feldabhängigkeiten
 - [ ] laienverständliche Fehlertexte
-- [ ] Regel-Preview vor Aktivierung
+- [x] Regel-Preview vor Aktivierung (nur browserlokaler Pflichtwert-Draft; I170-Testausnahme)
 
 ## E. Assistentenmodus
 

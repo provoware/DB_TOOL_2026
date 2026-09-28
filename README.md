@@ -2,11 +2,11 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I167 implementiert die browserlokale Pflichtwert-Preview mit zugänglichen Tooltips; reale Chromium-/Screenshot-Evidence ist mangels Browser-Binary noch blockiert
+> **Produktstand:** I167-Pflichtwert-Preview unter I170-Testausnahme akzeptiert; reale Chromium-/Screenshot-Evidence fehlt weiterhin
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
-> **Gesamtfortschritt Master-TODO A–M:** **40 / 132 = 30,3 %**
+> **Gesamtfortschritt Master-TODO A–M:** **42 / 132 = 31,8 %** (davon 2 unter Testausnahme)
 
 ## Zielbild
 
@@ -326,7 +326,7 @@ Als kleinster späterer Preview-Slice ist **Pflichtwert** bestimmt: ein einzelne
 
 I167 ergänzt für temporäre Draft-Felder eine Pflichtwert-Preview. Nach dem Einschalten kann ein Testwert eingegeben werden; leer und reiner Leerraum führen zum verständlichen Hinweis „Dieses Feld ist ein Pflichtfeld. Gib einen Wert ein.“, ein gefüllter Wert zu „Pflichtwert vorhanden.“ Strukturell ungültige Zustände scheitern geschlossen als nicht auswertbar.
 
-Zwei fokussierbare `?`-Tooltips erklären die Pflichtwert-Umschaltung und den Testwert sowohl per Tastatur als auch per Maus. Regel und Testwert bleiben ausschließlich im Browser-Draft; es gibt keinen Speichern-, Aktivieren-, Netzwerk- oder Datenbankpfad. Das statische Gate ist grün, die verpflichtende reale Chromium- und Screenshot-Abnahme bleibt in dieser Umgebung ohne Browser-Binary blockiert.
+Zwei fokussierbare `?`-Tooltips erklären die Pflichtwert-Umschaltung und den Testwert sowohl per Tastatur als auch per Maus. Regel und Testwert bleiben ausschließlich im Browser-Draft; es gibt keinen Speichern-, Aktivieren-, Netzwerk- oder Datenbankpfad. Das statische Gate ist grün. I170 akzeptiert auf ausdrücklichen Nutzerwunsch das fehlende Chromium-/Screenshot-Gate als **Testausnahme**; ein visueller oder Keyboard-PASS wurde nicht gemessen.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
@@ -359,9 +359,9 @@ Noch offen sind insbesondere:
 
 ## Nächste sichere Reihenfolge
 
-1. I167 in einer Umgebung mit Chrome/Chromium real auf Keyboard, Live-Status, Tooltips und Layout gaten und Screenshot aufnehmen.
-2. Erst nach grünem Browser-Gate Pflichtwert und Regel-Preview im Produktfortschritt schließen.
-3. Weitere Regelarten und persistenzabhängige Datenarbeit bleiben bis zu eigenen Verträgen geschlossen.
+1. I170-Testausnahme für Pflichtwert und browserlokale Regel-Preview nachvollziehbar beibehalten; ein späterer echter Browser-Test kann die Evidenzlücke schließen.
+2. Nächste Regelart nur als eigene browserlokale Iteration mit gezielter Prüfung planen.
+3. Persistenzabhängige Datenarbeit bis zu eigenen Preview-, Integritäts- und Recovery-Verträgen geschlossen halten.
 
 Keiner dieser Schritte öffnet automatisch CP-03 oder CP-06.
 
@@ -402,7 +402,7 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Die **30,3 %** sind kein geschätzter Marketingwert. Gezählt werden die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: aktuell **40 erledigt von 132**. Die separat aufgeführte Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 wird nicht als Produktpunkt mitgezählt.
+Die **31,8 %** zählen die eindeutigen Checkboxen des Implementierungspools **A–M** in `TODO.md`: **42 von 132**, darunter zwei ausdrücklich unter I170-Testausnahme akzeptierte Punkte. Die Prioritätenliste wird nicht zusätzlich gezählt. Governance-Arbeit aus I120–I124 zählt nicht als Produktpunkt.
 
 Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen jeweils einmal.
 

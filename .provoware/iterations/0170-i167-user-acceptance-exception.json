@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "iteration": 170,
+  "agent": "i167-acceptance-exception-170",
+  "size": "M",
+  "goal": "Die explizite Nutzerentscheidung zur übersprungenen I167-Browserabnahme nachvollziehbar erfassen und Produktstatus ohne fingierte Test-Evidence synchronisieren.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "I167-Pflichtwert-Vorschau",
+    "summary": "Die Funktion gilt auf ausdrücklichen Wunsch als unter Testausnahme abgenommen; ein Screenshot oder Browser-PASS wird weiterhin nicht behauptet.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0170-i167-user-acceptance-exception.json",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_170_I167_ACCEPTANCE_EXCEPTION.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_167_BROWSER_LOCAL_REQUIRED_PREVIEW.md",
+    "tests/mask_builder/test_i167_chromium_evidence.py"
+  ],
+  "direct_dependencies": ["main c1506a1", "I167 static contract green", "I167 Chromium gate blocked by missing browser", "User explicitly permits skipping and treating this step as accepted"],
+  "tests_required": ["Manifest and preflight", "40-to-42 A-M count consistency", "Documentation and scope check"],
+  "tests_explicitly_not_run": ["Chromium screenshot gate: explicitly waived, not passed", "Runtime tests: no product code change", "Database deep gate: frozen core unchanged"],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": ["The unobserved visual/keyboard behavior may still contain defects", "Acceptance waiver must not be mistaken for test PASS"],
+  "non_changes": ["No browser test result forged", "No product code", "No persistence or schema change", "No CP-03 or CP-06 reopen"],
+  "expected_side_effects": ["Two I167 product TODOs accepted under explicit waiver", "A-M progress becomes 42/132 = 31.8 percent", "Browser evidence remains outstanding as a documented residual risk"],
+  "screenshot_required": false,
+  "status": "USER_ACCEPTED_WITH_TEST_WAIVER"
+}
