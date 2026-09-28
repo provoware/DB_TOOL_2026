@@ -68,3 +68,75 @@ class FieldRepository:
         return values
     def search(self,q:str,limit:int=50):
         like=f"%{make_key(q)}%";return self.con.execute("SELECT f.id,f.scope,COALESCE(f.category_id,e.category_id) AS category_id,f.entry_id,f.name FROM field_definitions f LEFT JOIN categories c ON f.scope='category' AND c.id=f.category_id LEFT JOIN entries e ON f.scope='entry' AND e.id=f.entry_id LEFT JOIN categories ec ON e.category_id=ec.id WHERE f.deleted_at IS NULL AND f.name_key LIKE ? AND ((f.scope='category' AND c.deleted_at IS NULL) OR (f.scope='entry' AND e.deleted_at IS NULL AND ec.deleted_at IS NULL)) ORDER BY f.name_key,f.id LIMIT ?",(like,limit)).fetchall()
+
+    def search_value_lab(self,q:str,limit:int=50):
+        key=make_key(q)
+        if not key or limit<=0:return []
+        rows=[]
+
+        scalar_sql="""
+        SELECT c.id AS category_id,c.name AS category_name,e.id AS entry_id,e.title AS entry_title,
+               f.id AS field_id,f.name AS field_name,v.value_text AS value_preview,'scalar_text' AS source_kind
+        FROM scalar_field_values v
+        JOIN entries e ON e.id=v.entry_id AND e.deleted_at IS NULL
+        JOIN categories c ON c.id=e.category_id AND c.deleted_at IS NULL
+        JOIN field_definitions f ON f.id=v.field_definition_id AND f.deleted_at IS NULL
+        WHERE f.field_type IN ('text','long_text')
+          AND v.value_text IS NOT NULL
+          AND ((f.scope='category' AND f.category_id=e.category_id)
+               OR (f.scope='entry' AND f.entry_id=e.id))
+        """
+        for r in self.con.execute(scalar_sql).fetchall():
+            preview=str(r["value_preview"])
+            if key in make_key(preview):
+                rows.append(dict(r))
+
+        choice_sql="""
+        SELECT c.id AS category_id,c.name AS category_name,e.id AS entry_id,e.title AS entry_title,
+               f.id AS field_id,f.name AS field_name,o.label AS value_preview,src.source_kind
+        FROM (
+            SELECT entry_id,field_definition_id,option_id,'single_choice' AS source_kind
+            FROM single_choice_values
+            UNION ALL
+            SELECT entry_id,field_definition_id,option_id,'multi_choice' AS source_kind
+            FROM multi_choice_values
+        ) src
+        JOIN entries e ON e.id=src.entry_id AND e.deleted_at IS NULL
+        JOIN categories c ON c.id=e.category_id AND c.deleted_at IS NULL
+        JOIN field_definitions f ON f.id=src.field_definition_id AND f.deleted_at IS NULL
+        JOIN field_options o ON o.id=src.option_id AND o.deleted_at IS NULL
+        WHERE ((f.scope='category' AND f.category_id=e.category_id)
+               OR (f.scope='entry' AND f.entry_id=e.id))
+        """
+        grouped={}
+        for r in self.con.execute(choice_sql).fetchall():
+            preview=str(r["value_preview"])
+            if key not in make_key(preview):continue
+            group_key=(str(r["category_id"]),str(r["entry_id"]),str(r["field_id"]))
+            item=grouped.setdefault(group_key,{
+                "category_id":str(r["category_id"]),
+                "category_name":str(r["category_name"]),
+                "entry_id":str(r["entry_id"]),
+                "entry_title":str(r["entry_title"]),
+                "field_id":str(r["field_id"]),
+                "field_name":str(r["field_name"]),
+                "value_preview":[],
+                "source_kind":str(r["source_kind"]),
+            })
+            item["value_preview"].append(preview)
+            if item["source_kind"]!=str(r["source_kind"]):
+                item["source_kind"]="choice"
+
+        for item in grouped.values():
+            item["value_preview"]=", ".join(sorted(dict.fromkeys(item["value_preview"]),key=make_key))
+            rows.append(item)
+
+        rows.sort(key=lambda r:(
+            make_key(str(r["category_name"])),
+            make_key(str(r["entry_title"])),
+            make_key(str(r["field_name"])),
+            make_key(str(r["value_preview"])),
+            str(r["field_id"]),
+        ))
+        return rows[:limit]
+

@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I156 setzt die eindeutige Fundstellenprojektion für bestehende Kategorie-/Eintrag-/Feldnamen-Treffer um und nutzt die I155-Detail-/Feldanker. Nächster Schritt: Feldwertsuche ausschließlich im isolierten Deep-Gate-Labor beginnen; Produktintegration bleibt geschlossen.
+**Aktueller Stand:** I157 beginnt die Feldwertsuche ausschließlich als nicht integriertes Deep-Gate-Labor für Text/Langtext und Choice-Werte. Service/Web-Integration, weitere Datentypen und der TODO-Abschluss der globalen Feldwertsuche bleiben geschlossen und benötigen eigene Folgeslices.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.

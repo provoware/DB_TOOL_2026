@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I156 auf diesem Branch; bestehende Suchtreffer zeigen eindeutige Fundstellen und stabile GET-Ziele  
+> **Bestätigter Produktstand:** I157 auf diesem Branch; Feldwertsuche läuft ausschließlich als nicht integriertes Deep-Gate-Labor  
 > **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -252,6 +252,12 @@ Der Slice bleibt vollständig GET-only; Repository, Schema, Persistenz und Feldw
 I156 setzt den I153-Vertrag für die bereits vorhandenen Trefferarten um. Suchergebnisse zeigen nun eine explizite Fundstellenkette wie `Werkzeug → Akkuschrauber → Seriennummer`. Eintragstreffer verlinken auf den stabilen `#detail`-Bereich aus I155; eintragsspezifische Feldtreffer direkt auf `#field-<id>`.
 
 Die Projektion nutzt IDs für Navigation und Labels nur für die Anzeige. Feldwertsuche, Domain-`SearchHit`, Repository und Persistenz bleiben unverändert.
+
+## I157 – Feldwertsuche im isolierten Deep-Gate-Labor
+
+I157 öffnet noch **keine** globale Feldwertsuche im Produkt. Ein neuer Repository-Laborread prüft ausschließlich Text/Langtext sowie Single-/Multi-Choice-Werte. Er filtert gelöschte Eltern/Optionen, dedupliziert passende Multi-Choice-Werte pro Eintrag/Feld und bleibt read-only.
+
+Der Laborpfad ist nicht an `CatalogService.search()`, Web-Adapter oder HTTP angebunden. Da der geschützte Storage-/Repository-Bereich berührt wird, läuft I157 ausschließlich mit Deep-Gate. Numerische, boolesche und Datumswerte sowie jede Produktintegration bleiben getrennte spätere Schritte.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
