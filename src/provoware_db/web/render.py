@@ -17,6 +17,7 @@ def _nav_markup(
     param_name: str,
     category_id: str | None = None,
     selected_id: str | None = None,
+    multi_select: bool = False,
 ) -> str:
     if not items:
         return f'<p class="placeholder">{escape(empty_text)}</p>'
@@ -32,7 +33,7 @@ def _nav_markup(
         current = ' aria-current="true"' if selected else ""
         selected_label = '<span>✓ Ausgewählt · </span>' if selected else ""
 
-        rows.append(
+        form = (
             f'<form method="get" action="/?{escape(query, quote=True)}">'
             f'<input type="hidden" name="{escape(param_name, quote=True)}" '
             f'value="{escape(item.id, quote=True)}">'
@@ -46,6 +47,17 @@ def _nav_markup(
             f'{selected_label}<strong>{escape(item.label)}</strong>'
             f'<span> · {escape(item.meta)}</span></button></form>'
         )
+        if multi_select:
+            rows.append(
+                '<div class="entry-select-row" data-entry-select-row>'
+                f'<input class="entry-multiselect" type="checkbox" '
+                f'data-entry-id="{escape(item.id, quote=True)}" '
+                f'aria-label="Eintrag {escape(item.label, quote=True)} auswählen">'
+                + form
+                + '</div>'
+            )
+        else:
+            rows.append(form)
     return "".join(rows)
 
 
@@ -211,6 +223,19 @@ def _favorites_markup(
     )
 
 
+def _multiselect_markup(category_id: str | None) -> str:
+    if not category_id:
+        return ""
+    return (
+        '<section class="multiselect-toolbar" aria-labelledby="multiselect-title">'
+        '<h3 id="multiselect-title">Mehrfachauswahl</h3>'
+        '<p id="multiselect-count" role="status" aria-live="polite">0 ausgewählt</p>'
+        '<button type="button" id="multiselect-clear" disabled>Auswahl aufheben</button>'
+        '<p class="multiselect-note">Nur temporär im Browser · keine Speicherung</p>'
+        '</section>'
+    )
+
+
 def _field_markup(items: tuple[WebFieldItem, ...]) -> str:
     if not items:
         return '<p class="placeholder" id="detail-empty">Keine sichtbaren Felder vorhanden.</p>'
@@ -297,6 +322,7 @@ def render_page(
             _entry_filter_markup(category_id, entry_filter, len(entries), entry_sort, favorites_only)
             + _entry_sort_markup(category_id, entry_filter, entry_sort, favorites_only)
             + _favorites_markup(category_id, entry_filter, entry_sort, favorites_only)
+            + _multiselect_markup(category_id)
             + _nav_markup(
                 entries,
                 (
@@ -307,6 +333,7 @@ def render_page(
                 param_name="entry_id",
                 category_id=category_id,
                 selected_id=entry_id,
+                multi_select=True,
             ),
         )
         .replace("<!-- FIELDS -->", _detail_markup(selected_category, selected_entry, fields))
