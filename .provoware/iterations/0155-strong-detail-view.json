@@ -1,0 +1,82 @@
+{
+  "schema_version": 2,
+  "iteration": 155,
+  "agent": "strong-detail-view-agent-155",
+  "size": "M",
+  "goal": "Die inventarisierte starke Detailansicht als kleinen GET-only Produkt-Slice umsetzen: expliziter Detailkopf, Kategorie-/Eintragskontext, Feldanzahl, stabiler Detail-/Feld-Zielpunkt und klarer Leerzustand.",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Starke Detailansicht",
+    "summary": "I155 ergänzt ausschließlich die bestehende Web-Read-Projektion um einen semantisch klaren Detailbereich mit stabilen Navigationsankern.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0155-strong-detail-view.json",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i155_strong_detail_view.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_151_STRONG_DETAIL_INVENTORY.md",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_http_navigation.py"
+  ],
+  "direct_dependencies": [
+    "main e3c4aeeed20d06dc644e1fab90fbfa93ccb5b3a5",
+    "I151 inventory is merged",
+    "I154 planning is merged",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile changed render and I155 test",
+    "explicit detail context and field count",
+    "stable detail and field anchors",
+    "clear empty and unselected states",
+    "SQLite total_changes unchanged",
+    "existing HTTP navigation remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "storage tests because repository/schema are unchanged",
+    "mask-builder Chromium tests because mask-builder runtime is unchanged",
+    "Control Plane tests because governance is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i155_strong_detail_view.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i155_strong_detail_view.py"
+    ]
+  },
+  "risks": [
+    "detail anchors must remain deterministic for later search-location navigation",
+    "strong detail view must not accidentally introduce edit or persistence affordances"
+  ],
+  "non_changes": [
+    "no field-value search",
+    "no search-location projection yet",
+    "no persistence",
+    "no repository or schema change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "C · starke Detailansicht can close if gates are green",
+    "stable detail and field anchors become available for I153 location projection",
+    "A-M progress becomes 34 of 132 = 25.8 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
