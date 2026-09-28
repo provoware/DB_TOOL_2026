@@ -40,6 +40,15 @@ Mit der neuen Vorschau lässt sich ausprobieren, ob ein Feld als Pflichtfeld ein
 
 ## Nachzuholendes Abschlussgate
 
-1. Vorhandenen Chromium-Harness mit installiertem Chrome/Chromium ausführen.
+Der fokussierte Harness ist vorbereitet und unterscheidet maschinenlesbar zwischen
+`GREEN` (vollständig bestanden), `BLOCKED` (Browser fehlt) und `RED` (Prüfung
+fehlgeschlagen). Für Bedienende bedeutet das: Ein fehlender Browser wird nicht mit
+einem Produktfehler verwechselt. Der Aufruf lautet:
+
+```bash
+PYTHONPATH=src python tests/mask_builder/test_i167_chromium_evidence.py
+```
+
+1. Den vorbereiteten Chromium-Harness mit installiertem Chrome/Chromium ausführen.
 2. Leeren, Leerraum-, gefüllten und ungültigen Zustand sowie Tooltip-Fokus und Live-Status real bestätigen.
 3. Screenshot bei 1440 × 900 im Dark Theme aufnehmen und erst danach die beiden TODO-Punkte schließen.

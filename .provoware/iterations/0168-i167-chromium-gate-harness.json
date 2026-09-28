@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "iteration": 168,
+  "agent": "i167-chromium-gate-harness-agent-168",
+  "size": "M",
+  "goal": "Das blockierte I167-Abschlussgate mit einem fokussierten Chromium-Harness und eindeutiger GREEN-, BLOCKED- und RED-Semantik reproduzierbar vorbereiten.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "I167-Chromium-Abschlussgate",
+    "summary": "Die I167-Anleitung nennt jetzt den vorbereiteten Einzelbefehl und erklärt, dass ein fehlender Browser als BLOCKED statt als Produktfehler gemeldet wird.",
+    "target_doc": "docs/development/ITERATION_167_BROWSER_LOCAL_REQUIRED_PREVIEW.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0168-i167-chromium-gate-harness.json",
+    "tests/mask_builder/i167_chromium_evidence.mjs",
+    "tests/mask_builder/test_i167_chromium_evidence.py",
+    "docs/development/ITERATION_167_BROWSER_LOCAL_REQUIRED_PREVIEW.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0167-browser-local-required-preview.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_i167_required_rule_preview.py",
+    "tests/mask_builder/test_i132_accessibility_evidence.py",
+    "tests/mask_builder/i132_chromium_evidence.mjs",
+    "tests/mask_builder/i146_grid_apply_evidence.mjs",
+    "docs/development/ITERATION_167_BROWSER_LOCAL_REQUIRED_PREVIEW.md"
+  ],
+  "direct_dependencies": [
+    "work 54ba535e99d360a04b7eea7d6eed5da76d1ef364",
+    "I167 required-preview DOM and transient rule contract",
+    "existing dependency-free CDP evidence pattern",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Node syntax check for the I167 Chromium harness",
+    "Python compile for the I167 gate wrapper",
+    "deterministic BLOCKED result when no Chrome/Chromium executable exists",
+    "single-source preflight and manifest V2 validation"
+  ],
+  "tests_explicitly_not_run": [
+    "real Chromium interaction and screenshot gate because the environment has no browser binary",
+    "product regressions because product code is unchanged",
+    "storage deep gate because repository and schema are unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/mask_builder/test_i167_chromium_evidence.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_i167_required_rule_preview.py"
+    ]
+  },
+  "risks": [
+    "the real interaction assertions remain unexecuted until Chromium is available",
+    "future DOM changes may require synchronized selector updates",
+    "a BLOCKED result must never be presented as GREEN"
+  ],
+  "non_changes": [
+    "no product code change",
+    "no TODO, roadmap or progress closure",
+    "no screenshot claimed without a real browser run",
+    "no dependency or CI change",
+    "no persistence, repository or schema change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "a browser-equipped runner can execute the complete I167 gate with one command",
+    "missing browser infrastructure is reported separately from product failures",
+    "A-M product progress remains 40 of 132 pending real Chromium evidence"
+  ],
+  "screenshot_required": true,
+  "status": "BLOCKED_CHROMIUM_GATE"
+}
