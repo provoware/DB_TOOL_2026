@@ -5,7 +5,7 @@
   "size": "S",
   "goal": "Die bereits vorhandene GET-only Suche formal über Service, Repository, Web-Adapter, HTTP und Ergebnisnavigation abnehmen. Nur konkrete Read-only-Lücken reparieren; Persistenz und Schreibpfade bleiben geschlossen.",
   "change_kind": "product",
-  "gate_profile": "product",
+  "gate_profile": "deep",
   "guide_delta": {
     "mode": "optimize_existing",
     "topic": "Read-only-Suche",
@@ -51,7 +51,8 @@
     "no-result state is clear",
     "POST remains blocked with 405 and Allow GET",
     "deleted parent/category rows stay excluded by repository search",
-    "no write, persistence schema or browser storage path is introduced"
+    "no write, persistence schema or browser storage path is introduced",
+    "run deep gate because storage repository path is frozen-core protected"
   ],
   "tests_explicitly_not_run": [
     "mask-builder Chromium tests because I148 changes only read-only catalog search",
@@ -74,7 +75,8 @@
     "entry-scoped field hits could remain non-navigable if parent category is not projected",
     "search acceptance must not expand into field-value global search",
     "read-only web boundary must remain GET-only",
-    "search must continue excluding deleted parents"
+    "search must continue excluding deleted parents",
+    "repository read projection change must pass frozen-core deep gate even without schema/write change"
   ],
   "non_changes": [
     "no field-value/global search yet",
@@ -92,5 +94,5 @@
     "A-M progress becomes 31 of 132 = 23.5 percent"
   ],
   "screenshot_required": false,
-  "status": "IMPLEMENTED_PENDING_GATE"
+  "status": "GATE_FIX_APPLIED_PENDING_RERUN"
 }
