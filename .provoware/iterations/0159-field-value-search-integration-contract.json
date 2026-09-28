@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "iteration": 159,
+  "agent": "field-value-search-integration-contract-agent-159",
+  "size": "S",
+  "goal": "Repository → CatalogService → SearchHit Integration für Feldwerttreffer separat planen und die spätere Deep-Gate-Grenze festlegen, ohne Runtime zu ändern.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Feldwertsuche Integrationsvertrag",
+    "summary": "I159 definiert den einzigen Service-Einstiegspunkt, additive SearchHit-Felder, globale Limit-Semantik und die spätere Frozen-Core/Deep-Gate-Integration.",
+    "target_doc": "docs/development/ITERATION_159_FIELD_VALUE_SEARCH_INTEGRATION_CONTRACT.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0159-field-value-search-integration-contract.json",
+    "docs/development/ITERATION_159_FIELD_VALUE_SEARCH_INTEGRATION_CONTRACT.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_158_FIELD_VALUE_SEARCH_SCALARS_LAB.md",
+    "docs/development/ITERATION_153_SEARCH_LOCATION_CONTRACT.md",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/web/read_adapter.py"
+  ],
+  "direct_dependencies": [
+    "main 6c5cb099ec9dc70250fae48e2531aa77506a68bd",
+    "I158 scalar deep-lab is merged and green",
+    "I156 search-location projection is merged"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "manifest V2 validation",
+    "scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime is unchanged",
+    "storage tests because repository code is unchanged",
+    "web tests because web code is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "integration must not bypass CatalogService as the application boundary",
+    "SearchHit extensions must remain additive and backward-compatible",
+    "later product patch touches multiple frozen-core paths and requires deep gate"
+  ],
+  "non_changes": [
+    "no runtime integration",
+    "no repository rename yet",
+    "no SearchHit/domain change",
+    "no service/web change",
+    "no global-search TODO completion"
+  ],
+  "expected_side_effects": [
+    "I160 can implement one bounded deep-gate end-to-end slice",
+    "field-value search semantics are fixed before product integration"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}
