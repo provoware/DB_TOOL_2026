@@ -1,21 +1,20 @@
 # PROVOWARE DB TOOL 2026 – Master TODO
 
-Stand: **I146 auf Feature-Branch, Basis I145 auf `main`**. I146 ergänzt die tatsächliche atomare browserlokale Rastervorschlagsübernahme auf den flüchtigen Zeile+Spalte-Vertrag; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
+Stand: **I147 auf Feature-Branch, Basis I146 auf `main`**. I147 friert den vollständig grünen Strukturblock auf I146 ein und inventarisiert den nächsten Produktbereich; keine neue Produktfunktion; I127 schließt die gemeinsame Eigenschaften-/Preview-Abnahme als Regression/Evidence, während I120–I124 ausschließlich Control-Plane-V2-Shadow-Governance bleiben.
 
 Diese Liste ist der Implementierungspool zur Produkt-Roadmap. Ein Haken bedeutet: der Punkt ist im bestätigten Produktstand umgesetzt. Ein offener Punkt ist **keine automatische Freigabe** zur Implementierung.
 
 **Fortschritt A–M:** **30 von 132 = 22,7 %**. Die Prioritätenliste unten spiegelt vorhandene TODOs nur und wird nicht zusätzlich gezählt.
 
-**Bestätigter Produktstand:** I146 übernimmt einen bestätigten Rastervorschlag atomar in die flüchtige Zeile+Spalte-Layout-Map, mit Stale-Schutz, Fokus-Rückgabe und echter Chromium-Evidence; Draftdaten und Persistenz bleiben unverändert. I145 hält Rasterzeile und -spalte explizit in einer flüchtigen Browser-Layout-Map und rendert daraus, ohne Persistenz oder Vorschlagsübernahme. I144 stellt aktuelles und vorgeschlagenes Raster inklusive geplanter Zeilen-/Spaltenänderungen gegenüber, ohne zu mutieren. I143 ergänzt einen deterministischen read-only Raster-Assistenten ohne Übernahmeweg oder Persistenz. I142 nimmt Desktop 1152 px, Tablet 768 px und Schmal 360 px gemeinsam in realem Chromium auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz ab. I141 ergänzt den dritten browserlokalen Preview-Modus Schmal mit 360 px und erhält Desktop 1152 px sowie Tablet 768 px unverändert. I140 ergänzt einen browserlokalen Tablet-Modus mit 768 px und erhält I139 Desktop 1152 px als Standard. I139 ergänzt eine feste browserlokale Desktop-Vorschau mit 1152-px-Viewport. I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
+**Bestätigter Produktstand:** I147 friert den vollständig erledigten Strukturblock B auf dem I146-main-Stand ein und wählt als nächsten Kandidaten die formelle Abnahme der bereits vorhandenen Read-only-Suche. I146 übernimmt einen bestätigten Rastervorschlag atomar in die flüchtige Zeile+Spalte-Layout-Map, mit Stale-Schutz, Fokus-Rückgabe und echter Chromium-Evidence; Draftdaten und Persistenz bleiben unverändert. I145 hält Rasterzeile und -spalte explizit in einer flüchtigen Browser-Layout-Map und rendert daraus, ohne Persistenz oder Vorschlagsübernahme. I144 stellt aktuelles und vorgeschlagenes Raster inklusive geplanter Zeilen-/Spaltenänderungen gegenüber, ohne zu mutieren. I143 ergänzt einen deterministischen read-only Raster-Assistenten ohne Übernahmeweg oder Persistenz. I142 nimmt Desktop 1152 px, Tablet 768 px und Schmal 360 px gemeinsam in realem Chromium auf Fokus, Umschaltung, Beschriftung, Overflow und Inhaltskonsistenz ab. I141 ergänzt den dritten browserlokalen Preview-Modus Schmal mit 360 px und erhält Desktop 1152 px sowie Tablet 768 px unverändert. I140 ergänzt einen browserlokalen Tablet-Modus mit 768 px und erhält I139 Desktop 1152 px als Standard. I139 ergänzt eine feste browserlokale Desktop-Vorschau mit 1152-px-Viewport. I138 ergänzt eine explizite natürliche Tab-Reihenfolge mit roving Tabstop für die Zielspalten. I137 ergänzt browserlokales Ein-/Ausklappen der I136-Vorschau-Abschnitte mit zugänglichem Toggle. I136 ergänzt semantische Vorschau-Abschnitte über den vorhandenen Bereich-Baustein. I135 ergänzt kontrolliertes browserlokales Neuordnen ganzer Draft-Elemente per Hoch/Runter-Controls. I133 ergänzt browserlokales Duplizieren mit neuen monotonen Draft- und Choice-Option-IDs sowie umgebundener `defaultSelection`. I132 liefert die Choice-Default-Basis; I120–I124 erweitern ausschließlich die nicht-authoritative Shadow-Governance.
 
 ## Nächste sichere Prioritäten
 
-1. [x] kontrolliertes Neuordnen ohne Drag-and-drop-Zwang
-2. [x] Abschnitte
-3. [x] einklappbare Gruppen
-4. [x] explizite Tab-Reihenfolge
+1. **I148:** vorhandene Read-only-Suche abnehmen – Service → Adapter → GET-only HTTP → Ergebnisdarstellung/Navigation.
+2. TODO `C · Suche` nur bei vollständig grünem Vertrag schließen; keine Neuimplementierung ohne Befund.
+3. Danach Filter und Sortierung weiterhin getrennt und read-only planen.
 
-Bis dahin bleiben **Persistenz, CP-03 und CP-06 geschlossen**. `defaultSelection` ist ausschließlich browserlokal und flüchtig.
+**Persistenz, CP-03 und CP-06 bleiben geschlossen.** Der Strukturblock B ist auf I146 eingefroren.
 
 
 ## Bestätigter Governance-Stand
