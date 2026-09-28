@@ -2,7 +2,7 @@
 
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
-> **Bestätigter Produktstand:** I150 auf diesem Branch; GET-only Titel-Sortierung A–Z/Z–A ergänzt Suche und Filter ohne Persistenz oder Frozen-Core-Änderung  
+> **Bestätigter Produktstand:** I151 auf diesem Branch; starke Detailansicht ist inventarisiert, Runtime unverändert  
 > **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
@@ -224,6 +224,10 @@ Der Filter arbeitet ausschließlich auf der Web-Read-Projektion. Es gibt kein SQ
 I150 ergänzt ausschließlich die explizite Sortierung der bereits geladenen Eintragsliste: Standardreihenfolge, Titel A–Z oder Titel Z–A. Die Sortierung ist deterministisch, GET-only und arbeitet nach dem I149-Filter auf derselben Web-Read-Projektion. Filter und Sortierung erhalten ihren jeweiligen Zustand gegenseitig.
 
 Es gibt weiterhin keinen Repository-Write, keine Schemaänderung, keine gespeicherte Sortierung und keine Browser-Persistenz. Der gezielte Test prüft Standardreihenfolge, beide Sortierrichtungen, Filter+Sort-Komposition und unveränderte SQLite-`total_changes`.
+
+## I151 – Inventur starke Detailansicht
+
+I151 verändert keine Runtime. Die vorhandene Detaildarstellung wurde inventarisiert und der kleinste spätere Umsetzungsscope auf die bestehende Web-Read-Projektion begrenzt: expliziter Detailkopf, Kategorie-/Eintragskontext, Feldanzahl, stabiler semantischer Detailcontainer und klarer Leerzustand. Repository, Schema, Persistenz, Fundstellenvertrag und globale Feldwertsuche bleiben geschlossen.
 
 ## I120–I124 – Control Plane V2 im Shadow-Modus
 
