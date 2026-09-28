@@ -1,0 +1,71 @@
+{
+  "schema_version": 2,
+  "iteration": 151,
+  "agent": "strong-detail-inventory-agent-151",
+  "size": "S",
+  "goal": "Starke Detailansicht ausschließlich inventarisieren und den kleinsten späteren Read-only-Umsetzungsscope definieren, ohne Runtime-Verhalten zu ändern.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Starke Detailansicht",
+    "summary": "I151 inventarisiert den vorhandenen Detailpfad und grenzt den späteren kleinsten Umsetzungsslice auf die Web-Read-Projektion ein.",
+    "target_doc": "docs/development/ITERATION_151_STRONG_DETAIL_INVENTORY.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0151-strong-detail-inventory.json",
+    "docs/development/ITERATION_151_STRONG_DETAIL_INVENTORY.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_http_navigation.py"
+  ],
+  "direct_dependencies": [
+    "main 6d33b48924e0fcf0d5848d1b84ccf97befa96b58",
+    "I150 sorting is GATE_GREEN and squash-merged",
+    "C · starke Detailansicht remains open",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "validate manifest V2",
+    "validate scope-only changed files",
+    "validate fast planning context"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because I151 changes no runtime",
+    "Chromium evidence because rendering is unchanged",
+    "storage tests because repository/schema are unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "inventory could accidentally pre-commit global field-value search behavior",
+    "inventory could unnecessarily reopen repository or schema scope"
+  ],
+  "non_changes": [
+    "no runtime change",
+    "no TODO completion for strong detail view",
+    "no global field-value search",
+    "no fund-location highlighting",
+    "no persistence",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "later strong-detail implementation has a narrow read-only scope",
+    "next work can move to governance preflight optimization without mixing product code"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}
