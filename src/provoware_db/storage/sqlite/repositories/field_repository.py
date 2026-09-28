@@ -69,7 +69,7 @@ class FieldRepository:
     def search(self,q:str,limit:int=50):
         like=f"%{make_key(q)}%";return self.con.execute("SELECT f.id,f.scope,COALESCE(f.category_id,e.category_id) AS category_id,f.entry_id,f.name FROM field_definitions f LEFT JOIN categories c ON f.scope='category' AND c.id=f.category_id LEFT JOIN entries e ON f.scope='entry' AND e.id=f.entry_id LEFT JOIN categories ec ON e.category_id=ec.id WHERE f.deleted_at IS NULL AND f.name_key LIKE ? AND ((f.scope='category' AND c.deleted_at IS NULL) OR (f.scope='entry' AND e.deleted_at IS NULL AND ec.deleted_at IS NULL)) ORDER BY f.name_key,f.id LIMIT ?",(like,limit)).fetchall()
 
-    def search_value_lab(self,q:str,limit:int=50):
+    def search_values(self,q:str,limit:int=50):
         key=make_key(q)
         if not key or limit<=0:return []
         rows=[]
