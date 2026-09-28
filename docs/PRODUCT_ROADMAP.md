@@ -1,6 +1,6 @@
 # PROVOWARE DB TOOL 2026 – Produkt-Roadmap
 
-Stand: nach I147 auf `main`-Basis I146; Strukturblock P2 ist eingefroren, nächster Kandidat ist I148 Read-only-Suche-Abnahme.
+Stand: nach I148 auf `main`-Basis I147; Strukturblock P2 bleibt eingefroren, Read-only-Suche ist bestätigt, nächster Datenarbeits-Kandidat ist Filter.
 
 Diese Roadmap bündelt den langfristigen Funktionspool. Sie ist **keine Freigabe, alle Punkte in einem Patch umzusetzen**. Jede Funktion erhält weiterhin eine kleine Iteration mit eigenem Scope, Zwischen-Gate und Freeze-Prüfung.
 
@@ -102,7 +102,7 @@ Der Raster-Assistent ist bis I146 browserlokal umgesetzt: read-only Vorschlag �
 
 Read-only zuerst:
 
-- Suche
+- Suche — **I148 bestätigt**
 - Filter
 - Sortierung
 - starke Detailansicht
@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Einstieg:** I148 formelle Abnahme der bereits vorhandenen Suche → danach Filter → Sortierung → Detail/globaler Fundpfad. Anschließend P10 read-only Dashboard-Grundlage → P12 Health read-only.
+**Aktueller Stand:** I148 bestätigt die vorhandene GET-only Suche. Nächster kleiner Slice: Filter → danach getrennt Sortierung → Detail/globaler Fundpfad. Anschließend P10 read-only Dashboard-Grundlage → P12 Health read-only.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
