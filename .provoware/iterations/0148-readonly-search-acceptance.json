@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "iteration": 148,
+  "agent": "readonly-search-acceptance-agent-148",
+  "size": "S",
+  "goal": "Die bereits vorhandene GET-only Suche formal über Service, Repository, Web-Adapter, HTTP und Ergebnisnavigation abnehmen. Nur konkrete Read-only-Lücken reparieren; Persistenz und Schreibpfade bleiben geschlossen.",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Read-only-Suche",
+    "summary": "I148 nimmt die vorhandene Suche ab und repariert ausschließlich die fehlende Eltern-Kategorieprojektion bei eintragsspezifischen Feldtreffern, damit sichere Navigation zum zugehörigen Eintrag möglich ist.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0148-readonly-search-acceptance.json",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "tests/web/test_i148_readonly_search_acceptance.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/storage/sqlite/repositories/category_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/entry_repository.py",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "tests/web/test_readonly_search.py"
+  ],
+  "direct_dependencies": [
+    "main d47693c7f5bac42eb03fe925deae21a1bff72a12",
+    "I147 structure freeze is GATE_GREEN and merged",
+    "existing search service, adapter, GET-only HTTP and render path are present",
+    "I129 persistence boundary remains plan-only and closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile changed repository and I148 acceptance test",
+    "run existing read-only search regression",
+    "run I148 end-to-end search acceptance",
+    "empty and whitespace-only query produce no search operation/results",
+    "category, entry, category-field and entry-field hits are returned",
+    "entry-field hit carries parent category_id and navigates safely to category+entry",
+    "no-result state is clear",
+    "POST remains blocked with 405 and Allow GET",
+    "deleted parent/category rows stay excluded by repository search",
+    "no write, persistence schema or browser storage path is introduced"
+  ],
+  "tests_explicitly_not_run": [
+    "mask-builder Chromium tests because I148 changes only read-only catalog search",
+    "Control Plane tests because governance is unchanged",
+    "full product suite because the slice is limited to read-only search"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+      "tests/web/test_i148_readonly_search_acceptance.py"
+    ],
+    "python_tests": [
+      "tests/web/test_readonly_search.py",
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i148_readonly_search_acceptance.py"
+    ]
+  },
+  "risks": [
+    "entry-scoped field hits could remain non-navigable if parent category is not projected",
+    "search acceptance must not expand into field-value global search",
+    "read-only web boundary must remain GET-only",
+    "search must continue excluding deleted parents"
+  ],
+  "non_changes": [
+    "no field-value/global search yet",
+    "no filter or sorting feature",
+    "no search persistence or saved views",
+    "no write route",
+    "no schema change",
+    "no browser storage",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "entry-scoped field hits gain their parent category_id for safe navigation",
+    "existing search path is formally accepted end-to-end",
+    "TODO C · Suche can close if gates are green",
+    "A-M progress becomes 31 of 132 = 23.5 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
