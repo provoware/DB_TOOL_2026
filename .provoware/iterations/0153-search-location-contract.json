@@ -1,0 +1,68 @@
+{
+  "schema_version": 2,
+  "iteration": 153,
+  "agent": "search-location-contract-agent-153",
+  "size": "S",
+  "goal": "Fundstellenvertrag für Suchtreffer separat planen, damit spätere Feldwerttreffer Kategorie, Eintrag und Feld eindeutig benennen und deterministisch navigierbar sind.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Such-Fundstellenvertrag",
+    "summary": "I153 definiert Fundstellenkontext, Trefferart und Navigationsinvarianten getrennt von der späteren globalen Feldwertsuche.",
+    "target_doc": "docs/development/ITERATION_153_SEARCH_LOCATION_CONTRACT.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0153-search-location-contract.json",
+    "docs/development/ITERATION_153_SEARCH_LOCATION_CONTRACT.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_151_STRONG_DETAIL_INVENTORY.md",
+    "src/provoware_db/domain/models.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "src/provoware_db/web/render.py"
+  ],
+  "direct_dependencies": [
+    "main 445afa52e0caf7ca3d3b70b559e7ab08ab2e5792",
+    "I151 strong-detail inventory is merged",
+    "I152 shared preflight is merged",
+    "current SearchHit already carries category/entry navigation context"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "manifest V2 validation",
+    "scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime is unchanged",
+    "search regression because search implementation is unchanged",
+    "storage tests because repository/schema are unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {"compile": [], "python_tests": []},
+  "risks": [
+    "field-value search could otherwise be implemented before its location semantics are defined",
+    "label-based navigation would be ambiguous and must remain forbidden"
+  ],
+  "non_changes": [
+    "no SearchHit change",
+    "no field-value search",
+    "no repository query",
+    "no runtime UI change",
+    "no persistence"
+  ],
+  "expected_side_effects": [
+    "field-value search gains a precise prerequisite contract",
+    "implementation order becomes location contract before field-value search"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}
