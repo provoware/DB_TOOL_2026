@@ -156,3 +156,48 @@ h2 {
     flex-direction: column;
   }
 }
+
+
+.entry-select-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  margin-block: 0.4rem;
+  padding: 0.35rem;
+  border: 2px solid transparent;
+  border-radius: 0.85rem;
+}
+
+.entry-select-row[data-multi-selected] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.entry-multiselect {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.entry-multiselect:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.multiselect-toolbar {
+  margin-block: 0.75rem;
+  padding: 0.75rem;
+  border: 2px solid var(--panel);
+  border-radius: 0.85rem;
+}
+
+.multiselect-toolbar h3,
+.multiselect-toolbar p {
+  margin-block: 0.35rem;
+}
+
+.multiselect-note {
+  color: #cbd5e1;
+}
