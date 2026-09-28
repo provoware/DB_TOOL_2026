@@ -1,0 +1,79 @@
+{
+  "schema_version": 2,
+  "iteration": 134,
+  "agent": "persistence-lab-program-agent-134",
+  "size": "M",
+  "goal": "Die I129-Persistenzgrenze in isolierte Service-, Recovery- und Integritäts-Laboriterationen I135–I140 zerlegen, ohne einen produktiven Save-, HTTP- oder Browser-Write-Pfad zu öffnen.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Persistenz-Laborprogramm",
+    "summary": "I134 zerlegt die geplante Persistenz in sechs kleine Laboriterationen: Kandidat/Preview, Commit-Orchestrator, Recovery-Snapshot, Restore-Simulation, Read-back-Integrität und TOCTOU/Crash-Matrix. Eine separate spätere Release-Iteration bleibt Pflicht.",
+    "target_doc": "docs/development/I134_PERSISTENCE_LAB_PROGRAM.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0134-persistence-lab-program.json",
+    "docs/development/I134_PERSISTENCE_LAB_PROGRAM.md",
+    "docs/development/I129_MASK_PERSISTENCE_BOUNDARY.md",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/I129_MASK_PERSISTENCE_BOUNDARY.md",
+    "src/provoware_db/mask_builder/model.py",
+    "src/provoware_db/mask_builder/store.py"
+  ],
+  "direct_dependencies": [
+    "main c6fff6ecd92a078d8b3f6666f33da324eee78011",
+    "I132 defaultSelection browser slice is merged and green",
+    "I133 duplicate browser structure slice is merged and green",
+    "I129 defines the parent Preview/Integrity/Recovery boundary",
+    "product progress remains 21 of 132 = 15.9 percent",
+    "productive mask Save remains closed",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "Step 1: validate that I135-I140 have explicit dependencies, lab boundaries, negative tests and exit gates",
+    "Step 1: each lab must explicitly exclude productive HTTP/browser writes",
+    "Step 1: final release must remain a separate future iteration",
+    "Step 2 after green: link I129 to I134 and synchronize README/TODO planning status",
+    "Step 2: product checkbox count must remain exactly 21 of 132"
+  ],
+  "tests_explicitly_not_run": [
+    "browser tests because I134 changes no UI/runtime",
+    "store tests because I134 changes no store implementation",
+    "database tests because no schema or SQLite path changes",
+    "Control Plane behavior tests because governance implementation is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "a lab plan could accidentally be read as product-Save authorization",
+    "recovery and integrity concerns must stay independently gateable",
+    "combining crash/concurrency work too early would make failures hard to localize"
+  ],
+  "non_changes": [
+    "no browser shell changes",
+    "no application/store/model/schema implementation",
+    "no HTTP POST/PUT/PATCH route",
+    "no productive Save or Restore",
+    "no CP-03 or CP-06 reopen",
+    "no dependencies",
+    "no A-M product checkbox changes"
+  ],
+  "expected_side_effects": [
+    "I129 becomes executable as six isolated future lab iterations",
+    "service, recovery and integrity risks can be validated independently",
+    "productive Save remains behind a separate release gate"
+  ],
+  "screenshot_required": false,
+  "status": "STEP1_IMPLEMENTED"
+}
