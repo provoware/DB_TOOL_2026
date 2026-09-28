@@ -295,7 +295,7 @@ Vorbedingungen:
 P1 Eigenschaften → P2 Struktur/Layout **abgeschlossen und eingefroren** → P11 Accessibility-Härtung bleibt späterer eigener Block.
 
 ### Phase B – Read-only Datenkomfort
-**Aktueller Stand:** I153 definiert nach I151/I152 den eindeutigen Fundstellenvertrag als Voraussetzung für spätere Feldwerttreffer. Nächster Scope-Slice: I154 globale Suche Kategorie → Eintrag → Feldwert separat planen. Runtime und Persistenz bleiben dabei geschlossen.
+**Aktueller Stand:** I154 plant die globale Feldwertsuche separat auf Basis des I153-Fundstellenvertrags. Nächste Produktreihenfolge: starke Detailansicht → Fundstellenprojektion bestehender Treffer → erst danach Feldwertsuche in isoliertem Deep-Gate. Runtime der Feldwertsuche und Persistenz bleiben bis dahin geschlossen.
 
 ### Phase C – Persistenz-Sicherheitsgrenze
 P7 Simulation/Journal/Undo/Recovery als Voraussetzung für neue Schreibpfade.
