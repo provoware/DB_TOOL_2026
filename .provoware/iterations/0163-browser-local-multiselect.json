@@ -1,0 +1,94 @@
+{
+  "schema_version": 2,
+  "iteration": 163,
+  "agent": "browser-local-multiselect-agent-163",
+  "size": "L",
+  "goal": "C · Datenarbeit → Mehrfachauswahl als rein browserlokalen, flüchtigen Read-only-Slice umsetzen und damit die sichere Grundlage für spätere Massenaktions-Preview schaffen.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Browserlokale Mehrfachauswahl",
+    "summary": "I163 ergänzt temporäre Eintrags-Checkboxen, Auswahlzähler und Reset ohne LocalStorage, Netzwerk, Repository oder Persistenz.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0163-browser-local-multiselect.json",
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.css",
+    "src/provoware_db/web/static/app.js",
+    "tests/web/test_i163_browser_local_multiselect.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/web/templates/index.html",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/static/app.css",
+    "tests/web/test_i161_readonly_favorites_filter.py"
+  ],
+  "direct_dependencies": [
+    "main bf7a969b9ba028bee09ea219d7ab4a551c68f57a",
+    "I162 recently-used inventory is merged and green",
+    "entry list remains GET-only",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile changed Python web files and I163 test",
+    "multiselect markup appears only for entry rows",
+    "selection counter and reset control are present",
+    "static app.js is served with no-store and nosniff",
+    "app.js contains no localStorage/sessionStorage/network access",
+    "SQLite total_changes remains unchanged",
+    "existing I161 favorites regression remains green",
+    "existing HTTP navigation remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "storage deep gate because repository/schema are unchanged",
+    "mask-builder Chromium tests because mask-builder runtime is unchanged",
+    "mass-action tests because I163 implements no mass action"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i163_browser_local_multiselect.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i161_readonly_favorites_filter.py",
+      "tests/web/test_i163_browser_local_multiselect.py"
+    ]
+  },
+  "risks": [
+    "selection state must remain browser-local and ephemeral",
+    "selection controls must not interfere with entry navigation",
+    "later mass-action work must not treat I163 as write authorization"
+  ],
+  "non_changes": [
+    "no mass action",
+    "no persisted selection",
+    "no LocalStorage or SessionStorage",
+    "no network request from app.js",
+    "no repository/schema change",
+    "no POST/write route",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "C · Mehrfachauswahl can close if gates are green",
+    "preview for mass actions gains a safe browser-local prerequisite",
+    "A-M progress becomes 38 of 132 = 28.8 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}

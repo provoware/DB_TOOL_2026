@@ -11,6 +11,7 @@ from .render import render_page
 
 StartResponse = Callable[[str, list[tuple[str, str]]], Any]
 _STATIC_CSS = Path(__file__).with_name("static") / "app.css"
+_STATIC_JS = Path(__file__).with_name("static") / "app.js"
 
 
 def _one(params: dict[str, list[str]], name: str) -> str | None:
@@ -46,6 +47,19 @@ def make_app(catalog: CatalogReadPort) -> Callable[[dict[str, Any], StartRespons
                 "200 OK",
                 [
                     ("Content-Type", "text/css; charset=utf-8"),
+                    ("Content-Length", str(len(body))),
+                    ("Cache-Control", "no-store"),
+                    ("X-Content-Type-Options", "nosniff"),
+                ],
+            )
+            return [body]
+
+        if path == "/static/app.js":
+            body = _STATIC_JS.read_bytes()
+            start_response(
+                "200 OK",
+                [
+                    ("Content-Type", "text/javascript; charset=utf-8"),
                     ("Content-Length", str(len(body))),
                     ("Cache-Control", "no-store"),
                     ("X-Content-Type-Options", "nosniff"),
