@@ -76,20 +76,69 @@ class FieldRepository:
 
         scalar_sql="""
         SELECT c.id AS category_id,c.name AS category_name,e.id AS entry_id,e.title AS entry_title,
-               f.id AS field_id,f.name AS field_name,v.value_text AS value_preview,'scalar_text' AS source_kind
+               f.id AS field_id,f.name AS field_name,f.field_type,f.currency_code,
+               v.value_text,v.value_integer,v.value_real
         FROM scalar_field_values v
         JOIN entries e ON e.id=v.entry_id AND e.deleted_at IS NULL
         JOIN categories c ON c.id=e.category_id AND c.deleted_at IS NULL
         JOIN field_definitions f ON f.id=v.field_definition_id AND f.deleted_at IS NULL
-        WHERE f.field_type IN ('text','long_text')
-          AND v.value_text IS NOT NULL
-          AND ((f.scope='category' AND f.category_id=e.category_id)
+        WHERE ((f.scope='category' AND f.category_id=e.category_id)
                OR (f.scope='entry' AND f.entry_id=e.id))
         """
         for r in self.con.execute(scalar_sql).fetchall():
-            preview=str(r["value_preview"])
-            if key in make_key(preview):
-                rows.append(dict(r))
+            field_type=str(r["field_type"])
+            preview=None
+            aliases=[]
+            if field_type in {"text","long_text"} and r["value_text"] is not None:
+                preview=str(r["value_text"])
+                aliases=[preview]
+            elif field_type=="integer" and r["value_integer"] is not None:
+                preview=str(int(r["value_integer"]))
+                aliases=[preview]
+            elif field_type=="decimal" and r["value_text"] is not None:
+                canonical=str(r["value_text"])
+                preview=canonical.replace(".",",")
+                aliases=[canonical,preview]
+            elif field_type=="money" and r["value_integer"] is not None:
+                minor=int(r["value_integer"])
+                amount=f"{minor/100:.2f}"
+                currency="" if r["currency_code"] is None else str(r["currency_code"])
+                preview=amount.replace(".",",")+(f" {currency}" if currency else "")
+                aliases=[amount,amount.replace(".",","),preview]
+            elif field_type=="boolean" and r["value_integer"] is not None:
+                preview="Ja" if int(r["value_integer"]) else "Nein"
+                aliases=[preview,"true" if int(r["value_integer"]) else "false","1" if int(r["value_integer"]) else "0"]
+            elif field_type=="date" and r["value_text"] is not None:
+                canonical=str(r["value_text"])
+                try:
+                    y,m,d=canonical.split("-",2)
+                    preview=f"{d}.{m}.{y}"
+                except ValueError:
+                    preview=canonical
+                aliases=[canonical,preview]
+            elif field_type=="datetime" and r["value_text"] is not None:
+                canonical=str(r["value_text"])
+                preview=canonical
+                try:
+                    date_part,time_part=canonical.split("T",1)
+                    y,m,d=date_part.split("-",2)
+                    hhmm=time_part[:5]
+                    preview=f"{d}.{m}.{y}, {hhmm}"
+                except ValueError:
+                    pass
+                aliases=[canonical,preview]
+            if preview is None or not any(key in make_key(alias) for alias in aliases):
+                continue
+            rows.append({
+                "category_id":str(r["category_id"]),
+                "category_name":str(r["category_name"]),
+                "entry_id":str(r["entry_id"]),
+                "entry_title":str(r["entry_title"]),
+                "field_id":str(r["field_id"]),
+                "field_name":str(r["field_name"]),
+                "value_preview":preview,
+                "source_kind":"scalar_"+field_type,
+            })
 
         choice_sql="""
         SELECT c.id AS category_id,c.name AS category_name,e.id AS entry_id,e.title AS entry_title,
