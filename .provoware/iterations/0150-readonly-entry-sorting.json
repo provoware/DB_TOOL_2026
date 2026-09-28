@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "iteration": 150,
+  "agent": "readonly-entry-sorting-agent-150",
+  "size": "M",
+  "goal": "C · Datenarbeit → Sortierung als separaten GET-only Slice schließen: Einträge einer gewählten Kategorie deterministisch nach Titel A–Z oder Z–A sortieren, ohne Filtervertrag oder Persistenzgrenze zu erweitern.",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Read-only Eintragssortierung",
+    "summary": "I150 ergänzt ausschließlich eine deterministische Titel-Sortierung der bereits geladenen Eintragsprojektion und erhält den I149-Filterzustand.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0150-readonly-entry-sorting.json",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i150_readonly_entry_sorting.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i149_readonly_entry_filter.py"
+  ],
+  "direct_dependencies": [
+    "main 99e395c17f72893ba1d7a00c12ab93ad1e5f466c",
+    "I149 filter is GATE_GREEN and squash-merged",
+    "GET-only web boundary remains authoritative",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile changed web runtime and I150 test",
+    "default order remains unchanged",
+    "title_asc and title_desc are deterministic",
+    "filter and sort state preserve each other",
+    "SQLite total_changes remains unchanged",
+    "I149 filter regression remains green",
+    "existing HTTP navigation remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "mask-builder Chromium tests because I150 does not touch mask-builder runtime",
+    "Control Plane tests because governance is unchanged",
+    "storage deep gate because repository/schema/frozen storage core is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i150_readonly_entry_sorting.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i149_readonly_entry_filter.py",
+      "tests/web/test_i150_readonly_entry_sorting.py"
+    ]
+  },
+  "risks": [
+    "sort state must not create a write path",
+    "default repository order must remain unchanged unless sort is explicit",
+    "filter and sort must compose without silently clearing each other"
+  ],
+  "non_changes": [
+    "no strong detail view",
+    "no global field-value search",
+    "no saved sorting",
+    "no persistence",
+    "no repository or schema change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "users can explicitly sort the selected category entry list by title",
+    "TODO C · Sortierung can close if gates are green",
+    "A-M progress becomes 33 of 132 = 25.0 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
