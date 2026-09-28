@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "iteration": 157,
+  "agent": "field-value-search-deep-lab-agent-157",
+  "size": "M",
+  "goal": "Feldwertsuche ausschließlich im isolierten Frozen-Core-Labor beginnen: read-only Repositorypfad für Text/Langtext und Choice-Werte prüfen, ohne Service-/Web-Integration.",
+  "change_kind": "frozen_core",
+  "gate_profile": "deep",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Feldwertsuche Deep-Gate-Labor",
+    "summary": "I157 ergänzt einen nicht integrierten Repository-Laborread für Text- und Choice-Feldwerte und prüft No-Write-, Parent- und Limit-Invarianten.",
+    "target_doc": "docs/development/ITERATION_157_FIELD_VALUE_SEARCH_DEEP_LAB.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0157-field-value-search-deep-lab.json",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "tests/repository/test_i157_field_value_search_lab.py",
+    "docs/development/ITERATION_157_FIELD_VALUE_SEARCH_DEEP_LAB.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "docs/development/ITERATION_154_GLOBAL_FIELD_VALUE_SEARCH_PLAN.md",
+    "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+    "src/provoware_db/application/catalog_service.py",
+    "src/provoware_db/web/read_adapter.py",
+    "tests/repository/test_read_core_a.py",
+    "tests/repository/test_read_core_b.py"
+  ],
+  "direct_dependencies": [
+    "main 7b2765a4f423cfe54ff5bfc8ffd62c6fc690aac3",
+    "I155 strong detail view is merged",
+    "I156 search-location projection is merged",
+    "I154 requires later repository work to use a deep gate",
+    "service and web integration remain closed"
+  ],
+  "tests_required": [
+    "single-source preflight",
+    "compile changed repository and I157 lab test",
+    "text/long-text value matching",
+    "single-choice label matching",
+    "multi-choice deterministic deduplication",
+    "deleted-parent exclusion",
+    "limit behavior",
+    "SQLite total_changes unchanged",
+    "repository read-core regressions",
+    "full deep/foundation gate required for protected storage path"
+  ],
+  "tests_explicitly_not_run": [
+    "Web integration tests because I157 exposes no service/web path",
+    "Chromium tests because UI is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/storage/sqlite/repositories/field_repository.py",
+      "tests/repository/test_i157_field_value_search_lab.py"
+    ],
+    "python_tests": [
+      "tests/repository/test_i157_field_value_search_lab.py",
+      "tests/repository/test_read_core_a.py",
+      "tests/repository/test_read_core_b.py"
+    ]
+  },
+  "risks": [
+    "repository read touches protected CP-06 scope",
+    "lab method must remain unreachable from product service/web",
+    "choice joins must exclude deleted parents/options",
+    "first lab intentionally covers only text-like and choice values"
+  ],
+  "non_changes": [
+    "no CatalogService integration",
+    "no Web adapter or HTTP integration",
+    "no global-search TODO completion",
+    "no schema/FTS/index change",
+    "no write or persistence behavior"
+  ],
+  "expected_side_effects": [
+    "isolated read-path evidence exists for the first field-value types",
+    "later integration remains a separate gated iteration",
+    "product progress remains 35 of 132 = 26.5 percent"
+  ],
+  "screenshot_required": false,
+  "status": "LAB_PENDING_DEEP_GATE"
+}
