@@ -3,7 +3,7 @@
 PROVOWARE DB TOOL 2026 ist ein lokales Datenbankprojekt mit dem Ziel, Datenstrukturen auch ohne Datenbankwissen verständlich, sicher und schrittweise bedienbar zu machen.
 
 > **Bestätigter Produktstand:** I151 auf diesem Branch; starke Detailansicht ist inventarisiert, Runtime unverändert  
-> **Governance-Stand:** I124 Control Plane V2 ist vollständig als Shadow-Vertrag gemergt; die bestehende Governance bleibt autoritativ  
+> **Governance-Stand:** I152 führt einen gemeinsamen lokalen/CI-Preflight für Kontext, Manifest und Gate-Routing ein; Control Plane V2 bleibt Shadow-Vertrag  
 > **Sicherheitsstatus:** Browser-Maskenentwurf ohne Persistenz und ohne produktiven Datenbankzugriff  
 > **Frozen Core:** CP-03 und CP-06 bleiben geschlossen  
 > **Gesamtfortschritt Master-TODO A–M:** **33 / 132 = 25,0 %**
@@ -318,6 +318,16 @@ Dadurch ist die Zahl bewusst konservativ: große und kleine TODO-Punkte zählen 
 - `.provoware/iterations/` – maschinenlesbare Iterationsverträge
 - `scripts/repo_self_check.sh` – Repository-Gesundheitsprüfung
 - `scripts/start_readonly_web.py` – sicherer lokaler Nur-Lese-Webstart
+
+## Entwicklungs-Preflight
+
+Vor Produktänderung oder PR:
+
+```bash
+python scripts/iteration_preflight.py
+```
+
+Das Kommando prüft Fortschrittskonsistenz, aktuelles Manifest, Gate-Profil, Frozen-Core-Eskalation und Gate-Routing mit derselben Logik, die auch GitHub Actions verwendet. Die separate Scope-Prüfung bleibt zusätzlich bestehen.
 
 ## Repository-Hygiene
 

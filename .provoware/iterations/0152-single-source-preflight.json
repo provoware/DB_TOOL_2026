@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "iteration": 152,
+  "agent": "single-source-preflight-agent-152",
+  "size": "L",
+  "goal": "Lokale und CI-Vorprüfung auf eine gemeinsame Preflight-Logik zusammenführen, damit Fortschrittsdrift, ungültige Gate-Profile und Routingfehler vor teuren Gates erkannt werden.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Single-Source-of-Truth Preflight",
+    "summary": "I152 extrahiert Kontext-, Manifest- und Gate-Routing-Prüfung in ein gemeinsames Preflight-Skript, das lokal und im PR-Router identisch verwendet wird.",
+    "target_doc": "AGENTS.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0152-single-source-preflight.json",
+    ".github/workflows/iteration-gates.yml",
+    "scripts/iteration_preflight.py",
+    "tests/governance/test_iteration_preflight.py",
+    "AGENTS.md",
+    "README.md",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "scripts/build_iteration_context.py",
+    "scripts/validate_iteration_manifest.py",
+    ".provoware/schema/iteration-manifest-v2.schema.json",
+    ".github/workflows/iteration-gates.yml",
+    "tests/governance/test_iteration_context.py"
+  ],
+  "direct_dependencies": [
+    "main 1badc88e9cdb33fb71a8bb2a3cb222414b8fdfc9",
+    "I151 is scope-only and merged",
+    "I149 exposed progress drift and invalid gate-profile loops",
+    "existing manifest and fast-context validators remain authoritative"
+  ],
+  "tests_required": [
+    "compile preflight script and governance test",
+    "shared route contract returns expected targeted/governance/foundation gates",
+    "profile downgrade fails closed",
+    "frozen-core write without deep gate fails closed",
+    "current repository preflight passes end-to-end",
+    "existing iteration-context regression remains green"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime product code is unchanged",
+    "Chromium tests because UI is unchanged",
+    "storage tests because database code is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/iteration_preflight.py",
+      "tests/governance/test_iteration_preflight.py"
+    ],
+    "python_tests": [
+      "tests/governance/test_iteration_preflight.py",
+      "tests/governance/test_iteration_context.py"
+    ]
+  },
+  "risks": [
+    "CI and local preflight could diverge if workflow retains duplicate routing logic",
+    "preflight must fail closed on protected paths and profile downgrades",
+    "preflight must not weaken existing scope validation"
+  ],
+  "non_changes": [
+    "no product runtime change",
+    "no database or schema change",
+    "no reduction of gate coverage",
+    "changed-file scope validation remains a separate mandatory step"
+  ],
+  "expected_side_effects": [
+    "local and CI gate routing use the same Python implementation",
+    "invalid manifest/profile combinations fail before targeted or foundation gates",
+    "progress drift fails before expensive test jobs",
+    "workflow YAML becomes smaller and easier to audit"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
