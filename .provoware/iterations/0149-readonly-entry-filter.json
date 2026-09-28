@@ -1,0 +1,88 @@
+{
+  "schema_version": 2,
+  "iteration": 149,
+  "agent": "readonly-entry-filter-agent-149",
+  "size": "S",
+  "goal": "Den kleinsten unabhängigen Filtervertrag in C · Datenarbeit umsetzen: Einträge innerhalb der gewählten Kategorie browserseitig/read-only nach Titel filtern.",
+  "change_kind": "product",
+  "gate_profile": "standard",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Read-only Eintragsfilter",
+    "summary": "I149 ergänzt einen GET-only Titel-Filter auf der bereits geladenen Eintragsprojektion. Keine Repository-, Schema- oder Persistenzänderung.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0149-readonly-entry-filter.json",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "tests/web/test_i149_readonly_entry_filter.py",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    "src/provoware_db/web/http_app.py",
+    "src/provoware_db/web/render.py",
+    "src/provoware_db/web/read_adapter.py",
+    "tests/web/test_http_navigation.py",
+    "tests/web/test_i148_readonly_search_acceptance.py"
+  ],
+  "direct_dependencies": [
+    "main 1f83ad2605ab09abd3df4d051d07691f9a9a4377",
+    "I148 read-only search is GATE_GREEN and merged",
+    "GET-only web boundary remains authoritative",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile changed web runtime and I149 test",
+    "case-insensitive title filtering inside selected category",
+    "empty/whitespace filter behaves as unfiltered",
+    "no-match state is explicit",
+    "SQLite total_changes remains unchanged by filter GET",
+    "existing HTTP navigation and I148 search regressions remain green",
+    "POST/write boundary remains unchanged"
+  ],
+  "tests_explicitly_not_run": [
+    "mask-builder Chromium tests because I149 does not touch mask-builder runtime",
+    "Control Plane tests because governance is unchanged",
+    "storage deep gate because repository/schema/frozen storage core is unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/web/http_app.py",
+      "src/provoware_db/web/render.py",
+      "tests/web/test_i149_readonly_entry_filter.py"
+    ],
+    "python_tests": [
+      "tests/web/test_http_navigation.py",
+      "tests/web/test_i148_readonly_search_acceptance.py",
+      "tests/web/test_i149_readonly_entry_filter.py"
+    ]
+  },
+  "risks": [
+    "filter state must not accidentally create a write path",
+    "filter must remain scoped to the selected category entry list",
+    "sorting and global field-value search must not leak into this slice"
+  ],
+  "non_changes": [
+    "no sorting",
+    "no global field-value search",
+    "no saved filters",
+    "no persistence",
+    "no repository or schema change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "users can narrow a selected category's entry list by title",
+    "TODO C · Filter can close if gates are green",
+    "A-M progress becomes 32 of 132 = 24.2 percent"
+  ],
+  "screenshot_required": false,
+  "status": "IMPLEMENTED_PENDING_GATE"
+}
