@@ -233,6 +233,12 @@ def _multiselect_markup(category_id: str | None) -> str:
         '<button type="button" id="multiselect-clear" disabled>Auswahl aufheben</button>'
         '<p class="multiselect-note">Nur temporär im Browser · keine Speicherung</p>'
         '</section>'
+        '<section class="mass-preview" id="mass-preview" aria-labelledby="mass-preview-title">'
+        '<h3 id="mass-preview-title">Vorschau für Massenaktion</h3>'
+        '<p id="mass-preview-summary" role="status" aria-live="polite">Keine Einträge ausgewählt.</p>'
+        '<ul id="mass-preview-list" aria-label="Betroffene Einträge"></ul>'
+        '<p class="mass-preview-warning"><strong>Vorschau:</strong> Es wird nichts geändert oder gespeichert.</p>'
+        '</section>'
     )
 
 
