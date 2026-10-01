@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "iteration": 175,
+  "agent": "browser-local-rule-previews-agent-175",
+  "size": "L",
+  "goal": "Zahlenbereich, Datum von/bis und erlaubte Dateitypen als rein browserlokale Regelvorschauen gemeinsam absichern.",
+  "change_kind": "ui",
+  "gate_profile": "ui",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Browserlokale Regelvorschauen",
+    "summary": "Zahlen-, Datums- und Dateitypregeln können mit Testwerten ausprobiert werden, ohne Regeln, Datensätze oder Dateien zu speichern.",
+    "target_doc": "docs/development/ITERATION_175_BROWSER_LOCAL_RULE_PREVIEWS.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0175-browser-local-rule-previews.json",
+    "docs/development/ITERATION_175_BROWSER_LOCAL_RULE_PREVIEWS.md",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/i175_chromium_evidence.mjs",
+    "tests/mask_builder/test_i175_chromium_evidence.py",
+    "tests/mask_builder/test_i175_rule_previews.py",
+    "TODO.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    ".provoware/iterations/0172-browser-local-number-range-preview.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/i172_chromium_evidence.mjs",
+    "tests/mask_builder/test_i172_chromium_evidence.py",
+    "tests/mask_builder/test_i172_number_range_preview.py"
+  ],
+  "direct_dependencies": [
+    "work 81e0311",
+    "existing transient I172 number-range preview",
+    "existing browser-shell draft state and tooltip patterns",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile changed Python files",
+    "Node syntax check for Chromium harness",
+    "I175 static three-rule regression",
+    "direct browser-shell, required-value and number-range regressions",
+    "real Chromium date/file states, accessibility, layout and screenshot gate",
+    "manifest V2 and single-source preflight"
+  ],
+  "tests_explicitly_not_run": [
+    "local real Chromium gate is blocked because neither a browser binary nor a configured project browser lock exists; CI gate remains required",
+    "storage deep gate because repository and schema are unchanged",
+    "full product suite because the change is isolated to the transient browser editor"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i175_chromium_evidence.py",
+      "tests/mask_builder/test_i175_rule_previews.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_browser_shell.py",
+      "tests/mask_builder/test_i167_required_rule_preview.py",
+      "tests/mask_builder/test_i172_number_range_preview.py",
+      "tests/mask_builder/test_i175_rule_previews.py",
+      "tests/mask_builder/test_i175_chromium_evidence.py"
+    ]
+  },
+  "risks": [
+    "visible UI behavior must pass the real Chromium and screenshot gate before TODO completion",
+    "the large browser shell increases localized regression risk",
+    "file-type preview checks names only and must not imply content inspection"
+  ],
+  "non_changes": [
+    "no productive rule activation or persistence",
+    "no actual file access or existing-data validation",
+    "no backend, repository, schema, dependency or CI change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "date and file draft fields expose transient rule previews",
+    "the existing number-range preview receives a shared regression gate",
+    "the three TODO items close only after real Chromium evidence is green"
+  ],
+  "screenshot_required": true,
+  "status": "CI_GATE_PENDING"
+}
