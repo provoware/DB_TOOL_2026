@@ -160,7 +160,9 @@ Für UI-Slices gehören Tastaturbedienung, sichtbarer Fokus, zugängliche Namen/
 
 ## Fortschrittsmessung
 
-Der aktuelle Fortschritt wird ausschließlich in `TODO.md` aus den eindeutigen Checkboxen des Implementierungspools A–M abgeleitet. Die README wiederholt bewusst **keine Prozentzahl**, damit nach neuen Iterationen keine zweite Statusquelle veraltet.
+Der aktuelle Fortschritt wird aus den eindeutigen Checkboxen des Implementierungspools A–M in `TODO.md` abgeleitet. Die folgende kompakte Zeile bleibt absichtlich erhalten, weil der gemeinsame lokale/CI-Preflight sie als Driftkontrolle prüft.
+
+> **Gesamtfortschritt Master-TODO A–M:** **42 / 132 = 31,8 %**
 
 ## Wichtige Projektdateien
 
