@@ -680,6 +680,115 @@ _INTERACTION_SCRIPT = r"""
     setStatus(item.label + " · " + result.message + " · nur temporäre Vorschau.");
   }
 
+  function dateRangeRuleFor(item) {
+    return {
+      id: "draft-rule-date-range-" + item.id,
+      kind: "date_range",
+      targetFieldId: item.id,
+      enabled: item.dataType === "date",
+      parameters: { from: item.dateRangeFrom || null, to: item.dateRangeTo || null },
+    };
+  }
+
+  function evaluateDateRangeRule(rule, item, value) {
+    const parameters = rule === null ? null : rule.parameters;
+    const isDate = (candidate) => candidate === null || /^\d{4}-\d{2}-\d{2}$/.test(candidate);
+    if (
+      rule === null
+      || rule.kind !== "date_range"
+      || item === undefined
+      || item.kind !== "field"
+      || item.dataType !== "date"
+      || rule.targetFieldId !== item.id
+      || parameters === null
+      || !isDate(parameters.from)
+      || !isDate(parameters.to)
+      || (parameters.from === null && parameters.to === null)
+      || (parameters.from !== null && parameters.to !== null && parameters.from > parameters.to)
+    ) {
+      return { state: "not_evaluable", message: "Der Datumsbereich ist ungültig. Prüfe Von- und Bis-Datum." };
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      return { state: "not_evaluable", message: "Wähle einen gültigen Testtag aus." };
+    }
+    if (parameters.from !== null && value < parameters.from) {
+      return { state: "violated", message: "Der Testtag liegt vor dem erlaubten Zeitraum." };
+    }
+    if (parameters.to !== null && value > parameters.to) {
+      return { state: "violated", message: "Der Testtag liegt nach dem erlaubten Zeitraum." };
+    }
+    return { state: "satisfied", message: "Der Testtag liegt im erlaubten Zeitraum." };
+  }
+
+  function updateDateRangePreview(id, fromInput, toInput, valueInput, resultNode) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field" || item.dataType !== "date") {
+      resultNode.dataset.ruleState = "not_evaluable";
+      resultNode.textContent = "Vorschau nicht möglich: Das Datumsfeld ist ungültig.";
+      return;
+    }
+    item.dateRangeFrom = fromInput.value;
+    item.dateRangeTo = toInput.value;
+    item.dateRangePreviewValue = valueInput.value;
+    const result = evaluateDateRangeRule(dateRangeRuleFor(item), item, item.dateRangePreviewValue);
+    resultNode.dataset.ruleState = result.state;
+    resultNode.textContent = result.message;
+    setStatus(item.label + " · " + result.message + " · nur temporäre Vorschau.");
+  }
+
+  function fileTypeRuleFor(item) {
+    const extensions = item.allowedFileTypes
+      .split(",")
+      .map((value) => value.trim().toLowerCase())
+      .filter((value) => /^\.[a-z0-9]+$/.test(value));
+    return {
+      id: "draft-rule-file-type-" + item.id,
+      kind: "allowed_file_types",
+      targetFieldId: item.id,
+      enabled: item.dataType === "file",
+      parameters: { extensions },
+    };
+  }
+
+  function evaluateFileTypeRule(rule, item, value) {
+    const extensions = rule?.parameters?.extensions;
+    if (
+      rule === null
+      || rule.kind !== "allowed_file_types"
+      || item === undefined
+      || item.kind !== "field"
+      || item.dataType !== "file"
+      || rule.targetFieldId !== item.id
+      || !Array.isArray(extensions)
+      || extensions.length === 0
+    ) {
+      return { state: "not_evaluable", message: "Die Dateityp-Regel ist ungültig. Gib mindestens eine Endung wie .pdf ein." };
+    }
+    const fileName = typeof value === "string" ? value.trim().toLowerCase() : "";
+    if (fileName.length === 0 || !fileName.includes(".")) {
+      return { state: "not_evaluable", message: "Gib einen Test-Dateinamen mit Endung ein." };
+    }
+    if (!extensions.some((extension) => fileName.endsWith(extension))) {
+      return { state: "violated", message: "Dieser Dateityp ist nicht erlaubt." };
+    }
+    return { state: "satisfied", message: "Dieser Dateityp ist erlaubt." };
+  }
+
+  function updateFileTypePreview(id, typesInput, valueInput, resultNode) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field" || item.dataType !== "file") {
+      resultNode.dataset.ruleState = "not_evaluable";
+      resultNode.textContent = "Vorschau nicht möglich: Das Dateifeld ist ungültig.";
+      return;
+    }
+    item.allowedFileTypes = typesInput.value;
+    item.fileTypePreviewValue = valueInput.value;
+    const result = evaluateFileTypeRule(fileTypeRuleFor(item), item, item.fileTypePreviewValue);
+    resultNode.dataset.ruleState = result.state;
+    resultNode.textContent = result.message;
+    setStatus(item.label + " · " + result.message + " · nur temporäre Vorschau.");
+  }
+
   function appendTooltip(container, id, label, text) {
     const trigger = document.createElement("button");
     trigger.type = "button";
@@ -1201,6 +1310,11 @@ _INTERACTION_SCRIPT = r"""
       numberRangeBoundType: source.numberRangeBoundType,
       numberRangeBoundaryValue: source.numberRangeBoundaryValue,
       numberRangePreviewValue: source.numberRangePreviewValue,
+      dateRangeFrom: source.dateRangeFrom,
+      dateRangeTo: source.dateRangeTo,
+      dateRangePreviewValue: source.dateRangePreviewValue,
+      allowedFileTypes: source.allowedFileTypes,
+      fileTypePreviewValue: source.fileTypePreviewValue,
     };
     draftElements.push(duplicate);
     setTemporaryGridPosition(duplicate.id, draftElements.length, duplicate.column, duplicate.width);
@@ -1418,6 +1532,7 @@ _INTERACTION_SCRIPT = r"""
           ["text", "Text"],
           ["number", "Zahl"],
           ["date", "Datum"],
+          ["file", "Datei"],
           ["boolean", "Ja/Nein"],
           ["single_choice", "Einfachauswahl"],
           ["multi_choice", "Mehrfachauswahl"],
@@ -1509,6 +1624,93 @@ _INTERACTION_SCRIPT = r"""
           );
           rangeGroup.appendChild(rangeResult);
           card.appendChild(rangeGroup);
+        }
+
+        if (item.dataType === "date") {
+          const dateGroup = document.createElement("fieldset");
+          dateGroup.className = "date-range-preview";
+          const legend = document.createElement("legend");
+          legend.textContent = "Datumsbereich testen";
+          dateGroup.appendChild(legend);
+          const controls = [
+            ["Von", "date-range-from", item.dateRangeFrom],
+            ["Bis", "date-range-to", item.dateRangeTo],
+            ["Testtag", "date-range-value", item.dateRangePreviewValue],
+          ].map(([text, className, currentValue]) => {
+            const label = document.createElement("label");
+            label.textContent = text;
+            const input = document.createElement("input");
+            input.type = "date";
+            input.className = className;
+            input.id = className + "-" + item.id;
+            input.value = currentValue;
+            label.htmlFor = input.id;
+            dateGroup.appendChild(label);
+            dateGroup.appendChild(input);
+            return input;
+          });
+          const resultNode = document.createElement("span");
+          const initial = evaluateDateRangeRule(dateRangeRuleFor(item), item, item.dateRangePreviewValue);
+          resultNode.className = "date-range-result";
+          resultNode.id = "date-range-result-" + item.id;
+          resultNode.dataset.ruleState = initial.state;
+          resultNode.setAttribute("role", "status");
+          resultNode.setAttribute("aria-live", "polite");
+          resultNode.textContent = initial.message;
+          const helpId = "date-range-help-" + item.id;
+          controls.forEach((control) => {
+            control.setAttribute("aria-describedby", helpId + " " + resultNode.id);
+            control.addEventListener("input", () => updateDateRangePreview(
+              item.id, controls[0], controls[1], controls[2], resultNode
+            ));
+          });
+          appendTooltip(dateGroup, helpId, item.label + " · Hilfe zum Datumsbereich", "Von, Bis und Testtag bleiben ausschließlich im Browser.");
+          dateGroup.appendChild(resultNode);
+          card.appendChild(dateGroup);
+        }
+
+        if (item.dataType === "file") {
+          const fileGroup = document.createElement("fieldset");
+          fileGroup.className = "file-type-preview";
+          const legend = document.createElement("legend");
+          legend.textContent = "Erlaubte Dateitypen testen";
+          fileGroup.appendChild(legend);
+          const typesLabel = document.createElement("label");
+          typesLabel.textContent = "Erlaubte Endungen";
+          const typesInput = document.createElement("input");
+          typesInput.type = "text";
+          typesInput.className = "file-type-extensions";
+          typesInput.id = "file-type-extensions-" + item.id;
+          typesInput.value = item.allowedFileTypes;
+          typesLabel.htmlFor = typesInput.id;
+          const valueLabel = document.createElement("label");
+          valueLabel.textContent = "Test-Dateiname";
+          const valueInput = document.createElement("input");
+          valueInput.type = "text";
+          valueInput.className = "file-type-value";
+          valueInput.id = "file-type-value-" + item.id;
+          valueInput.value = item.fileTypePreviewValue;
+          valueLabel.htmlFor = valueInput.id;
+          const resultNode = document.createElement("span");
+          const initial = evaluateFileTypeRule(fileTypeRuleFor(item), item, item.fileTypePreviewValue);
+          resultNode.className = "file-type-result";
+          resultNode.id = "file-type-result-" + item.id;
+          resultNode.dataset.ruleState = initial.state;
+          resultNode.setAttribute("role", "status");
+          resultNode.setAttribute("aria-live", "polite");
+          resultNode.textContent = initial.message;
+          const helpId = "file-type-help-" + item.id;
+          [typesInput, valueInput].forEach((control) => {
+            control.setAttribute("aria-describedby", helpId + " " + resultNode.id);
+            control.addEventListener("input", () => updateFileTypePreview(item.id, typesInput, valueInput, resultNode));
+          });
+          fileGroup.appendChild(typesLabel);
+          fileGroup.appendChild(typesInput);
+          fileGroup.appendChild(valueLabel);
+          fileGroup.appendChild(valueInput);
+          appendTooltip(fileGroup, helpId, item.label + " · Hilfe zu Dateitypen", "Kommagetrennte Endungen wie .pdf, .jpg prüfen nur den Test-Dateinamen. Keine Datei wird gelesen oder gespeichert.");
+          fileGroup.appendChild(resultNode);
+          card.appendChild(fileGroup);
         }
 
         if (isChoiceDataType(item.dataType)) {
@@ -1967,6 +2169,11 @@ _INTERACTION_SCRIPT = r"""
       numberRangeBoundType: "min",
       numberRangeBoundaryValue: "",
       numberRangePreviewValue: "",
+      dateRangeFrom: "",
+      dateRangeTo: "",
+      dateRangePreviewValue: "",
+      allowedFileTypes: "",
+      fileTypePreviewValue: "",
     };
     draftElements.push(created);
     setTemporaryGridPosition(created.id, draftElements.length, column, created.width);
@@ -2115,6 +2322,12 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .number-range-result {{ width:100%; padding:.45rem .55rem; border:1px solid #4a526b; border-radius:7px; color:#d7def5; }}
 .number-range-result[data-rule-state="violated"] {{ border-color:#ff9c9c; color:#ffd0d0; }}
 .number-range-result[data-rule-state="satisfied"] {{ border-color:#76d7a0; color:#bff2d2; }}
+.date-range-preview, .file-type-preview {{ display:flex; flex-wrap:wrap; align-items:center; gap:.45rem; width:100%; padding:.55rem; border:1px solid #4a526b; border-radius:7px; }}
+.date-range-preview legend, .file-type-preview legend {{ color:#d7def5; font-weight:600; }}
+.date-range-preview input, .file-type-preview input {{ min-width:0; max-width:12rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
+.date-range-result, .file-type-result {{ width:100%; padding:.45rem .55rem; border:1px solid #4a526b; border-radius:7px; color:#d7def5; }}
+.date-range-result[data-rule-state="violated"], .file-type-result[data-rule-state="violated"] {{ border-color:#ff9c9c; color:#ffd0d0; }}
+.date-range-result[data-rule-state="satisfied"], .file-type-result[data-rule-state="satisfied"] {{ border-color:#76d7a0; color:#bff2d2; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .option-editor-label {{ color:#d7def5; font-weight:600; }}
 .choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
@@ -2153,7 +2366,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .grid-assistant-comparison th, .grid-assistant-comparison td {{ padding:.45rem; border:1px solid #4a526b; text-align:left; vertical-align:top; overflow-wrap:anywhere; }}
 .grid-assistant-comparison th {{ background:#202536; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .required-preview-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .number-range-preview {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .required-preview-input, .number-range-bound, .number-range-boundary, .number-range-value {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .required-preview-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .number-range-preview, .date-range-preview, .file-type-preview {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .required-preview-input, .number-range-bound, .number-range-boundary, .number-range-value, .date-range-preview input, .file-type-preview input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
