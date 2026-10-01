@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "iteration": 176,
+  "agent": "repository-information-architecture-agent-176",
+  "size": "M",
+  "goal": "README von historischer Iterationschronik entlasten und den internen .provoware-Steuerordner verständlich dokumentieren, ohne Produktcode, Persistenz oder Frozen Core zu verändern.",
+  "change_kind": "docs",
+  "gate_profile": "docs",
+  "guide_delta": {
+    "mode": "optimize_existing",
+    "topic": "Repository-Navigation und Dokumenttrennung",
+    "summary": "Aktuelle Einstiegshinweise bleiben in README; Iterationshistorie wird verlustfrei nach docs/DEVELOPMENT_HISTORY.md ausgelagert und .provoware als versionierte Auditspur erklärt.",
+    "target_doc": "README.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0176-repository-information-architecture.json",
+    "README.md",
+    "docs/DEVELOPMENT_HISTORY.md",
+    ".provoware/README.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/schema/iteration-manifest-v2.schema.json",
+    ".provoware/queues/README.md",
+    ".provoware/iterations/0175-browser-local-rule-previews.json"
+  ],
+  "direct_dependencies": [
+    "stacked on PR #174 / I175 head fbe63f052cd5fabf4bfa38fd4066c1c8382e7d21",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "README no longer duplicates iteration-by-iteration sections moved to docs/DEVELOPMENT_HISTORY.md",
+    "moved historical text remains present in docs/DEVELOPMENT_HISTORY.md",
+    "README links point to existing documentation paths in this branch",
+    ".provoware/README.md clearly marks versioned audit material as non-cache",
+    "diff contains documentation and iteration metadata only"
+  ],
+  "tests_explicitly_not_run": [
+    "product test suite because no product/runtime code changes",
+    "database deep gate because schema, persistence, domain and repository code remain unchanged",
+    "Chromium/UI tests because rendering and browser behavior remain unchanged"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": []
+  },
+  "risks": [
+    "historical iteration text must not be mistaken for current product status",
+    "the cleanup must not delete or rename machine-readable audit files",
+    "stacked documentation PR must remain separate from I175 product scope"
+  ],
+  "non_changes": [
+    "no src/ changes",
+    "no tests/ changes",
+    "no schema or migration changes",
+    "no database write path changes",
+    "no CP-03 or CP-06 reopen",
+    "no deletion or renaming of existing .provoware/iterations files",
+    "no TODO checkbox or product-progress changes"
+  ],
+  "expected_side_effects": [
+    "README becomes materially shorter and less drift-prone",
+    "full historical explanation remains available under docs/",
+    "contributors can distinguish .provoware audit data from disposable local artifacts"
+  ],
+  "screenshot_required": false,
+  "status": "DOCS_IMPLEMENTED_AWAITING_GATE"
+}
