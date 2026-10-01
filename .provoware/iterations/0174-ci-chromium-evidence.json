@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "iteration": 174,
+  "agent": "ci-chromium-evidence-agent-174",
+  "size": "M",
+  "goal": "Das reale I172-Chromium- und Screenshot-Gate autonom im vorhandenen PR-Workflow ausfuehren und Evidence hochladen.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Automatische Browserabnahme in CI",
+    "summary": "Der Pull-Request-Workflow fuehrt das unveraenderte I172-Browser-Gate autonom aus und laedt echte Screenshot-Evidence hoch; ohne Browser oder gruenen Nachweis bleibt der Lauf rot.",
+    "target_doc": "docs/development/ITERATION_174_CI_CHROMIUM_EVIDENCE.md"
+  },
+  "write_files": [
+    ".github/workflows/targeted-iteration.yml",
+    ".provoware/iterations/0174-ci-chromium-evidence.json",
+    "docs/development/ITERATION_174_CI_CHROMIUM_EVIDENCE.md",
+    "tests/scripts/test_i174_ci_chromium_gate.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".github/workflows/iteration-gates.yml",
+    ".github/workflows/targeted-iteration.yml",
+    ".provoware/iterations/0173-project-local-test-browser.json",
+    "tests/mask_builder/test_i172_chromium_evidence.py"
+  ],
+  "direct_dependencies": [
+    "work 29cedb6",
+    "existing targeted manifest runner",
+    "existing runtime evidence artifact upload",
+    "unchanged I172 CDP and screenshot harness",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile I174 CI contract and I172 wrapper",
+    "I174 workflow and manifest contract",
+    "real I172 Chromium screenshot and accessibility gate on the PR runner",
+    "manifest V2 and single-source preflight",
+    "final scope and diff validation"
+  ],
+  "tests_explicitly_not_run": [
+    "real Chromium gate cannot run in the local container because no browser binary exists",
+    "product tests because runtime product code is unchanged",
+    "storage deep gate because repository and schema are unchanged",
+    "full suite because the change is limited to browser CI routing"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/mask_builder/test_i172_chromium_evidence.py",
+      "tests/scripts/test_i174_ci_chromium_gate.py"
+    ],
+    "python_tests": [
+      "tests/scripts/test_i174_ci_chromium_gate.py",
+      "tests/mask_builder/test_i172_chromium_evidence.py"
+    ]
+  },
+  "risks": [
+    "the selected ubuntu-latest runner may not expose a compatible Chrome executable",
+    "a real rendering or accessibility defect may turn the PR gate red",
+    "shared PYTHONPATH handling must preserve all existing manifest tests"
+  ],
+  "non_changes": [
+    "no product runtime or UI change",
+    "no change to I172 gate assertions or screenshot criteria",
+    "no browser binary or archive committed",
+    "no new Python, Node or workflow action dependency",
+    "no README, TODO or roadmap progress change before remote evidence",
+    "no persistence, repository or schema change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "pull requests execute the real I172 Chromium gate as a targeted manifest test",
+    "runtime iteration evidence is uploaded even when the browser gate fails",
+    "A-M product progress remains 42 of 132 until remote evidence is green"
+  ],
+  "screenshot_required": true,
+  "status": "CI_GATE_PENDING"
+}

@@ -72,10 +72,12 @@ jobs:
 
           env = os.environ.copy()
           src_path = str((root / "src").resolve())
+          root_path = str(root.resolve())
+          python_path = src_path + os.pathsep + root_path
           env["PYTHONPATH"] = (
-              src_path
+              python_path
               if not env.get("PYTHONPATH")
-              else src_path + os.pathsep + env["PYTHONPATH"]
+              else python_path + os.pathsep + env["PYTHONPATH"]
           )
 
           for target in test_targets:

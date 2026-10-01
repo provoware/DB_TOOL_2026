@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "browser": "chromium",
+  "platform": "linux-x86_64",
+  "revision": "UNCONFIGURED",
+  "url": "",
+  "sha256": "",
+  "cache_dir": ".browser-cache/chromium",
+  "executable": "chrome-linux64/chrome",
+  "allowed_download_hosts": [
+    "storage.googleapis.com"
+  ]
+}

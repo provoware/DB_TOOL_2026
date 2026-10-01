@@ -605,6 +605,81 @@ _INTERACTION_SCRIPT = r"""
     setStatus(item.label + " · " + result.message + " · nur temporäre Vorschau.");
   }
 
+  function parseCanonicalNumber(value) {
+    if (typeof value !== "string" || !/^-?(0|[1-9][0-9]*)(\.[0-9]+)?$/.test(value)) {
+      return null;
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function numberRangeRuleFor(item) {
+    const boundary = parseCanonicalNumber(item.numberRangeBoundaryValue);
+    return {
+      id: "draft-rule-number-range-" + item.id,
+      kind: "number_range",
+      targetFieldId: item.id,
+      enabled: item.dataType === "number",
+      parameters: {
+        min: item.numberRangeBoundType === "min" ? boundary : null,
+        max: item.numberRangeBoundType === "max" ? boundary : null,
+      },
+    };
+  }
+
+  function evaluateNumberRangeRule(rule, item, value) {
+    const parameters = rule === null ? null : rule.parameters;
+    const validParameters = (
+      parameters !== null
+      && typeof parameters === "object"
+      && Object.keys(parameters).length === 2
+      && Object.hasOwn(parameters, "min")
+      && Object.hasOwn(parameters, "max")
+      && (parameters.min === null || (typeof parameters.min === "number" && Number.isFinite(parameters.min)))
+      && (parameters.max === null || (typeof parameters.max === "number" && Number.isFinite(parameters.max)))
+      && ((parameters.min === null) !== (parameters.max === null))
+    );
+    if (
+      rule === null
+      || rule.kind !== "number_range"
+      || typeof rule.id !== "string"
+      || item === undefined
+      || item.kind !== "field"
+      || item.dataType !== "number"
+      || rule.targetFieldId !== item.id
+      || !validParameters
+    ) {
+      return { state: "not_evaluable", reason: "invalid_number_range", message: "Der Zahlenbereich ist ungültig. Prüfe die Grenze." };
+    }
+    const parsedValue = parseCanonicalNumber(value);
+    if (parsedValue === null) {
+      return { state: "not_evaluable", reason: "invalid_number_value", message: "Gib eine gültige Zahl ohne Leerzeichen ein." };
+    }
+    if (parameters.min !== null && parsedValue < parameters.min) {
+      return { state: "violated", reason: "number_below_min", message: "Der Testwert muss mindestens " + String(parameters.min) + " sein." };
+    }
+    if (parameters.max !== null && parsedValue > parameters.max) {
+      return { state: "violated", reason: "number_above_max", message: "Der Testwert darf höchstens " + String(parameters.max) + " sein." };
+    }
+    return { state: "satisfied", reason: "number_in_range", message: "Der Testwert liegt im erlaubten Zahlenbereich." };
+  }
+
+  function updateNumberRangePreview(id, boundSelect, boundaryInput, valueInput, resultNode) {
+    const item = draftElements.find((candidate) => candidate.id === id);
+    if (item === undefined || item.kind !== "field" || item.dataType !== "number") {
+      resultNode.dataset.ruleState = "not_evaluable";
+      resultNode.textContent = "Vorschau nicht möglich: Das Zahlenfeld ist ungültig.";
+      return;
+    }
+    item.numberRangeBoundType = boundSelect.value;
+    item.numberRangeBoundaryValue = boundaryInput.value;
+    item.numberRangePreviewValue = valueInput.value;
+    const result = evaluateNumberRangeRule(numberRangeRuleFor(item), item, item.numberRangePreviewValue);
+    resultNode.dataset.ruleState = result.state;
+    resultNode.textContent = result.message;
+    setStatus(item.label + " · " + result.message + " · nur temporäre Vorschau.");
+  }
+
   function appendTooltip(container, id, label, text) {
     const trigger = document.createElement("button");
     trigger.type = "button";
@@ -1123,6 +1198,9 @@ _INTERACTION_SCRIPT = r"""
       options,
       defaultSelection,
       requiredPreviewValue: source.requiredPreviewValue,
+      numberRangeBoundType: source.numberRangeBoundType,
+      numberRangeBoundaryValue: source.numberRangeBoundaryValue,
+      numberRangePreviewValue: source.numberRangePreviewValue,
     };
     draftElements.push(duplicate);
     setTemporaryGridPosition(duplicate.id, draftElements.length, duplicate.column, duplicate.width);
@@ -1355,6 +1433,83 @@ _INTERACTION_SCRIPT = r"""
         dataTypeSelect.addEventListener("change", () => changeDataType(item.id, dataTypeSelect));
         card.appendChild(dataTypeLabel);
         card.appendChild(dataTypeSelect);
+
+        if (item.dataType === "number") {
+          const rangeGroup = document.createElement("fieldset");
+          rangeGroup.className = "number-range-preview";
+          const rangeLegend = document.createElement("legend");
+          rangeLegend.textContent = "Zahlenbereich testen";
+          rangeGroup.appendChild(rangeLegend);
+
+          const boundLabel = document.createElement("label");
+          boundLabel.textContent = "Grenzart";
+          const boundSelect = document.createElement("select");
+          boundSelect.className = "number-range-bound";
+          boundSelect.id = "number-range-bound-" + item.id;
+          [["min", "Mindestens"], ["max", "Höchstens"]].forEach(([value, text]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = text;
+            option.selected = item.numberRangeBoundType === value;
+            boundSelect.appendChild(option);
+          });
+          boundLabel.htmlFor = boundSelect.id;
+
+          const boundaryLabel = document.createElement("label");
+          boundaryLabel.textContent = "Grenzwert";
+          const boundaryInput = document.createElement("input");
+          boundaryInput.type = "text";
+          boundaryInput.inputMode = "decimal";
+          boundaryInput.className = "number-range-boundary";
+          boundaryInput.id = "number-range-boundary-" + item.id;
+          boundaryInput.value = item.numberRangeBoundaryValue;
+          boundaryLabel.htmlFor = boundaryInput.id;
+
+          const valueLabel = document.createElement("label");
+          valueLabel.textContent = "Testwert";
+          const valueInput = document.createElement("input");
+          valueInput.type = "text";
+          valueInput.inputMode = "decimal";
+          valueInput.className = "number-range-value";
+          valueInput.id = "number-range-value-" + item.id;
+          valueInput.value = item.numberRangePreviewValue;
+          valueLabel.htmlFor = valueInput.id;
+
+          const rangeResult = document.createElement("span");
+          const initialRangeResult = evaluateNumberRangeRule(
+            numberRangeRuleFor(item), item, item.numberRangePreviewValue
+          );
+          rangeResult.className = "number-range-result";
+          rangeResult.id = "number-range-result-" + item.id;
+          rangeResult.dataset.ruleState = initialRangeResult.state;
+          rangeResult.setAttribute("role", "status");
+          rangeResult.setAttribute("aria-live", "polite");
+          rangeResult.textContent = initialRangeResult.message;
+          const updateRange = () => updateNumberRangePreview(
+            item.id, boundSelect, boundaryInput, valueInput, rangeResult
+          );
+          boundSelect.addEventListener("change", updateRange);
+          boundaryInput.addEventListener("input", updateRange);
+          valueInput.addEventListener("input", updateRange);
+          const helpId = "number-range-help-" + item.id;
+          boundaryInput.setAttribute("aria-describedby", helpId + " " + rangeResult.id);
+          valueInput.setAttribute("aria-describedby", helpId + " " + rangeResult.id);
+
+          rangeGroup.appendChild(boundLabel);
+          rangeGroup.appendChild(boundSelect);
+          rangeGroup.appendChild(boundaryLabel);
+          rangeGroup.appendChild(boundaryInput);
+          rangeGroup.appendChild(valueLabel);
+          rangeGroup.appendChild(valueInput);
+          appendTooltip(
+            rangeGroup,
+            helpId,
+            item.label + " · Hilfe zur Zahlenbereichsregel",
+            "Prüft genau eine Unter- oder Obergrenze. Regel und Testwert bleiben ausschließlich im Browser."
+          );
+          rangeGroup.appendChild(rangeResult);
+          card.appendChild(rangeGroup);
+        }
 
         if (isChoiceDataType(item.dataType)) {
           const choiceState = document.createElement("span");
@@ -1809,6 +1964,9 @@ _INTERACTION_SCRIPT = r"""
       options: selectedKind === "field" ? [] : null,
       defaultSelection: null,
       requiredPreviewValue: "",
+      numberRangeBoundType: "min",
+      numberRangeBoundaryValue: "",
+      numberRangePreviewValue: "",
     };
     draftElements.push(created);
     setTemporaryGridPosition(created.id, draftElements.length, column, created.width);
@@ -1951,6 +2109,12 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .required-preview-result {{ width:100%; padding:.45rem .55rem; border:1px solid #4a526b; border-radius:7px; color:#d7def5; }}
 .required-preview-result[data-rule-state="violated"] {{ border-color:#ff9c9c; color:#ffd0d0; }}
 .required-preview-result[data-rule-state="satisfied"] {{ border-color:#76d7a0; color:#bff2d2; }}
+.number-range-preview {{ display:flex; flex-wrap:wrap; align-items:center; gap:.45rem; width:100%; padding:.55rem; border:1px solid #4a526b; border-radius:7px; }}
+.number-range-preview legend {{ color:#d7def5; font-weight:600; }}
+.number-range-bound, .number-range-boundary, .number-range-value {{ min-width:0; max-width:10rem; padding:.35rem .45rem; border:1px solid #6978a4; border-radius:6px; background:#11131a; color:inherit; font:inherit; }}
+.number-range-result {{ width:100%; padding:.45rem .55rem; border:1px solid #4a526b; border-radius:7px; color:#d7def5; }}
+.number-range-result[data-rule-state="violated"] {{ border-color:#ff9c9c; color:#ffd0d0; }}
+.number-range-result[data-rule-state="satisfied"] {{ border-color:#76d7a0; color:#bff2d2; }}
 .choice-state {{ color:#b8bfd2; font-weight:600; overflow-wrap:anywhere; }}
 .option-editor-label {{ color:#d7def5; font-weight:600; }}
 .choice-options-list {{ width:100%; margin:.2rem 0 .4rem; padding-left:1.5rem; }}
@@ -1989,7 +2153,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {{ outline:3px s
 .grid-assistant-comparison th, .grid-assistant-comparison td {{ padding:.45rem; border:1px solid #4a526b; text-align:left; vertical-align:top; overflow-wrap:anywhere; }}
 .grid-assistant-comparison th {{ background:#202536; }}
 .status {{ display:inline-block; margin-top:.75rem; padding:.35rem .6rem; border:1px solid #4a526b; border-radius:999px; color:#b8bfd2; }}
-@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .required-preview-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .required-preview-input {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
+@media (max-width:1000px) {{ .editor {{ grid-template-columns:1fr; }} .canvas {{ min-height:24rem; }} .placed-element {{ align-items:stretch; flex-direction:column; }} .placed-element > span, .width-label, .datatype-label, .default-value-label, .default-selection-label, .choice-state, .visibility-state {{ min-width:0; overflow-wrap:anywhere; }} .required-preview-label {{ min-width:0; overflow-wrap:anywhere; }} .label-editor, .help-editor, .option-editor, .default-selection-group {{ align-items:stretch; flex-direction:column; width:100%; }} .number-range-preview {{ align-items:stretch; flex-direction:column; width:100%; }} .label-editor-input, .help-editor-input, .option-editor-input {{ max-width:none; width:100%; }} .required-preview-input, .number-range-bound, .number-range-boundary, .number-range-value {{ max-width:none; width:100%; }} .choice-option-row {{ align-items:stretch; flex-direction:column; }} .default-selection-row .default-selection-control {{ width:auto; align-self:flex-start; }} .edit-label, .edit-help, .save-label, .save-help, .toggle-required, .toggle-visibility, .width-select, .datatype-select, .default-value-control, .default-selection-control, .add-option, .move-option-up, .move-option-down, .remove-option, .move-draft-up, .move-draft-down, .duplicate-draft, .move-draft, .remove-draft {{ align-self:stretch; width:100%; }} }}
 </style>
 </head>
 <body>
