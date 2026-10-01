@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "iteration": 173,
+  "agent": "project-local-test-browser-agent-173",
+  "size": "L",
+  "goal": "Einen sicheren projektlokalen Chromium-Bootstrap und Lookup fuer das bestehende I172-Gate bereitstellen.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Projektlokaler Testbrowser",
+    "summary": "Ein gepinntes Browserarchiv kann nach SHA-256-Pruefung sicher in einen lokalen Cache installiert werden; ohne passenden Fingerabdruck oder freigegebenen Host bleibt die Installation geschlossen.",
+    "target_doc": "docs/development/ITERATION_173_PROJECT_LOCAL_TEST_BROWSER.md"
+  },
+  "write_files": [
+    ".gitignore",
+    ".provoware/browser-lock.json",
+    ".provoware/iterations/0173-project-local-test-browser.json",
+    "docs/development/ITERATION_173_PROJECT_LOCAL_TEST_BROWSER.md",
+    "scripts/install_test_browser.py",
+    "tests/mask_builder/test_i172_chromium_evidence.py",
+    "tests/scripts/test_install_test_browser.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0172-browser-local-number-range-preview.json",
+    "docs/development/ITERATION_172_BROWSER_LOCAL_NUMBER_RANGE_PREVIEW.md",
+    "scripts/build_iteration_context.py",
+    "tests/mask_builder/test_i172_chromium_evidence.py"
+  ],
+  "direct_dependencies": [
+    "work a7af3bc",
+    "I172 Chromium gate and CDP harness",
+    "Python standard library only",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile browser installer, installer tests and I172 wrapper",
+    "verified offline archive installation",
+    "SHA-256 mismatch and archive traversal negative tests",
+    "project-local receipt lookup",
+    "I172 Chromium gate",
+    "manifest V2 and single-source preflight",
+    "final scope and diff validation"
+  ],
+  "tests_explicitly_not_run": [
+    "real I172 Chromium screenshot gate remains blocked until a pinned archive or executable is supplied",
+    "product tests because product runtime is unchanged",
+    "storage deep gate because repository and schema are unchanged",
+    "full suite because only browser test infrastructure changes"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "scripts/install_test_browser.py",
+      "tests/mask_builder/test_i172_chromium_evidence.py",
+      "tests/scripts/test_install_test_browser.py"
+    ],
+    "python_tests": [
+      "tests/scripts/test_install_test_browser.py"
+    ]
+  },
+  "risks": [
+    "a compromised archive must never be accepted without the pinned SHA-256",
+    "archive paths or symlinks could otherwise escape the local cache",
+    "a stale or partial cache could otherwise be mistaken for a verified browser",
+    "the real screenshot gate remains unavailable until an external artifact is provided"
+  ],
+  "non_changes": [
+    "no browser binary or archive committed",
+    "no product runtime or UI change",
+    "no Python or Node dependency",
+    "no CI workflow change",
+    "no README, TODO or roadmap progress change",
+    "no persistence, repository or schema change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "a pinned Chromium archive can be installed into an ignored project-local cache",
+    "I172 can use an explicit or receipt-verified local browser before PATH lookup",
+    "I172 remains blocked while the lockfile is unconfigured and no external executable is supplied",
+    "A-M product progress remains 42 of 132"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}

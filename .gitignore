@@ -13,6 +13,7 @@ htmlcov/
 venv/
 
 # Runtime / local data
+.browser-cache/
 *.db
 *.db-shm
 *.db-wal

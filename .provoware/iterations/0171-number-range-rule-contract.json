@@ -1,0 +1,72 @@
+{
+  "schema_version": 2,
+  "iteration": 171,
+  "agent": "number-range-rule-contract-agent-171",
+  "size": "M",
+  "goal": "Den Zahlenbereich als naechsten Regeltyp deterministisch planen und den kleinsten spaeteren browserlokalen Preview-Slice abgrenzen.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "Zahlenbereichsregel",
+    "summary": "I171 erklaert eine Zahlenbereichsregel als rein temporaere Pruefung einer Unter- oder Obergrenze; weder Regel noch Testwert oder vorhandene Daten werden gespeichert.",
+    "target_doc": "docs/development/ITERATION_171_NUMBER_RANGE_RULE_CONTRACT.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0171-number-range-rule-contract.json",
+    "docs/development/ITERATION_171_NUMBER_RANGE_RULE_CONTRACT.md",
+    "tests/mask_builder/test_i171_number_range_contract.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "TODO.md",
+    ".provoware/iterations/0166-common-rule-model-contract.json",
+    "docs/development/ITERATION_166_COMMON_RULE_MODEL_CONTRACT.md",
+    "scripts/validate_iteration_manifest.py"
+  ],
+  "direct_dependencies": [
+    "work 7405b83",
+    "I166 common rule model contract",
+    "I170 browser-test exception is not reusable",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "I171 number-range contract regression",
+    "manifest V2 validation",
+    "single-source preflight",
+    "final diff and scope validation"
+  ],
+  "tests_explicitly_not_run": [
+    "product tests because runtime is unchanged",
+    "UI and Chromium tests because rendering is unchanged",
+    "storage tests because repository and schema are unchanged",
+    "full suite because this is a local contract-only change"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [],
+    "python_tests": [
+      "tests/mask_builder/test_i171_number_range_contract.py"
+    ]
+  },
+  "risks": [
+    "the planning contract could be mistaken for runtime approval",
+    "locale-dependent parsing could make later evaluation nondeterministic",
+    "both bounds or productive activation could accidentally expand the first implementation slice"
+  ],
+  "non_changes": [
+    "no runtime or UI change",
+    "no number-range preview implementation or activation",
+    "no TODO or roadmap progress change",
+    "no persistence, validation_json or schema change",
+    "no dependency or CI change",
+    "no CP-03 or CP-06 reopen"
+  ],
+  "expected_side_effects": [
+    "number-range semantics and failure states become reviewable before implementation",
+    "the next safe implementation slice is limited to one browser-local draft number field and one bound",
+    "A-M product progress remains 42 of 132"
+  ],
+  "screenshot_required": false,
+  "status": "GATE_GREEN_PENDING"
+}
