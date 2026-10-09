@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "iteration": 176,
+  "agent": "shell-refactor-contract-agent-176",
+  "size": "S",
+  "goal": "Die bestehende HTTP-Antwort, unveränderte eingebettete HTML/CSS/JavaScript-Grenzen, Syntax und Nur-Lesen-Sicherheit vor der geplanten Modulaufteilung nachweisbar absichern.",
+  "change_kind": "scope_only",
+  "gate_profile": "scope",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Testgrundlage vor der Maskeneditor-Aufteilung",
+    "summary": "Das Programm selbst bleibt unverändert. Vor einer späteren Aufteilung wird automatisch geprüft, dass Browsercode, HTML-Antwort und reine Lesezugriffe erhalten bleiben."
+  },
+  "write_files": [
+    ".provoware/iterations/0176-shell-refactor-readonly-baseline.json",
+    "tests/mask_builder/test_i176_shell_refactor_contract.py"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0175-browser-local-rule-previews.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "scripts/iteration_preflight.py"
+  ],
+  "direct_dependencies": [
+    "I175 browser-local shell remains unchanged",
+    "I176 test-first baseline for optional future extraction of inline JS and CSS",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile I176 characterization test",
+    "run I176 asset-boundary, Node syntax and HTTP response invariants",
+    "existing browser-shell static regressions",
+    "manifest V2 and iteration-scope gate"
+  ],
+  "tests_explicitly_not_run": [
+    "actual headless Chromium visual acceptance: no UI or runtime logic changed",
+    "schema, domain and storage deep gates: frozen and untouched",
+    "full repository test suite: separate release validation"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/mask_builder/test_i176_shell_refactor_contract.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_i176_shell_refactor_contract.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "the 2415-line browser shell remains monolithic until a separately authorized extraction",
+    "Node must be available on the Linux CI runner for syntax verification",
+    "an external JS or CSS URL would change the current GET-only server contract; extraction should initially preserve inline output",
+    "later extraction must prove byte-for-byte generated HTML and complete existing tests"
+  ],
+  "non_changes": [
+    "no change to browser_shell.py or the returned HTML",
+    "no HTTP asset routes, no new dependencies, no database writes",
+    "no CP-03 or CP-06 reopening, no README or TODO progress changes",
+    "no declaration of visual or release acceptance"
+  ],
+  "expected_side_effects": [
+    "I176 test becomes a repeatable baseline before any future code extraction",
+    "the existing editor response is compared to its WSGI body byte-for-byte",
+    "Node parses the embedded JavaScript without execution"
+  ],
+  "screenshot_required": false,
+  "status": "TEST_BASELINE_PENDING"
+}
