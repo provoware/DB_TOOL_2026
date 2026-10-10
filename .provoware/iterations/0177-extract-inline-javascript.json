@@ -1,0 +1,78 @@
+{
+  "schema_version": 2,
+  "iteration": 177,
+  "agent": "inline-script-extraction-agent-177",
+  "size": "M",
+  "goal": "Maskeneditor-JavaScript ohne Änderung des generierten HTML, des HTTP-Vertrags oder der Produktivdaten als eigene Datei warten können.",
+  "change_kind": "product",
+  "gate_profile": "product",
+  "guide_delta": {
+    "mode": "explain_change",
+    "topic": "JavaScript-Datei des Maskeneditors",
+    "summary": "Das Verhalten und die Oberfläche bleiben vollständig gleich. Nur der JavaScript-Quelltext liegt nun in einer eigenen Datei.",
+    "target_doc": "docs/development/ITERATION_177_EXTRACT_INLINE_JS.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0177-extract-inline-javascript.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "src/provoware_db/mask_builder/interaction_script.js",
+    "tests/mask_builder/test_i177_extracted_script.py",
+    "docs/development/ITERATION_177_EXTRACT_INLINE_JS.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0176-shell-refactor-readonly-baseline.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "tests/mask_builder/test_browser_shell.py",
+    "tests/mask_builder/test_i176_shell_refactor_contract.py",
+    "scripts/iteration_preflight.py"
+  ],
+  "direct_dependencies": [
+    "I176 read-only baseline is the parent branch and must be merged first",
+    "unchanged original inline JavaScript git-blob SHA1 20fd1f9b5080c4cf53b738b3109697d6bfd28851",
+    "unchanged GET-only WSGI HTTP application",
+    "CP-03 and CP-06 remain frozen"
+  ],
+  "tests_required": [
+    "compile modified Python module and new regression",
+    "run Node --check on extracted JavaScript",
+    "I177 original blob fingerprint and HTTP byte equality",
+    "existing I176 baseline and browser-shell regressions",
+    "iteration preflight, file scope and repository foundation gates"
+  ],
+  "tests_explicitly_not_run": [
+    "live Chromium screenshots because the HTML/JS bytes are proven identical and no DOM behavior was changed",
+    "storage and schema deep gates because frozen core and persistent models are unchanged",
+    "full unrelated repository test suite because this is a narrow extraction"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "src/provoware_db/mask_builder/browser_shell.py",
+      "tests/mask_builder/test_i177_extracted_script.py"
+    ],
+    "python_tests": [
+      "tests/mask_builder/test_i177_extracted_script.py",
+      "tests/mask_builder/test_i176_shell_refactor_contract.py",
+      "tests/mask_builder/test_browser_shell.py"
+    ]
+  },
+  "risks": [
+    "the new JavaScript file must be distributed beside browser_shell.py",
+    "regression contract must catch even a one-byte change to the originally embedded script",
+    "I177 cannot be promoted ahead of I176 stacked parent PR"
+  ],
+  "non_changes": [
+    "no rendered HTML/CSS or JavaScript character changes",
+    "no new HTTP routes or network access",
+    "no persisted data or storage writes",
+    "no CP-03 / CP-06 reopening, no UI redesign, no runtime schema change"
+  ],
+  "expected_side_effects": [
+    "about 86 KB JavaScript moved out of Python shell into one JS source",
+    "Python loader inserts the identical inline script and preserves all HTTP output",
+    "new test fingerprints original inline script and checks JavaScript syntax"
+  ],
+  "screenshot_required": false,
+  "status": "CI_GATE_PENDING"
+}
