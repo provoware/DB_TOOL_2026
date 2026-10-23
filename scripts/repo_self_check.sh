@@ -15,7 +15,7 @@ echo "Repo: $ROOT"
 echo "Zeit: $(date --iso-8601=seconds 2>/dev/null || date)"
 echo
 
-for f in README.md TODO.md AGENTS.md CONTRIBUTING.md .gitignore .editorconfig docs/PROJECT_STANDARDS.md scripts/build_iteration_context.py scripts/iteration_preflight.py src/provoware_db/mask_builder/browser_shell.py; do
+for f in README.md TODO.md AGENTS.md CONTRIBUTING.md .gitignore .editorconfig docs/PROJECT_STANDARDS.md scripts/build_iteration_context.py scripts/iteration_preflight.py src/provoware_db/mask_builder/browser_shell.py src/provoware_db/mask_builder/interaction_script.js; do
   if [[ -f "$f" ]]; then
     echo "GRÜN: $f vorhanden"
   else
