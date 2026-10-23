@@ -1,4 +1,4 @@
-"""I178: Der Selbstcheck muss das zum Editorstart nötige JS-Asset prüfen."""
+"""I178/I179: Der Selbstcheck muss ein vorhandenes, nichtleeres Editor-JS prüfen."""
 from __future__ import annotations
 
 import os
@@ -16,8 +16,8 @@ EDITOR_ASSET = "src/provoware_db/mask_builder/interaction_script.js"
 
 
 class RepositorySelfCheckAssetTests(unittest.TestCase):
-    def _run_isolated(self, *, include_editor_asset: bool) -> subprocess.CompletedProcess[str]:
-        """Nur Dateiexistenz prüfen; die beiden unabhängigen Python-Gates simulieren."""
+    def _run_isolated(self, *, include_editor_asset: bool, empty_editor_asset: bool = False) -> subprocess.CompletedProcess[str]:
+        """Nur Dateiexistenz/Inhalt prüfen; die unabhängigen Python-Gates simulieren."""
         with tempfile.TemporaryDirectory() as directory:
             fixture = Path(directory)
             (fixture / "scripts").mkdir()
@@ -32,7 +32,8 @@ class RepositorySelfCheckAssetTests(unittest.TestCase):
             asset = fixture / EDITOR_ASSET
             if include_editor_asset:
                 asset.parent.mkdir(parents=True, exist_ok=True)
-                asset.touch()
+                if not empty_editor_asset:
+                    asset.write_text("// browser editor script fixture\n", encoding="utf-8")
             else:
                 asset.unlink(missing_ok=True)
 
@@ -63,6 +64,12 @@ class RepositorySelfCheckAssetTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(f"GRÜN: {EDITOR_ASSET} vorhanden", result.stdout)
         self.assertIn("GESAMTSTATUS: GRÜN", result.stdout)
+
+    def test_empty_editor_asset_is_a_failing_self_check(self) -> None:
+        result = self._run_isolated(include_editor_asset=True, empty_editor_asset=True)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn(f"ROT: {EDITOR_ASSET} ist leer", result.stdout)
+        self.assertIn("GESAMTSTATUS: ROT", result.stdout)
 
 
 if __name__ == "__main__":
