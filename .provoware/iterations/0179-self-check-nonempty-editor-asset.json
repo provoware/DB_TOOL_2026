@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "iteration": 179,
+  "agent": "editor-asset-nonempty-check-agent-179",
+  "size": "M",
+  "goal": "Repository-Selbstcheck muss ein leeres JavaScript-Asset des Maskeneditors als ROT erkennen, statt nur Dateiexistenz zu prüfen.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Selbstcheck bei leerer Editor-JavaScript-Datei",
+    "summary": "Ein versehentlich leeres Editor-Skript wird nun als Fehler gemeldet; an Bedienung und Nutzerdaten ändert sich nichts.",
+    "target_doc": "docs/development/ITERATION_179_NONEMPTY_EDITOR_ASSET.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0179-self-check-nonempty-editor-asset.json",
+    "scripts/repo_self_check.sh",
+    "tests/scripts/test_repo_self_check.py",
+    "docs/development/ITERATION_179_NONEMPTY_EDITOR_ASSET.md",
+    "docs/RELEASE_PFLICHTMATRIX.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/PRODUCT_ROADMAP.md",
+    ".provoware/iterations/0178-self-check-editor-asset.json",
+    "scripts/repo_self_check.sh",
+    "tests/scripts/test_repo_self_check.py",
+    "scripts/iteration_preflight.py",
+    "scripts/validate_iteration_manifest.py",
+    ".github/workflows/iteration-gates.yml"
+  ],
+  "direct_dependencies": [
+    "main HEAD 835b12568136f33e69c8395dd0331d4d1762d769",
+    "I178 JS asset existence check is present",
+    "no storage/schema/frozen-core changes"
+  ],
+  "tests_required": [
+    "bash -n scripts/repo_self_check.sh",
+    "python -W error tests/scripts/test_repo_self_check.py",
+    "preflight/manifest V2/scope CI gates",
+    "GitHub governance + targeted workflow"
+  ],
+  "tests_explicitly_not_run": [
+    "real Chromium UI: no rendering or interaction changes",
+    "database migration/recovery: no data write paths changed",
+    "unrelated full suite: risk-scoped governance fix"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/scripts/test_repo_self_check.py"
+    ],
+    "python_tests": [
+      "tests/scripts/test_repo_self_check.py"
+    ]
+  },
+  "risks": [
+    "nonempty is necessary but not sufficient for valid JavaScript; syntax/browser behavior remain separate gates",
+    "existing tests using zero-byte fixture must be updated to use a nonempty fixture"
+  ],
+  "non_changes": [
+    "no browser-shell behavior or client JavaScript modifications",
+    "no persistence or migration",
+    "no CP-03/CP-06 modifications",
+    "no release or merge"
+  ],
+  "expected_side_effects": [
+    "empty interaction_script.js produces ROT and exit 1",
+    "existing/missing and new empty asset tests cover green/red outcomes",
+    "release matrix records evidence separately from unresolved duties"
+  ],
+  "screenshot_required": false,
+  "status": "CI_GATE_PENDING"
+}
