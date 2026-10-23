@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "iteration": 178,
+  "agent": "selfcheck-editor-asset-agent-178",
+  "size": "S",
+  "goal": "Fehlendes interaction_script.js muss im Repository-Selbstcheck eine rote Prüfung erzeugen, bevor der Browser-Maskeneditor gestartet wird.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Repository-Selbstcheck des Maskeneditors",
+    "summary": "Zusätzliches zwingendes JavaScript-Asset wird zusammen mit Python-Loader geprüft; Produktdaten und GUI bleiben unverändert.",
+    "target_doc": "docs/development/ITERATION_178_SELF_CHECK_EDITOR_ASSET.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0178-self-check-editor-asset.json",
+    "scripts/repo_self_check.sh",
+    "tests/scripts/test_repo_self_check.py",
+    "docs/development/ITERATION_178_SELF_CHECK_EDITOR_ASSET.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    ".provoware/iterations/0177-extract-inline-javascript.json",
+    "src/provoware_db/mask_builder/browser_shell.py",
+    "scripts/repo_self_check.sh",
+    "scripts/check_iteration_scope.py"
+  ],
+  "direct_dependencies": [
+    "I177 extracted interaction_script.js is present in main",
+    "CI workflow selects latest iteration manifest",
+    "Frozen CP-03 and CP-06 are not reopened"
+  ],
+  "tests_required": [
+    "bash -n scripts/repo_self_check.sh",
+    "python -m unittest tests.scripts.test_repo_self_check or direct test discovery",
+    "manifest v2 validation, scope and fast-context preflight",
+    "CI governance and targeted gates"
+  ],
+  "tests_explicitly_not_run": [
+    "full browser interaction because no UI changes",
+    "schema or data migration tests because no storage write paths changed"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/scripts/test_repo_self_check.py"
+    ],
+    "python_tests": [
+      "tests/scripts/test_repo_self_check.py"
+    ]
+  },
+  "risks": [
+    "self-check may fail on incomplete packaging missing editor script (intended)",
+    "CI smoke depends on availability of bash and python3 in Linux runner"
+  ],
+  "non_changes": [
+    "no product GUI or client JavaScript behavior modification",
+    "no persistent data, schema or frozen core changes",
+    "do not change prior frozen I177 manifest"
+  ],
+  "expected_side_effects": [
+    "selfcheck returns nonzero when interaction_script.js missing",
+    "two isolated regression cases for missing and present asset"
+  ],
+  "screenshot_required": false,
+  "status": "CI_GATE_PENDING"
+}
