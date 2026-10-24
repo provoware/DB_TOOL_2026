@@ -1,4 +1,4 @@
-"""I178/I179: Der Selbstcheck muss ein vorhandenes, nichtleeres Editor-JS prüfen."""
+"""I178–I180: Der Selbstcheck muss das Editor-JS zuverlässig prüfen."""
 from __future__ import annotations
 
 import os
@@ -16,7 +16,7 @@ EDITOR_ASSET = "src/provoware_db/mask_builder/interaction_script.js"
 
 
 class RepositorySelfCheckAssetTests(unittest.TestCase):
-    def _run_isolated(self, *, include_editor_asset: bool, empty_editor_asset: bool = False) -> subprocess.CompletedProcess[str]:
+    def _run_isolated(self, *, include_editor_asset: bool, empty_editor_asset: bool = False, linked_editor_asset: bool = False) -> subprocess.CompletedProcess[str]:
         """Nur Dateiexistenz/Inhalt prüfen; die unabhängigen Python-Gates simulieren."""
         with tempfile.TemporaryDirectory() as directory:
             fixture = Path(directory)
@@ -32,7 +32,12 @@ class RepositorySelfCheckAssetTests(unittest.TestCase):
             asset = fixture / EDITOR_ASSET
             if include_editor_asset:
                 asset.parent.mkdir(parents=True, exist_ok=True)
-                if not empty_editor_asset:
+                if linked_editor_asset:
+                    foreign = fixture / "foreign-editor.js"
+                    foreign.write_text("// foreign script\n", encoding="utf-8")
+                    asset.unlink(missing_ok=True)
+                    asset.symlink_to(foreign)
+                elif not empty_editor_asset:
                     asset.write_text("// browser editor script fixture\n", encoding="utf-8")
             else:
                 asset.unlink(missing_ok=True)
@@ -69,6 +74,12 @@ class RepositorySelfCheckAssetTests(unittest.TestCase):
         result = self._run_isolated(include_editor_asset=True, empty_editor_asset=True)
         self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
         self.assertIn(f"ROT: {EDITOR_ASSET} ist leer", result.stdout)
+        self.assertIn("GESAMTSTATUS: ROT", result.stdout)
+
+    def test_symlinked_editor_asset_is_a_failing_self_check(self) -> None:
+        result = self._run_isolated(include_editor_asset=True, linked_editor_asset=True)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn(f"ROT: {EDITOR_ASSET} ist ein symbolischer Link", result.stdout)
         self.assertIn("GESAMTSTATUS: ROT", result.stdout)
 
 

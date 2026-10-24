@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "iteration": 180,
+  "agent": "selfcheck-editor-symlink-guard-agent-180",
+  "size": "M",
+  "goal": "Repository-Selbstcheck darf ein per Symlink ersetztes Editor-JavaScript nicht als vollständiges internes Asset akzeptieren.",
+  "change_kind": "governance",
+  "gate_profile": "governance",
+  "guide_delta": {
+    "mode": "no_user_change",
+    "topic": "Schutz des Editor-Skripts vor symbolischen Verknüpfungen",
+    "summary": "Der Selbstcheck meldet symbolische Links anstelle des echten Editor-Skripts als Fehler; keine Änderung an Oberfläche oder Nutzerdaten.",
+    "target_doc": "docs/development/ITERATION_180_EDITOR_SYMLINK_GUARD.md"
+  },
+  "write_files": [
+    ".provoware/iterations/0180-self-check-editor-symlink-guard.json",
+    "scripts/repo_self_check.sh",
+    "tests/scripts/test_repo_self_check.py",
+    "docs/development/ITERATION_180_EDITOR_SYMLINK_GUARD.md",
+    "docs/RELEASE_PFLICHTMATRIX.md"
+  ],
+  "read_files": [
+    "AGENTS.md",
+    "README.md",
+    "TODO.md",
+    "docs/RELEASE_PFLICHTMATRIX.md",
+    ".provoware/iterations/0179-self-check-nonempty-editor-asset.json",
+    "scripts/repo_self_check.sh",
+    "tests/scripts/test_repo_self_check.py",
+    "scripts/iteration_preflight.py",
+    ".github/workflows/iteration-gates.yml"
+  ],
+  "direct_dependencies": [
+    "main HEAD eff5bb7e0db904e243518f4cdd7ead1f2308b2fb",
+    "I179 nonempty editor-asset self-check merged",
+    "Step 1: reject symlinked asset and add isolated regression; internal test gate before step 2",
+    "Step 2: document evidence and update release duty matrix; no unrelated product work",
+    "No storage/schema/frozen core changes"
+  ],
+  "tests_required": [
+    "bash -n scripts/repo_self_check.sh",
+    "python3 -m py_compile tests/scripts/test_repo_self_check.py",
+    "python3 -W error tests/scripts/test_repo_self_check.py",
+    "python3 scripts/iteration_preflight.py",
+    "GitHub targeted + governance CI at final PR head"
+  ],
+  "tests_explicitly_not_run": [
+    "real browser/visual gate: editor runtime and rendering unchanged",
+    "SQLite migration/recovery: no storage write paths changed",
+    "unrelated full suite: governance-only change"
+  ],
+  "pip_requirements": [],
+  "ci": {
+    "compile": [
+      "tests/scripts/test_repo_self_check.py"
+    ],
+    "python_tests": [
+      "tests/scripts/test_repo_self_check.py"
+    ]
+  },
+  "risks": [
+    "symlinks intentionally rejected even when pointing to an existing internal file",
+    "non-symlink nonempty JS is not a substitute for browser or syntax validation"
+  ],
+  "non_changes": [
+    "no browser/client script changes",
+    "no data persistence/schema or CP-03/CP-06 changes",
+    "no merge or release"
+  ],
+  "expected_side_effects": [
+    "symlink to nonempty editor script now produces ROT and exit 1",
+    "missing, empty and real regular file behavior remains unchanged",
+    "focused four-case regression documents behavior"
+  ],
+  "screenshot_required": false,
+  "status": "CI_GATE_PENDING"
+}
